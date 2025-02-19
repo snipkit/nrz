@@ -151,9 +151,9 @@ export const transformSourcePlugin = ({
                       .replaceWith(() =>
                         j.callExpression(j.identifier(name), [
                           j.identifier(
-                            // Map the vlt package.json to the actual package.json used for publishing
+                            // Map the nrz package.json to the actual package.json used for publishing
                             // which will be at the root by resolving an empty string instead of the pkg name.
-                            JSON.stringify(dir === 'vlt' ? '' : dir),
+                            JSON.stringify(dir === 'nrz' ? '' : dir),
                           ),
                         ]),
                       ),

@@ -44,9 +44,9 @@ export type ProjectInfo = {
   tools: DashboardTools[]
   /**
    * `true` if this package node_modules folder was installed
-   * using the vlt client.
+   * using the nrz client.
    */
-  vltInstalled?: boolean
+  nrzInstalled?: boolean
 }
 
 /**
@@ -152,7 +152,7 @@ export type State = {
 }
 
 export type DashboardTools =
-  | 'vlt'
+  | 'nrz'
   | 'node'
   | 'deno'
   | 'bun'

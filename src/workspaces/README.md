@@ -2,7 +2,7 @@
 
 # @nrz/workspaces
 
-Utilities for working with vlt workspaces.
+Utilities for working with nrz workspaces.
 
 **[Usage](#usage)**
 ·
@@ -72,7 +72,7 @@ for (const path of m.paths()) {
 ```
 
 Configuration is stored in the project root at
-`vlt-workspaces.json`. The type of the object in the file must
+`nrz-workspaces.json`. The type of the object in the file must
 be:
 
 ```ts
@@ -113,4 +113,4 @@ workspace in the project, visiting each exactly once.
 
 When workspaces depend on one another, it will walk dependencies
 before dependents, _unless_ there is a cycle, as that would be
-impossible, and vlt does not prevent workspace dependency cycles.
+impossible, and nrz does not prevent workspace dependency cycles.

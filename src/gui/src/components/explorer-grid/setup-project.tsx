@@ -48,7 +48,7 @@ export const SetupProject = () => {
       <Card className="container mx-auto w-full px-8 py-8 lg:w-[1024px]">
         <h1 className="mb-2 text-3xl font-bold">Setup Project</h1>
         <p className="mb-6 text-gray-600">
-          Initializing your project with the <strong>vlt</strong>{' '}
+          Initializing your project with the <strong>nrz</strong>{' '}
           client will replace your{' '}
           <code className="rounded-md bg-gray-200 px-1 dark:bg-gray-900">
             node_modules

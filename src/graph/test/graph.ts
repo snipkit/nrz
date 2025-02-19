@@ -65,7 +65,7 @@ t.test('Graph', async t => {
   )
   t.strictSame(
     newNode.location,
-    './node_modules/.vlt/' +
+    './node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
       '/node_modules/foo',
     'location gutcheck',
@@ -195,7 +195,7 @@ t.test('using placePackage', async t => {
       name: 'baz',
       version: '1.0.0',
       dist: {
-        tarball: 'https://registry.vlt.sh/baz',
+        tarball: 'https://registry.khulnasoft.com/baz',
       },
     },
   )
@@ -278,7 +278,7 @@ t.test('workspaces', async t => {
   }
   const dir = t.testdir({
     'package.json': JSON.stringify(mainManifest),
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./packages/*'],
     }),
     packages: {

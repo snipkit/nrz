@@ -33,7 +33,7 @@ export const restHandlers = [
         name: 'project-foo',
         path: '/home/user/project-foo',
         manifest: { name: 'project-foo', version: '1.0.0' },
-        tools: ['node', 'vlt'],
+        tools: ['node', 'nrz'],
         mtime: 1730498483044,
       },
       {

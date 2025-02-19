@@ -14,7 +14,7 @@ const AppSidebarFooter = () => {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <a href="https://docs.vlt.sh" target="_blank">
+            <a href="https://docs.khulnasoft.com" target="_blank">
               <Library />
               <span>Documentation</span>
               <ArrowUpRight className="ml-auto" />

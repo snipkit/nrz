@@ -18,7 +18,7 @@ if (process.env.CI && process.env.RUNNER_OS === 'Windows') {
 const MIXPANEL_TOKEN = '7853b372fb0f20e238be6d11e53f60fe'
 
 export default defineConfig({
-  site: 'https://docs.vlt.sh',
+  site: 'https://docs.khulnasoft.com',
   trailingSlash: 'never',
   integrations: [
     starlight({
@@ -41,7 +41,7 @@ export default defineConfig({
           preserveIndent: true,
         },
       },
-      title: 'vlt /vōlt/',
+      title: 'nrz /vōlt/',
       social: {
         linkedin: 'https://www.linkedin.com/company/nrz',
         twitter: 'https://twitter.com/nrz',
@@ -95,7 +95,7 @@ export default defineConfig({
         },
         {
           label: 'Serverless Registry',
-          link: 'https://www.vlt.sh/serverless-registry',
+          link: 'https://www.khulnasoft.com/serverless-registry',
         },
       ],
     }),

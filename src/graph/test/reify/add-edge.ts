@@ -31,7 +31,7 @@ const barManifest = {
 t.test('reify an edge', async t => {
   const projectRoot = t.testdir({
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', 'foo@1.2.3'])]: {
           node_modules: {
             foo: {
@@ -53,7 +53,7 @@ t.test('reify an edge', async t => {
 
   const fooNM =
     projectRoot +
-    '/node_modules/.vlt/' +
+    '/node_modules/.nrz/' +
     joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
     '/node_modules'
 
@@ -71,7 +71,7 @@ t.test('reify an edge', async t => {
   )
   fooNode.location =
     projectRoot +
-    '/node_modules/.vlt/' +
+    '/node_modules/.nrz/' +
     joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
     '/node_modules/foo'
   const barNode = new Node(
@@ -81,7 +81,7 @@ t.test('reify an edge', async t => {
   )
   barNode.location =
     projectRoot +
-    '/node_modules/.vlt/' +
+    '/node_modules/.nrz/' +
     joinDepIDTuple(['registry', '', 'bar@1.2.3']) +
     '/node_modules/bar'
   const rootNode = new Node(opts, joinDepIDTuple(['file', '.']), {})

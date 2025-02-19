@@ -217,7 +217,7 @@ const childMethod = async (fn: string, args: string[]) => {
       projectRoot,
       env: Object.fromEntries(
         Object.entries(process.env).filter(([k]) =>
-          /^(npm|VLT)_/i.test(k),
+          /^(npm|NRZ)_/i.test(k),
         ),
       ),
       path: [

@@ -71,18 +71,18 @@ exports[`test/ideal/append-nodes.ts > TAP > append file type of nodes > should h
       Edge spec(linked@file:./linked) -prod-> to: Node { id: 'file·linked', location: 'linked', resolved: 'linked' },
       Edge spec(foo@^1.0.0) -prod-> to: Node {
         id: '··foo@1.0.0',
-        location: './node_modules/.vlt/··foo@1.0.0/node_modules/foo',
+        location: './node_modules/.nrz/··foo@1.0.0/node_modules/foo',
         resolved: 'https://registry.npmjs.org/foo/-/foo-1.0.0.tgz',
         edgesOut: [
           Edge spec(bar@file:./bar) -prod-> to: Node {
-            id: 'file·node_modules§.vlt§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§bar',
-            location: './node_modules/.vlt/file·node_modules§.vlt§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§bar/node_modules/bar',
-            resolved: 'node_modules/.vlt/··foo@1.0.0/node_modules/foo/bar'
+            id: 'file·node_modules§.nrz§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§bar',
+            location: './node_modules/.nrz/file·node_modules§.nrz§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§bar/node_modules/bar',
+            resolved: 'node_modules/.nrz/··foo@1.0.0/node_modules/foo/bar'
           },
           Edge spec(baz@file:./baz.tgz) -prod-> to: Node {
-            id: 'file·node_modules§.vlt§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§baz.tgz',
-            location: './node_modules/.vlt/file·node_modules§.vlt§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§baz.tgz/node_modules/baz',
-            resolved: 'node_modules/.vlt/··foo@1.0.0/node_modules/foo/baz.tgz'
+            id: 'file·node_modules§.nrz§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§baz.tgz',
+            location: './node_modules/.nrz/file·node_modules§.nrz§%C2%B7%C2%B7foo@1.0.0§node_modules§foo§baz.tgz/node_modules/baz',
+            resolved: 'node_modules/.nrz/··foo@1.0.0/node_modules/foo/baz.tgz'
           }
         ]
       }

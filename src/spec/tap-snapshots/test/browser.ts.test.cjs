@@ -8596,9 +8596,9 @@ exports[`test/browser.ts > TAP > parse args > x@workspace:y@1.x > inspect defaul
 
 exports[`test/browser.ts > TAP > reverse-lookup registry: specifiers if named > must match snapshot 1`] = `
 Array [
-  "x@registry:http://vlt.sh#x@latest",
-  "x@registry:http://vlt.sh#x@latest",
-  "x@registry:http://vlt.sh/#x@latest",
-  "x@registry:http://vlt.sh/#x@latest",
+  "x@registry:http://khulnasoft.com#x@latest",
+  "x@registry:http://khulnasoft.com#x@latest",
+  "x@registry:http://khulnasoft.com/#x@latest",
+  "x@registry:http://khulnasoft.com/#x@latest",
 ]
 `

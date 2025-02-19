@@ -60,7 +60,7 @@ test('create-new-project-content with results', async () => {
           readablePath: '~/project-foo',
           path: '/home/user/project-foo',
           manifest: { name: 'project-foo', version: '1.0.0' },
-          tools: ['node', 'vlt'],
+          tools: ['node', 'nrz'],
           mtime: 1730498483044,
         },
         {

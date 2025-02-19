@@ -46,7 +46,7 @@ export const newNode =
     name,
     version: '1.0.0',
     location:
-      'node_modules/.vlt/;;${name}@1.0.0/node_modules/${name}',
+      'node_modules/.nrz/;;${name}@1.0.0/node_modules/${name}',
     manifest: { name, version: '1.0.0' },
     integrity: 'sha512-deadbeef',
     resolved: undefined,

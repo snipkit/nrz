@@ -41,7 +41,7 @@ const makeJob = (
   flat = false,
 ): [string, Buffer] => {
   return [
-    `node_modules/.vlt/registry.npmjs.org/${name}/${version}/node_modules/${name}`,
+    `node_modules/.nrz/registry.npmjs.org/${name}/${version}/node_modules/${name}`,
     (flat ? makePkgFlat : makePkg)(name, version),
   ]
 }

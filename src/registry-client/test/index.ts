@@ -476,7 +476,7 @@ t.test('client.login()', async t => {
   await rc.login(registryURL)
   await getKC('').save()
   const auths = JSON.parse(
-    readFileSync(resolve(dir, 'vlt/auth/keychain.json'), 'utf8'),
+    readFileSync(resolve(dir, 'nrz/auth/keychain.json'), 'utf8'),
   )
   t.matchOnlyStrict(
     auths,
@@ -495,7 +495,7 @@ t.test('client.login() with immediate retry', async t => {
   await rc.login(registryURL)
   await getKC('').save()
   const auths = JSON.parse(
-    readFileSync(resolve(dir, 'vlt/auth/keychain.json'), 'utf8'),
+    readFileSync(resolve(dir, 'nrz/auth/keychain.json'), 'utf8'),
   )
   t.matchOnlyStrict(
     auths,
@@ -514,7 +514,7 @@ t.test('client.login() with 100ms delayed retry', async t => {
   await rc.login(registryURL)
   await getKC('').save()
   const auths = JSON.parse(
-    readFileSync(resolve(dir, 'vlt/auth/keychain.json'), 'utf8'),
+    readFileSync(resolve(dir, 'nrz/auth/keychain.json'), 'utf8'),
   )
   t.matchOnlyStrict(
     auths,

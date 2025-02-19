@@ -140,7 +140,7 @@ const ExplorerContent = () => {
   }
 
   // intentional check for `false` in order to avoid flashing content
-  if (projectInfo.vltInstalled === false) {
+  if (projectInfo.nrzInstalled === false) {
     return <SetupProject />
   }
 

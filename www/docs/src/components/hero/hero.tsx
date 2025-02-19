@@ -61,7 +61,7 @@ const Introduction = ({
           Quick Start
         </a>
         <a
-          href="https://www.vlt.sh/serverless-registry"
+          href="https://www.khulnasoft.com/serverless-registry"
           target="_blank"
           role="link"
           className="flex cursor-pointer items-center gap-1 rounded-sm border-[1px] border-muted-foreground/25 bg-white px-8 py-2 text-foreground no-underline transition-all hover:bg-muted-foreground/20 dark:bg-black">
@@ -93,16 +93,16 @@ const Workspaces = () => {
         />
         <ConfigCard
           title="Configuration"
-          subtitle="Personalize vlt"
+          subtitle="Personalize nrz"
           link="/cli/configuring"
         />
         <VSRCard
           title="Serverless Registry"
           subtitle="VSR"
-          link="https://www.vlt.sh/serverless-registry"
+          link="https://www.khulnasoft.com/serverless-registry"
         />
         <WorkspacesCard
-          title="Packages of vlt"
+          title="Packages of nrz"
           subtitle="Workspaces"
           link="/packages/"
         />

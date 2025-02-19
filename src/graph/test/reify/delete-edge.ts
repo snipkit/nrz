@@ -27,10 +27,10 @@ const mockRemover = {
   rollback() {},
 } as unknown as RollbackRemove
 
-const vltInstallFixture = (t: Test) =>
+const nrzInstallFixture = (t: Test) =>
   t.testdir({
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', 'foo@1.2.3'])]: {
           node_modules: {
             '.bin': {
@@ -60,13 +60,13 @@ const vltInstallFixture = (t: Test) =>
       },
       foo: t.fixture(
         'symlink',
-        './.vlt/' +
+        './.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
           '/node_modules/foo',
       ),
       bar: t.fixture(
         'symlink',
-        './.vlt/' +
+        './.nrz/' +
           joinDepIDTuple(['registry', '', 'bar@1.2.3']) +
           '/node_modules/bar',
       ),
@@ -85,7 +85,7 @@ t.test('posix', async t => {
     typeof import('../../src/reify/delete-edge.ts')
   >('../../src/reify/delete-edge.ts')
 
-  const projectRoot = vltInstallFixture(t)
+  const projectRoot = nrzInstallFixture(t)
   const opts = {
     projectRoot,
     graph: {} as GraphLike,
@@ -96,7 +96,7 @@ t.test('posix', async t => {
   statSync(projectRoot + '/node_modules/.bin/bar.pwsh')
   const fooNM =
     projectRoot +
-    '/node_modules/.vlt/' +
+    '/node_modules/.nrz/' +
     joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
     '/node_modules'
   statSync(fooNM + '/bar')
@@ -138,14 +138,14 @@ t.test('win32', async t => {
     typeof import('../../src/reify/delete-edge.ts')
   >('../../src/reify/delete-edge.ts')
 
-  const projectRoot = vltInstallFixture(t)
+  const projectRoot = nrzInstallFixture(t)
   // gutcheck
   statSync(projectRoot + '/node_modules/.bin/bar')
   statSync(projectRoot + '/node_modules/.bin/bar.cmd')
   statSync(projectRoot + '/node_modules/.bin/bar.pwsh')
   const fooNM =
     projectRoot +
-    '/node_modules/.vlt/' +
+    '/node_modules/.nrz/' +
     joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
     '/node_modules'
   statSync(fooNM + '/bar')

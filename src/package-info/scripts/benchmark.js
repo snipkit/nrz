@@ -35,32 +35,32 @@ const PACKAGES = randomPackages(
 )
 const FIXTURES = resolve(tmpdir(), 'fixtures')
 const DIRS = {
-  vlt: join(FIXTURES, 'vlt-cache'),
-  vltExtract: join(FIXTURES, 'vlt-extract'),
+  nrz: join(FIXTURES, 'nrz-cache'),
+  nrzExtract: join(FIXTURES, 'nrz-extract'),
   npm: join(FIXTURES, 'npm-cache'),
   npmExtract: join(FIXTURES, 'npm-extract'),
 }
 
-const p = new PackageInfoClient({ cache: DIRS.vlt })
+const p = new PackageInfoClient({ cache: DIRS.nrz })
 
 const CACHE = {
   resetFs: () => {
     resetDir(DIRS.npm)
-    resetDir(DIRS.vlt)
+    resetDir(DIRS.nrz)
   },
-  seedFs: async ({ packages, vlt, npm }) => {
+  seedFs: async ({ packages, nrz, npm }) => {
     if (!readdirSync(DIRS.npm).length) {
       await Promise.all(packages.map(n => npm(n)))
     }
-    if (!readdirSync(DIRS.vlt).length) {
+    if (!readdirSync(DIRS.nrz).length) {
       const input = new EventEmitter()
-      await Promise.all(packages.map(n => vlt(n)))
+      await Promise.all(packages.map(n => nrz(n)))
       // manually do the the cache-unzip task here, to replicate a
       // fs cache that has been fully settled.
-      const mp = unzip(DIRS.vlt, input)
-      for (const entry of readdirSync(DIRS.vlt)) {
+      const mp = unzip(DIRS.nrz, input)
+      for (const entry of readdirSync(DIRS.nrz)) {
         if (entry.endsWith('.key')) {
-          const f = DIRS.vlt + '/' + entry
+          const f = DIRS.nrz + '/' + entry
           const key = readFileSync(f, 'utf8').trim()
           input.emit('data', key + '\0')
         }
@@ -73,13 +73,13 @@ const CACHE = {
     p.registryClient.cache.clear()
     // npm has no in-memory cache by default
   },
-  seedMemory: async ({ packages, vlt, npm }) => {
+  seedMemory: async ({ packages, nrz, npm }) => {
     const packumentCache = new Map()
     await Promise.all(packages.map(n => npm(n, { packumentCache })))
-    await Promise.all(packages.map(n => vlt(n)))
+    await Promise.all(packages.map(n => nrz(n)))
     return {
       npm: { packumentCache },
-      vlt: {},
+      nrz: {},
     }
   },
 }
@@ -106,11 +106,11 @@ const run = async (id, fn, packages, unit) => {
 
 const test = async (
   id,
-  { packages, options, vlt: vlt_, npm: npm_ },
+  { packages, options, nrz: nrz_, npm: npm_ },
 ) => {
-  const vltOptions = { cache: DIRS.vlt }
+  const nrzOptions = { cache: DIRS.nrz }
   const npmOptions = { cache: DIRS.npm, fullMetadata: true }
-  const vlt = (n, o) => vlt_(n, { ...options, ...vltOptions, ...o })
+  const nrz = (n, o) => nrz_(n, { ...options, ...nrzOptions, ...o })
   const npm = (n, o) => npm_(n, { ...options, ...npmOptions, ...o })
 
   switch (id) {
@@ -119,12 +119,12 @@ const test = async (
       CACHE.resetFs()
       break
     case 'fs':
-      await CACHE.seedFs({ packages, vlt, npm })
+      await CACHE.seedFs({ packages, nrz, npm })
       CACHE.resetMemory()
       break
     case 'memory': {
-      const seeded = await CACHE.seedMemory({ packages, vlt, npm })
-      Object.assign(vltOptions, seeded.vlt)
+      const seeded = await CACHE.seedMemory({ packages, nrz, npm })
+      Object.assign(nrzOptions, seeded.nrz)
       Object.assign(npmOptions, seeded.npm)
       CACHE.resetFs()
       break
@@ -133,7 +133,7 @@ const test = async (
       throw new Error(`unknown benchmark ${id}`)
   }
 
-  const unit = await run(`vlt (${id})`, vlt, packages)
+  const unit = await run(`nrz (${id})`, nrz, packages)
   await run(`npm (${id})`, npm, packages, unit)
 }
 
@@ -157,19 +157,19 @@ resetDir(FIXTURES)
 
 await compare(`resolve`, {
   memory: true,
-  vlt: (n, o) => p.resolve(n, o),
+  nrz: (n, o) => p.resolve(n, o),
   npm: (n, o) => pacote.resolve(n, o),
 })
 
 await compare(`manifest`, {
-  vlt: (n, o) => p.manifest(n, o),
+  nrz: (n, o) => p.manifest(n, o),
   npm: (n, o) => pacote.manifest(n, o),
 })
 
 await compare(`extract`, {
   // dont extract more than this or else we get rate-limited by the npm registry
   max: 500,
-  vlt: (n, o) => p.extract(n, join(DIRS.vltExtract, n), o),
+  nrz: (n, o) => p.extract(n, join(DIRS.nrzExtract, n), o),
   npm: (n, o) => pacote.extract(n, join(DIRS.npmExtract, n), o),
 })
 

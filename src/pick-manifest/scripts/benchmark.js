@@ -31,7 +31,7 @@ const test = (name, comp, fn, howLong) => {
 }
 
 const compare = (comp, args) => {
-  test('vlt', comp, p => pickManifest(p, ...args))
+  test('nrz', comp, p => pickManifest(p, ...args))
   test('npm', comp, p => npmPickManifest(p, ...args))
 }
 

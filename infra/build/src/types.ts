@@ -5,7 +5,7 @@ export const All = 'all'
 // on the name of the argument that will work in both bundle and compile
 // scenarios.
 export const Bins = {
-  vlt: 'vlt',
+  nrz: 'nrz',
   vlr: 'vlr',
   vlx: 'vlx',
   vlrx: 'vlrx',

@@ -2,7 +2,7 @@
 
 # @nrz/semver
 
-A library for parsing, validating & comparing Semantic Versions used by `vlt`.
+A library for parsing, validating & comparing Semantic Versions used by `nrz`.
 
 **[Usage](#usage)**
 ·
@@ -127,7 +127,7 @@ Unless otherwise noted, they throw an error on invalid versions.
 
 - The API is slightly different. Most notably, `@nrz/semver`
   lacks range intersection and other methods that are not needed
-  by `vlt`. Of course, these may be added eventually if we find a
+  by `nrz`. Of course, these may be added eventually if we find a
   need for them.
 
 - Build metadata is preserved on `Version` objects and in

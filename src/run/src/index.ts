@@ -68,11 +68,11 @@ export type SharedOptions = PromiseSpawnOptions & {
    * environment variables to set. `process.env` is always included,
    * to omit fields, set them explicitly to undefined.
    *
-   * vlt will add some of its own, as well:
+   * nrz will add some of its own, as well:
    * - npm_lifecycle_event: the event name
    * - npm_lifecycle_script: the command in package.json#scripts
    * - npm_package_json: path to the package.json file
-   * - VLT_* envs for all vlt configuration values that are set
+   * - NRZ_* envs for all nrz configuration values that are set
    */
   env?: NodeJS.ProcessEnv
   /**

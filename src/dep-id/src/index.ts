@@ -18,7 +18,7 @@ export type Delimiter = '·'
  *   url to a registry. If empty, it is the default registry. Examples:
  *   - `··some-package@2.0.1`
  *   - `·npm·whatever@1.2.3`
- *   - `·http%3A%2F%2Fvlt.sh%2F·x@1.2.3`
+ *   - `·http%3A%2F%2Fkhulnasoft.com%2F·x@1.2.3`
  * - `git`: `'git·<git remote>·<git selector>'`. For example:
  *   - `git·github:user/project·branchname`
  *   - `git·git%2Bssh%3A%2F%2Fuser%40host%3Aproject.git·semver:1.x`

@@ -21,7 +21,7 @@ const test = (fn: () => void, howLong = 1000) => {
 }
 
 t.test('version parses per ms', t => {
-  const vltSemVer = () => {
+  const nrzSemVer = () => {
     for (const [_, v] of all) Version.parse(v)
   }
 
@@ -30,7 +30,7 @@ t.test('version parses per ms', t => {
   }
 
   const ns = test(nodeSemVer) * all.length
-  const vs = test(vltSemVer) * all.length
+  const vs = test(nrzSemVer) * all.length
   t.comment('node-semver', ns)
   t.comment('@nrz/semver', vs)
   t.comment(vs / ns)
@@ -48,14 +48,14 @@ t.test('range parses per ms', t => {
     }
   }
 
-  const rangeVltSemVer = () => {
+  const rangeNrzSemVer = () => {
     for (const range of allRanges) {
       new Range(range)
     }
   }
 
   const ns = test(rangeNodeSemVer) * allRanges.length
-  const vs = test(rangeVltSemVer) * allRanges.length
+  const vs = test(rangeNrzSemVer) * allRanges.length
   t.comment('node-semver', ns)
   t.comment('@nrz/semver', vs)
   t.comment(vs / ns)
@@ -80,7 +80,7 @@ t.test('range tests per ms', t => {
     }
   }
 
-  const satisfiesVltSemVer = () => {
+  const satisfiesNrzSemVer = () => {
     for (const [range, version] of all) {
       const r = new Range(range)
       const v = Version.parse(version)
@@ -89,7 +89,7 @@ t.test('range tests per ms', t => {
   }
 
   const ns = test(satisfiesNodeSemVer) * all.length
-  const vs = test(satisfiesVltSemVer) * all.length
+  const vs = test(satisfiesNrzSemVer) * all.length
   t.comment('node-semver', ns)
   t.comment('@nrz/semver', vs)
   t.comment(vs / ns)
@@ -106,13 +106,13 @@ t.test(`highest per ms (with ${allVersions.length} versions)`, t => {
       semver.maxSatisfying(allVersions, range)
     }
   }
-  const highestVltSemVer = () => {
+  const highestNrzSemVer = () => {
     for (const range of allRanges) {
       highest(allVersions, range)
     }
   }
   const ns = test(highestNodeSemVer) * allRanges.length
-  const vs = test(highestVltSemVer) * allRanges.length
+  const vs = test(highestNrzSemVer) * allRanges.length
   t.comment('node-semver', ns)
   t.comment('@nrz/semver', vs)
   t.comment(vs / ns)

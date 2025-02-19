@@ -41,7 +41,7 @@ t.test('super basic reification', async t => {
   const dir = t.testdir({
     cache: {},
     project: {
-      'vlt.json': JSON.stringify({
+      'nrz.json': JSON.stringify({
         cache: resolve(t.testdirName, 'cache'),
       }),
       'package.json': JSON.stringify({
@@ -73,7 +73,7 @@ t.test('super basic reification', async t => {
 
   t.strictSame(
     new Set(readdirSync(projectRoot + '/node_modules')),
-    new Set(['.vlt', '.vlt-lock.json', 'lodash']),
+    new Set(['.nrz', '.nrz-lock.json', 'lodash']),
   )
 
   t.strictSame(
@@ -100,7 +100,7 @@ t.test('super basic reification', async t => {
   }
   t.strictSame(
     JSON.parse(
-      readFileSync(resolve(projectRoot, 'vlt-lock.json'), 'utf8'),
+      readFileSync(resolve(projectRoot, 'nrz-lock.json'), 'utf8'),
     ),
     expectLockfileData,
   )
@@ -143,7 +143,7 @@ t.test('super basic reification', async t => {
 
   // verify that it works if there's contents in node_modules,
   // but no lockfile present.
-  unlinkSync(resolve(projectRoot, 'vlt-lock.json'))
+  unlinkSync(resolve(projectRoot, 'nrz-lock.json'))
 
   await reify({
     projectRoot,
@@ -233,7 +233,7 @@ t.test('reify with a bin', async t => {
   const dir = t.testdir({
     cache: {},
     project: {
-      'vlt.json': JSON.stringify({
+      'nrz.json': JSON.stringify({
         cache: resolve(t.testdirName, 'cache'),
       }),
       'package.json': JSON.stringify({
@@ -275,7 +275,7 @@ t.test('failure rolls back', async t => {
   const dir = t.testdir({
     cache: {},
     project: {
-      'vlt.json': JSON.stringify({
+      'nrz.json': JSON.stringify({
         cache: resolve(t.testdirName, 'cache'),
       }),
       'package.json': JSON.stringify({
@@ -338,7 +338,7 @@ t.test('failure of optional node just deletes it', async t => {
   const dir = t.testdir({
     cache: {},
     project: {
-      'vlt.json': JSON.stringify({
+      'nrz.json': JSON.stringify({
         cache: resolve(t.testdirName, 'cache'),
       }),
       'package.json': JSON.stringify({

@@ -13,7 +13,7 @@ Array [
 
 exports[`test/matrix.ts > TAP > compile matrix > files 1`] = `
 Array [
-  "vlt",
+  "nrz",
   "vlr",
   "vlx",
   "vlrx",

@@ -30,7 +30,7 @@ import {
 import { create as tarC } from 'tar'
 import { rename } from './rename.ts'
 
-const xdg = new XDG('vlt')
+const xdg = new XDG('nrz')
 
 export type Resolution = {
   resolved: string

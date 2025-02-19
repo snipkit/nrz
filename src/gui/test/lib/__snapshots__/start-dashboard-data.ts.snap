@@ -16,7 +16,7 @@ exports[`standard dashboard response > should return standard dashboard data 1`]
       "readablePath": "~/project-foo",
       "tools": [
         "node",
-        "vlt",
+        "nrz",
       ],
     },
     {

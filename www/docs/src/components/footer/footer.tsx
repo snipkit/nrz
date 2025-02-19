@@ -12,7 +12,7 @@ const Footer = (_props: Props) => {
           <FooterSocials />
           <div className="flex items-center gap-2">
             <a
-              href="https://www.vlt.sh/join"
+              href="https://www.khulnasoft.com/join"
               className="group inline-flex items-center gap-3 rounded-[12px] pl-3 pr-1 text-foreground no-underline transition-all">
               <span className="text-15 rounded-[7px] border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-100 px-3 py-1 text-left font-medium group-hover:border-neutral-400 dark:border-neutral-800 dark:from-neutral-900 dark:to-black dark:group-hover:border-neutral-700 dark:group-hover:from-neutral-800/80">
                 Join waitlist
@@ -25,18 +25,18 @@ const Footer = (_props: Props) => {
         {/* footer policies */}
         <div className="flex w-full flex-row items-center justify-between">
           <a
-            href="https://www.vlt.sh/"
+            href="https://www.khulnasoft.com/"
             className="text-sm font-medium text-muted-foreground no-underline transition-all hover:text-foreground">
-            &copy; {new Date().getFullYear()} vlt technology inc.
+            &copy; {new Date().getFullYear()} nrz technology inc.
           </a>
           <div className="flex flex-row gap-4">
             <a
-              href="https://www.vlt.sh/terms"
+              href="https://www.khulnasoft.com/terms"
               className="text-sm font-medium text-muted-foreground no-underline transition-all hover:text-foreground">
               Terms
             </a>
             <a
-              href="https://www.vlt.sh/privacy"
+              href="https://www.khulnasoft.com/privacy"
               className="text-sm font-medium text-muted-foreground no-underline transition-all hover:text-foreground">
               Privacy
             </a>

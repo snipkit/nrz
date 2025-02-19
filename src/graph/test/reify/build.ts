@@ -60,7 +60,7 @@ t.test(
           node_modules: {
             y: t.fixture(
               'symlink',
-              '../../../node_modules/.vlt/' + yid + '/node_modules/y',
+              '../../../node_modules/.nrz/' + yid + '/node_modules/y',
             ),
           },
         },
@@ -73,17 +73,17 @@ t.test(
           a: '',
         },
       }),
-      'vlt-workspaces.json': '"src/*"',
+      'nrz-workspaces.json': '"src/*"',
       node_modules: {
         '.bin': {
           x: t.fixture(
             'symlink',
-            '../.vlt/' + xid + '/node_modules/x/bin.js',
+            '../.nrz/' + xid + '/node_modules/x/bin.js',
           ),
         },
-        a: t.fixture('symlink', './.vlt/' + aid + '/node_modules/a'),
-        x: t.fixture('symlink', './.vlt/' + xid + '/node_modules/x'),
-        '.vlt': {
+        a: t.fixture('symlink', './.nrz/' + aid + '/node_modules/a'),
+        x: t.fixture('symlink', './.nrz/' + xid + '/node_modules/x'),
+        '.nrz': {
           [aid]: {
             node_modules: {
               a: {
@@ -164,7 +164,7 @@ t.test(
           arg0: 'install',
           cwd: resolve(
             projectRoot,
-            `./node_modules/.vlt/${yid}/node_modules/y`,
+            `./node_modules/.nrz/${yid}/node_modules/y`,
           ),
         },
         { arg0: 'prepare', cwd: resolve(projectRoot, `./src/app`) },
@@ -175,7 +175,7 @@ t.test(
       new Set([
         resolve(
           projectRoot,
-          `node_modules/.vlt/${xid}/node_modules/x/bin.js`,
+          `node_modules/.nrz/${xid}/node_modules/x/bin.js`,
         ),
       ]),
     )

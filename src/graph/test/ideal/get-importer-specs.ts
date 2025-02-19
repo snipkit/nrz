@@ -51,7 +51,7 @@ t.test('empty graph with workspaces and nothing to add', async t => {
         }),
       },
     },
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./packages/*'],
     }),
   })
@@ -274,7 +274,7 @@ t.test(
           }),
         },
       },
-      'vlt-workspaces.json': JSON.stringify({
+      'nrz-workspaces.json': JSON.stringify({
         packages: ['./packages/*'],
       }),
     })
@@ -367,7 +367,7 @@ t.test('graph specs and something to remove', async t => {
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', 'bar@1.0.0'])]: {
           node_modules: {
             bar: {
@@ -391,13 +391,13 @@ t.test('graph specs and something to remove', async t => {
       },
       bar: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'bar@1.0.0']) +
           '/node_modules/bar',
       ),
       foo: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
           '/node_modules/foo',
       ),
@@ -430,7 +430,7 @@ t.test(
     const projectRoot = t.testdir({
       'package.json': JSON.stringify(mainManifest),
       node_modules: {
-        '.vlt': {
+        '.nrz': {
           [joinDepIDTuple(['registry', '', 'bar@1.0.0'])]: {
             node_modules: {
               bar: {
@@ -454,7 +454,7 @@ t.test(
         },
         foo: t.fixture(
           'symlink',
-          '.vlt/' +
+          '.nrz/' +
             joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
             '/node_modules/foo',
         ),
@@ -468,7 +468,7 @@ t.test(
           node_modules: {
             bar: t.fixture(
               'symlink',
-              '../../../node_modules/.vlt/' +
+              '../../../node_modules/.nrz/' +
                 joinDepIDTuple(['registry', '', 'bar@1.0.0']) +
                 '/node_modules/bar',
             ),
@@ -487,7 +487,7 @@ t.test(
           },
         },
       },
-      'vlt-workspaces.json': JSON.stringify({
+      'nrz-workspaces.json': JSON.stringify({
         packages: ['./packages/*'],
       }),
     })

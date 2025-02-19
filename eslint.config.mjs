@@ -325,7 +325,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['infra/build/test/**/*.ts', 'src/vlt/test/**/*/*.ts'],
+    files: ['infra/build/test/**/*.ts', 'src/nrz/test/**/*/*.ts'],
     rules: {
       'no-restricted-syntax': [
         'warn',

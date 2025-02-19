@@ -152,6 +152,6 @@ export const main = async (
 }
 
 if (process.argv[1] === import.meta.filename) {
-  process.title = 'vlt-cache-unzip'
+  process.title = 'nrz-cache-unzip'
   void main(process.argv[2], process.stdin)
 }

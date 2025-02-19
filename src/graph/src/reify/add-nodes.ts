@@ -21,7 +21,7 @@ export const addNodes = (
     const { manifest = {} } = node
     // if it's not in the store, we don't have to extract it, because
     // we're just linking to a location that already exists.
-    if (!node.inVltStore()) continue
+    if (!node.inNrzStore()) continue
     // remove anything already there
     const target = node.resolvedLocation(scurry)
     const from = scurry.resolve('')

@@ -11,7 +11,7 @@ import { resolve } from 'node:path'
 
 t.test('load some workspaces', async t => {
   const dir = t.testdir({
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./src/*'],
     }),
     src: {
@@ -193,14 +193,14 @@ t.test('cyclic intra-project ws deps are handled', async t => {
   // goes into Monorepo.onCycle, but for now just load a cyclic
   // monorepo and verify with coverage.
   const dir = t.testdir({
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       utils: 'utils/*',
       // use ** so that we exercise the 'remove child ws' path
       apps: ['app/bar/*', 'app/*'],
     }),
     utils: {
       // this if course still an actual problem for the app 😅
-      // but vlt can't know whether it's actually an issue,
+      // but nrz can't know whether it's actually an issue,
       // and there are reasonable use cases for cyclic deps.
       'is-even': {
         'package.json': JSON.stringify({
@@ -360,7 +360,7 @@ export const isOdd = (n) => !isEven(n)
   t.end()
 })
 
-t.test('missing/invalid vlt-workspaces.json file', t => {
+t.test('missing/invalid nrz-workspaces.json file', t => {
   const dir = t.testdir({
     'package.json': JSON.stringify({
       name: 'just a package',
@@ -370,26 +370,26 @@ t.test('missing/invalid vlt-workspaces.json file', t => {
   const m = new Monorepo(dir)
   t.equal(Monorepo.maybeLoad(m.projectRoot), undefined)
   t.throws(() => m.load(), {
-    message: 'Not in a monorepo, no vlt-workspaces.json found',
+    message: 'Not in a monorepo, no nrz-workspaces.json found',
   })
 
-  mkdirSync(dir + '/vlt-workspaces.json')
+  mkdirSync(dir + '/nrz-workspaces.json')
   t.equal(Monorepo.maybeLoad(m.projectRoot), undefined)
   t.throws(() => m.load(), {
-    message: 'Not in a monorepo, no vlt-workspaces.json found',
+    message: 'Not in a monorepo, no nrz-workspaces.json found',
   })
 
-  rmdirSync(dir + '/vlt-workspaces.json')
+  rmdirSync(dir + '/nrz-workspaces.json')
 
-  writeFileSync(dir + '/vlt-workspaces.json', 'hello, world')
+  writeFileSync(dir + '/nrz-workspaces.json', 'hello, world')
   t.throws(() => Monorepo.maybeLoad(m.projectRoot), {
-    message: 'Invalid vlt-workspaces.json file',
+    message: 'Invalid nrz-workspaces.json file',
   })
   t.throws(() => m.load(), {
-    message: 'Invalid vlt-workspaces.json file',
+    message: 'Invalid nrz-workspaces.json file',
   })
   writeFileSync(
-    dir + '/vlt-workspaces.json',
+    dir + '/nrz-workspaces.json',
     JSON.stringify({
       hello: { world: true },
     }),
@@ -430,7 +430,7 @@ t.test('missing/invalid vlt-workspaces.json file', t => {
 
 t.test('iterating empty monorepo is no-op', async t => {
   const dir = t.testdir({
-    'vlt-workspaces.json': JSON.stringify('utils'),
+    'nrz-workspaces.json': JSON.stringify('utils'),
   })
 
   const m = new Monorepo(dir)
@@ -449,7 +449,7 @@ t.test('iterating empty monorepo is no-op', async t => {
 
 t.test('force a full load, but still not found', t => {
   const dir = t.testdir({
-    'vlt-workspaces.json': JSON.stringify('src/*'),
+    'nrz-workspaces.json': JSON.stringify('src/*'),
     src: {
       ws: {
         'package.json': JSON.stringify({

@@ -96,7 +96,7 @@ export class Cache extends LRUCache<
     const {
       onDiskWrite,
       onDiskDelete,
-      path = new XDG('vlt').cache(),
+      path = new XDG('nrz').cache(),
       fetchMethod: _,
       sizeCalculation = options.maxSize || options.maxEntrySize ?
         (v: Buffer, k: string) => v.length + k.length

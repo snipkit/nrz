@@ -363,8 +363,8 @@ const fixLicense = ws => {
       throw new Error(`${ws.pj.name} must have a license`)
     }
     const contents = readFileSync(join(ws.dir, 'LICENSE'), 'utf8')
-    if (!contents.includes('Copyright (c) vlt technology, Inc.')) {
-      throw new Error(`${ws.pj.name} should contain vlt company name`)
+    if (!contents.includes('Copyright (c) nrz technology, Inc.')) {
+      throw new Error(`${ws.pj.name} should contain nrz company name`)
     }
     if (!contents.includes(`${license} License`)) {
       throw new Error(`${ws.pj.name} should contain ${license}`)

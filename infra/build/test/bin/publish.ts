@@ -62,7 +62,7 @@ t.test('basic', async t => {
     withFileTypes: true,
   })
   t.equal(npm.length, 0)
-  t.ok(contents.find(f => f.name.endsWith('vlt.js')))
+  t.ok(contents.find(f => f.name.endsWith('nrz.js')))
 })
 
 t.test('pack', async t => {
@@ -80,7 +80,7 @@ t.test('live publish', async t => {
   t.intercept(process, 'env', {
     value: {
       ...process.env,
-      VLT_CLI_PUBLISH_TOKEN: 'mytoken',
+      NRZ_CLI_PUBLISH_TOKEN: 'mytoken',
     },
   })
   const { npm } = await publish(t, ['--action=publish', '--forReal'])

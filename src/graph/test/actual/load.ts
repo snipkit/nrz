@@ -69,7 +69,7 @@ t.test('cycle', async t => {
       },
     }),
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', 'a@1.0.0'])]: {
           node_modules: {
             a: {
@@ -111,7 +111,7 @@ t.test('cycle', async t => {
       },
       a: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'a@1.0.0']) +
           '/node_modules/a',
       ),

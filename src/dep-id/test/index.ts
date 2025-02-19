@@ -127,12 +127,12 @@ t.test('hydrate only', t => {
 })
 
 t.test('named registry', t => {
-  const options = { registries: { vlt: 'http://vlt.sh' } }
+  const options = { registries: { nrz: 'http://khulnasoft.com' } }
   t.equal(
     String(
-      hydrate(`${delimiter}vlt${delimiter}x@1.2.3`, 'x', options),
+      hydrate(`${delimiter}nrz${delimiter}x@1.2.3`, 'x', options),
     ),
-    'x@vlt:x@1.2.3',
+    'x@nrz:x@1.2.3',
   )
   t.end()
 })

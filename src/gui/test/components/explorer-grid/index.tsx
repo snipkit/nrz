@@ -170,8 +170,8 @@ test('explorer-grid renders workspace with edges in', async () => {
       } as RawNode,
     ],
     projectInfo: {
-      tools: ['vlt'],
-      vltInstalled: true,
+      tools: ['nrz'],
+      nrzInstalled: true,
     },
   })
   const q = new Query({ graph })

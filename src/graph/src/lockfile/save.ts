@@ -55,7 +55,7 @@ const formatNodes = (
       (
         node.id.startsWith('file') ||
         node.location.endsWith(
-          '/node_modules/.vlt/' +
+          '/node_modules/.nrz/' +
             node.id +
             '/node_modules/' +
             node.name,
@@ -202,7 +202,7 @@ export const saveData = (
 export const save = (options: SaveOptions) => {
   const { graph } = options
   const data = lockfileData({ ...options, saveManifests: false })
-  const fileName = resolve(graph.projectRoot, 'vlt-lock.json')
+  const fileName = resolve(graph.projectRoot, 'nrz-lock.json')
   return saveData(data, fileName, false)
 }
 
@@ -211,7 +211,7 @@ export const saveHidden = (options: SaveOptions) => {
   const data = lockfileData({ ...options, saveManifests: true })
   const fileName = resolve(
     graph.projectRoot,
-    'node_modules/.vlt-lock.json',
+    'node_modules/.nrz-lock.json',
   )
   mkdirSync(dirname(fileName), { recursive: true })
   return saveData(data, fileName, true)

@@ -471,7 +471,7 @@ t.test('parse argument options', t => {
   const nameAndBare = Spec.parse('foo', 'latest')
   const full = Spec.parse('foo@latest')
   t.matchOnly(full, nameAndBare)
-  t.equal(full, Spec.parse(full, { registry: 'https://vlt.sh' }))
+  t.equal(full, Spec.parse(full, { registry: 'https://khulnasoft.com' }))
   t.end()
 })
 
@@ -485,20 +485,20 @@ t.test('constructor argument options', t => {
 t.test('reverse-lookup registry: specifiers if named', t => {
   // verify that it works regardless of slashiness
   const specs = [
-    'x@registry:http://vlt.sh#x@latest',
-    'x@registry:http://vlt.sh/#x@latest',
+    'x@registry:http://khulnasoft.com#x@latest',
+    'x@registry:http://khulnasoft.com/#x@latest',
   ]
-  const urls = ['http://vlt.sh', 'http://vlt.sh/']
+  const urls = ['http://khulnasoft.com', 'http://khulnasoft.com/']
   const found: Spec[] = []
   for (const s of specs) {
-    for (const vlt of urls) {
-      found.push(Spec.parse(s, { registries: { vlt } }))
+    for (const nrz of urls) {
+      found.push(Spec.parse(s, { registries: { nrz } }))
     }
   }
   for (const spec of found) {
-    t.equal(spec.namedRegistry, 'vlt')
-    t.equal(spec.registry, 'http://vlt.sh/')
-    t.equal(spec.options.registries.vlt, 'http://vlt.sh/')
+    t.equal(spec.namedRegistry, 'nrz')
+    t.equal(spec.registry, 'http://khulnasoft.com/')
+    t.equal(spec.options.registries.nrz, 'http://khulnasoft.com/')
   }
   t.matchSnapshot(found.map(s => String(s)))
   t.end()
@@ -537,10 +537,10 @@ t.test('try to guess the conventional tarball URL', t => {
     ['x@npm:y@2.4.5', '/y/-/y-2.4.5.tgz'],
     ['x@npm:y@=2.4.5', '/y/-/y-2.4.5.tgz'],
     ['x@npm:y@v2.4.5', '/y/-/y-2.4.5.tgz'],
-    ['x@vlt:z@6.5.4', '/z/-/z-6.5.4.tgz', true],
+    ['x@nrz:z@6.5.4', '/z/-/z-6.5.4.tgz', true],
     ['@scope/pkg@1.2.3', '/@scope/pkg/-/pkg-1.2.3.tgz'],
     ['@scope/pkg@npm:x@1.2.3', '/x/-/x-1.2.3.tgz'],
-    ['@scope/pkg@vlt:x@1.2.3', '/x/-/x-1.2.3.tgz', true],
+    ['@scope/pkg@nrz:x@1.2.3', '/x/-/x-1.2.3.tgz', true],
 
     [
       'x@registry:https://registry.npmjs.org#x@1.2.3',
@@ -563,7 +563,7 @@ t.test('try to guess the conventional tarball URL', t => {
       '/y/-/y-2.4.5.tgz',
     ],
     [
-      'x@registry:https://registry.npmjs.org#x@vlt:z@6.5.4',
+      'x@registry:https://registry.npmjs.org#x@nrz:z@6.5.4',
       '/z/-/z-6.5.4.tgz',
       true,
     ],
@@ -576,7 +576,7 @@ t.test('try to guess the conventional tarball URL', t => {
       '/x/-/x-1.2.3.tgz',
     ],
     [
-      'x@registry:https://registry.npmjs.org#@scope/pkg@vlt:x@1.2.3',
+      'x@registry:https://registry.npmjs.org#@scope/pkg@nrz:x@1.2.3',
       '/x/-/x-1.2.3.tgz',
       true,
     ],
@@ -589,7 +589,7 @@ t.test('try to guess the conventional tarball URL', t => {
   ]
   const options = {
     registries: {
-      vlt: 'https://registry.vlt.sh',
+      nrz: 'https://registry.khulnasoft.com',
     },
   }
   for (const [spec, path, r] of guesses) {
@@ -602,7 +602,7 @@ t.test('try to guess the conventional tarball URL', t => {
       )
     } else {
       const host =
-        r ? 'https://registry.vlt.sh' : 'https://registry.npmjs.org'
+        r ? 'https://registry.khulnasoft.com' : 'https://registry.npmjs.org'
       const expect = String(new URL(path, host))
       t.equal(s.conventionalRegistryTarball, expect)
     }

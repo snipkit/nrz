@@ -18,12 +18,12 @@ const CliInstall = () => {
   ]
 
   const commands = [
-    ['#', 'vlt', 'is', 'your', 'next', 'package', 'manager'],
+    ['#', 'nrz', 'is', 'your', 'next', 'package', 'manager'],
     ['#', 'streamline', 'package', 'management'],
     ['#', 'scale', 'confidently', 'and', 'efficiently'],
     ['#', 'enhanced', 'security', 'and', 'performance'],
-    ['#', 'all', 'at', 'the', 'speed', 'of', 'vlt'],
-    ['npm', 'i', '-g', 'vlt'],
+    ['#', 'all', 'at', 'the', 'speed', 'of', 'nrz'],
+    ['npm', 'i', '-g', 'nrz'],
     [' '],
   ]
 

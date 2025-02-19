@@ -24,7 +24,7 @@ t.test('build from lockfile', async t => {
         foo: '^1.0.0',
       },
     }),
-    'vlt-lock.json': JSON.stringify({
+    'nrz-lock.json': JSON.stringify({
       options: {},
       nodes: {
         [joinDepIDTuple(['registry', '', 'foo@1.0.0'])]: [
@@ -69,7 +69,7 @@ t.test('build from actual files', async t => {
       },
     }),
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', 'foo@1.0.0'])]: {
           node_modules: {
             foo: {
@@ -83,7 +83,7 @@ t.test('build from actual files', async t => {
       },
       foo: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
           '/node_modules/foo',
       ),

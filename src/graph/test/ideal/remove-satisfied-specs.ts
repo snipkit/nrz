@@ -39,7 +39,7 @@ t.test('graph with an actual node', async t => {
       },
     }),
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', 'foo@1.0.0'])]: {
           node_modules: {
             foo: {
@@ -53,7 +53,7 @@ t.test('graph with an actual node', async t => {
       },
       foo: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
           '/node_modules/foo',
       ),

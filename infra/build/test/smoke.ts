@@ -89,13 +89,13 @@ const testCommand = async (
       const binPath = join(dir, `${bin}.js`)
       const cwd = t.testdir(testdir)
       // Remove env vars that might cause trouble for tests since
-      // we might be be using vlt or another tool to run these tests.
+      // we might be be using nrz or another tool to run these tests.
       // Not all of these have been proven to cause problems but it
       // errs on the side of removing more for a cleaner test environment.
       const env = Object.entries(process.env).reduce<
         NodeJS.Process['env']
       >((acc, [k, v]) => {
-        if (!/^_?(tapjs|tap|npm|vlt|node|ts_node)(_|$)/i.test(k)) {
+        if (!/^_?(tapjs|tap|npm|nrz|node|ts_node)(_|$)/i.test(k)) {
           acc[k] = v
         }
         return acc
@@ -172,9 +172,9 @@ t.test('commands', async t => {
   const outdir = t.testdir()
   await bundle({ outdir, ...defaultOptions() })
 
-  const snapshots: Record<'vlt', { [command: string]: TestCase[] }> &
-    Record<Exclude<types.Bin, 'vlt' | 'vlix'>, TestCase[]> = {
-    vlt: {
+  const snapshots: Record<'nrz', { [command: string]: TestCase[] }> &
+    Record<Exclude<types.Bin, 'nrz' | 'vlix'>, TestCase[]> = {
+    nrz: {
       pkg: [
         { args: ['get'], snapshot: true },
         { args: ['get', 'name'], snapshot: true },
@@ -199,7 +199,7 @@ t.test('commands', async t => {
 
   for (const [bin, commands] of Object.entries(snapshots)) {
     assert(types.isBin(bin))
-    await t[bin === 'vlt' ? 'test' : 'skip'](bin, async t => {
+    await t[bin === 'nrz' ? 'test' : 'skip'](bin, async t => {
       for (const [command, cases] of Object.entries(
         Array.isArray(commands) ? { '': commands } : commands,
       )) {

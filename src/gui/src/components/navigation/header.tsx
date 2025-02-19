@@ -23,7 +23,7 @@ const Header = () => {
     if (mappedName) {
       setRouteName(mappedName)
     } else {
-      setRouteName('VLT /vōlt/')
+      setRouteName('NRZ /vōlt/')
     }
   }, [route])
 

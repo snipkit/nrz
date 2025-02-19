@@ -3,7 +3,7 @@ import { isToken } from '../src/auth.ts'
 
 const checkLog = (kc: any) => (kc as Keychain).log
 
-let expectKeychainApp = 'vlt/auth'
+let expectKeychainApp = 'nrz/auth'
 class Keychain {
   log: string[][] = []
   file: string
@@ -84,13 +84,13 @@ t.test('getToken', async t => {
   await t.rejects(getToken('not a url', ''))
   t.equal(await getToken('https://x.com/', ''), 'Bearer stokenboken')
   t.strictSame(checkLog(getKC('')), [['get', 'https://x.com']])
-  process.env.VLT_TOKEN = 'fromenv'
-  process.env.VLT_REGISTRY = 'https://asdf.com/'
+  process.env.NRZ_TOKEN = 'fromenv'
+  process.env.NRZ_REGISTRY = 'https://asdf.com/'
   t.strictSame(
     await getToken('https://asdf.com', ''),
     'Bearer fromenv',
   )
-  process.env.VLT_TOKEN_https_foo_com_8080 = 'foofromenv'
+  process.env.NRZ_TOKEN_https_foo_com_8080 = 'foofromenv'
   t.strictSame(
     await getToken('https://foo.com:8080/', ''),
     'Bearer foofromenv',
@@ -101,8 +101,8 @@ t.test('get a KC with a different identity', async t => {
   const { getKC } = await t.mockImport<
     typeof import('../src/auth.ts')
   >('../src/auth.ts', mocks)
-  expectKeychainApp = 'vlt/auth/politics'
+  expectKeychainApp = 'nrz/auth/politics'
   const kc = getKC('politics')
-  t.equal(kc.file, 'vlt/auth/politics/keychain.json')
+  t.equal(kc.file, 'nrz/auth/politics/keychain.json')
   t.end()
 })

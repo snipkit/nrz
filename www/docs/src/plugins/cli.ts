@@ -58,9 +58,9 @@ export const plugin = {
       await writeFile(
         entries.configuring,
         matter.stringify(
-          loadedConfig.jack.usageMarkdown().replace(/^# vlt/, ''),
+          loadedConfig.jack.usageMarkdown().replace(/^# nrz/, ''),
           {
-            title: 'Configuring the vlt CLI',
+            title: 'Configuring the nrz CLI',
             sidebar: {
               label: 'Configuring',
               order: 1,
@@ -75,7 +75,7 @@ export const plugin = {
         await writeFile(
           join(entries.commandsDir, c.id + '.md'),
           matter.stringify(c.command.usage().usageMarkdown(), {
-            title: `vlt ${c.id}`,
+            title: `nrz ${c.id}`,
             sidebar: { label: c.id },
           }),
         )

@@ -24,8 +24,8 @@ const mockPackageInfo = {
   },
 } as unknown as PackageInfoClient
 
-const inVltStoreFalse = () => false
-const inVltStoreTrue = () => true
+const inNrzStoreFalse = () => false
+const inNrzStoreTrue = () => true
 
 const isOptionalFalse = () => false
 const isOptionalTrue = () => true
@@ -43,18 +43,18 @@ const diff = {
   nodes: {
     delete: new Set<any>([]),
     add: new Set([
-      // not in vlt store
+      // not in nrz store
       {
         name: 'name',
-        inVltStore: inVltStoreFalse,
+        inNrzStore: inNrzStoreFalse,
         isOptional: isOptionalFalse,
       },
       // this one gets added
       node({
         id: joinDepIDTuple(['registry', '', 'foo@1.2.3']),
-        inVltStore: inVltStoreTrue,
+        inNrzStore: inNrzStoreTrue,
         location:
-          './node_modules/.vlt/' +
+          './node_modules/.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
           '/node_modules/foo',
         name: 'foo',
@@ -63,9 +63,9 @@ const diff = {
       // this one too, but has a manifest
       node({
         id: joinDepIDTuple(['registry', '', 'bar@1.2.3']),
-        inVltStore: inVltStoreTrue,
+        inNrzStore: inNrzStoreTrue,
         location:
-          './node_modules/.vlt/' +
+          './node_modules/.nrz/' +
           joinDepIDTuple(['registry', '', 'bar@1.2.3']) +
           '/node_modules/bar',
         name: 'bar',
@@ -75,9 +75,9 @@ const diff = {
       // this one fails, but it's optional, so it's fine
       node({
         id: joinDepIDTuple(['registry', '', 'failer@1.2.3']),
-        inVltStore: inVltStoreTrue,
+        inNrzStore: inNrzStoreTrue,
         location:
-          './node_modules/.vlt/' +
+          './node_modules/.nrz/' +
           joinDepIDTuple(['registry', '', 'failer@1.2.3']) +
           '/node_modules/failer',
         name: 'failer',
@@ -92,9 +92,9 @@ const diff = {
           '',
           'optional-incompatible@1.2.3',
         ]),
-        inVltStore: inVltStoreTrue,
+        inNrzStore: inNrzStoreTrue,
         location:
-          './node_modules/.vlt/' +
+          './node_modules/.nrz/' +
           joinDepIDTuple([
             'registry',
             '',
@@ -117,9 +117,9 @@ const diff = {
           '',
           'optional-deprecated@1.2.3',
         ]),
-        inVltStore: inVltStoreTrue,
+        inNrzStore: inNrzStoreTrue,
         location:
-          './node_modules/.vlt/' +
+          './node_modules/.nrz/' +
           joinDepIDTuple([
             'registry',
             '',
@@ -161,19 +161,19 @@ t.match(
 t.strictSame(removed, [
   resolve(
     t.testdirName,
-    'node_modules/.vlt/' +
+    'node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
       '/node_modules/foo',
   ),
   resolve(
     t.testdirName,
-    'node_modules/.vlt/' +
+    'node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'bar@1.2.3']) +
       '/node_modules/bar',
   ),
   resolve(
     t.testdirName,
-    'node_modules/.vlt/' +
+    'node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'failer@1.2.3']) +
       '/node_modules/failer',
   ),
@@ -184,7 +184,7 @@ t.strictSame(extracted, [
     Spec.parse('foo@1.2.3'),
     resolve(
       t.testdirName,
-      'node_modules/.vlt/' +
+      'node_modules/.nrz/' +
         joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
         '/node_modules/foo',
     ),
@@ -193,7 +193,7 @@ t.strictSame(extracted, [
     Spec.parse('bar@1.2.3'),
     resolve(
       t.testdirName,
-      'node_modules/.vlt/' +
+      'node_modules/.nrz/' +
         joinDepIDTuple(['registry', '', 'bar@1.2.3']) +
         '/node_modules/bar',
     ),

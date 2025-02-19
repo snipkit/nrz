@@ -168,17 +168,17 @@ export class Node implements NodeLike {
     if (this.#location) {
       return this.#location
     }
-    this.#location = `./node_modules/.vlt/${this.id}/node_modules/${this.name}`
+    this.#location = `./node_modules/.nrz/${this.id}/node_modules/${this.name}`
     // if using the default location, it is in the store
-    this.inVltStore = () => true
+    this.inNrzStore = () => true
     return this.#location
   }
 
   set location(location: string) {
     this.#location = location
     // reset memoization, since it might be elsewhere now
-    if (this.inVltStore !== Node.prototype.inVltStore) {
-      this.inVltStore = Node.prototype.inVltStore
+    if (this.inNrzStore !== Node.prototype.inNrzStore) {
+      this.inNrzStore = Node.prototype.inNrzStore
     }
   }
 
@@ -199,7 +199,7 @@ export class Node implements NodeLike {
    */
   nodeModules(scurry: PathScurry): string {
     const loc = this.resolvedLocation(scurry)
-    return this.inVltStore() ?
+    return this.inNrzStore() ?
         loc.substring(0, loc.length - this.name.length - 1)
       : scurry.resolve(loc, 'node_modules')
   }
@@ -234,18 +234,18 @@ export class Node implements NodeLike {
   }
 
   /**
-   * return true if this node is located in the vlt store
+   * return true if this node is located in the nrz store
    * memoized the first time it's called, since the store location
    * doesn't change within the context of a single operation.
    */
-  inVltStore(): boolean {
-    // technically this just means it's in *a* vlt store, but we can safely
+  inNrzStore(): boolean {
+    // technically this just means it's in *a* nrz store, but we can safely
     // assume that a user won't construct a path like this by accident,
     // and there's only ever one store in any given project.
     const inStore = this.location.endsWith(
-      `.vlt/${this.id}/node_modules/${this.name}`,
+      `.nrz/${this.id}/node_modules/${this.name}`,
     )
-    this.inVltStore = () => inStore
+    this.inNrzStore = () => inStore
     return inStore
   }
 
@@ -290,7 +290,7 @@ export class Node implements NodeLike {
   }
 
   setDefaultLocation() {
-    const def = `./node_modules/.vlt/${this.id}/node_modules/${this.name}`
+    const def = `./node_modules/.nrz/${this.id}/node_modules/${this.name}`
 
     // only relocate if the location is in node_modules already
     if (

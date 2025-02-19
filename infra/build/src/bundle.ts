@@ -104,7 +104,7 @@ const bundle = async (o: {
     },
     define: {
       'process.env.NODE_ENV': '"production"',
-      'process.env._VLT_DEV_LIVE_RELOAD': 'false',
+      'process.env._NRZ_DEV_LIVE_RELOAD': 'false',
       // The import.meta shims are then globally replaced with our newly defined values
       ...Object.values(IMPORT_META).reduce(
         (acc, k) => {

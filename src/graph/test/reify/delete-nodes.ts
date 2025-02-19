@@ -10,20 +10,20 @@ const mockRemover = {
   rm: async (path: string) => removed.push(path),
 } as unknown as RollbackRemove
 
-const inVltStoreFalse = () => false
-const inVltStoreTrue = () => true
+const inNrzStoreFalse = () => false
+const inNrzStoreTrue = () => true
 
 const diff = {
   nodes: {
     delete: new Set([
-      // not in vlt store
-      { name: 'name', inVltStore: inVltStoreFalse },
+      // not in nrz store
+      { name: 'name', inNrzStore: inNrzStoreFalse },
       // this one gets added
       {
         id: joinDepIDTuple(['registry', '', 'foo@1.2.3']),
-        inVltStore: inVltStoreTrue,
+        inNrzStore: inNrzStoreTrue,
         location:
-          './node_modules/.vlt/' +
+          './node_modules/.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
           '/node_modules/foo',
         name: 'foo',
@@ -38,7 +38,7 @@ await Promise.all(deleteNodes(diff, mockRemover, scurry))
 
 t.strictSame(removed, [
   scurry.resolve(
-    'node_modules/.vlt/' +
+    'node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'foo@1.2.3']),
   ),
 ])

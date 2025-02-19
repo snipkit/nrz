@@ -9,12 +9,12 @@ export const rollback = async (
   scurry: PathScurry,
 ) => {
   const promises: Promise<unknown>[] = []
-  const store = scurry.resolve('node_modules/.vlt')
+  const store = scurry.resolve('node_modules/.nrz')
 
   // remove everything the diff tried to add
   const backRoller = new RollbackRemove()
   for (const node of diff.nodes.add) {
-    if (!node.inVltStore()) continue
+    if (!node.inNrzStore()) continue
     const path = scurry.resolve(store, node.id)
     /* c8 ignore next */
     promises.push(backRoller.rm(path).catch(() => {}))

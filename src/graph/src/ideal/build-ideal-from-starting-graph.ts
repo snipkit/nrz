@@ -14,7 +14,7 @@ export type BuildIdealFromStartingGraphOptions = AddNodesOptions &
 /**
  * Builds an ideal {@link Graph} representing the dependencies that
  * should be present in order to fulfill the requirements defined
- * by the `package.json` and `vlt-lock.json` files using the `graph` set
+ * by the `package.json` and `nrz-lock.json` files using the `graph` set
  * in options as a starting point. Also add / remove any dependencies
  * listed in the `add` and `remove` properties.
  */

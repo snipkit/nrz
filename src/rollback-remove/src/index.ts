@@ -9,7 +9,7 @@ export class RollbackRemove {
   #paths = new Map<string, string>()
 
   async rm(path: string) {
-    const target = `${dirname(path)}/.VLT.DELETE.${this.#key}.${basename(path)}`
+    const target = `${dirname(path)}/.NRZ.DELETE.${this.#key}.${basename(path)}`
     this.#paths.set(path, target)
     await rename(path, target).catch((e: unknown) => {
       if (e instanceof Error && 'code' in e && e.code === 'ENOENT') {

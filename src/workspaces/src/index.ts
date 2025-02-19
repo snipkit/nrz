@@ -39,7 +39,7 @@ export type LoadQuery = {
 export type WorkspaceConfigObject = Record<string, string[]>
 
 /**
- * Allowed datatype in the `vlt-workspaces.json` file.
+ * Allowed datatype in the `nrz-workspaces.json` file.
  */
 export type WorkspaceConfig =
   | string[]
@@ -130,7 +130,7 @@ export type MonorepoOptions = {
    * A {@link PathScurry} object, for use in globs
    */
   scurry?: PathScurry
-  /** Parsed normalized contents of a `vlt-workspaces.json` file */
+  /** Parsed normalized contents of a `nrz-workspaces.json` file */
   config?: WorkspaceConfigObject
   /**
    * If set, then {@link Monorepo#load} will be called immediately with
@@ -144,10 +144,10 @@ export type MonorepoOptions = {
  *
  * Does not automatically look up the root, but that can be provided by
  * running `Config.load()`, since it stops seeking the route when a
- * `vlt-workspaces.json` file is encountered.
+ * `nrz-workspaces.json` file is encountered.
  */
 export class Monorepo {
-  /** The project root where vlt-workspaces.json is found */
+  /** The project root where nrz-workspaces.json is found */
   projectRoot: string
   /** Scurry object to cache all filesystem calls (mostly globs) */
   scurry: PathScurry
@@ -174,7 +174,7 @@ export class Monorepo {
   }
 
   /**
-   * Load the workspace definitions from vlt-workspaces.json,
+   * Load the workspace definitions from nrz-workspaces.json,
    * canonicalizing the result into the effective `{[group:string]:string[]}`
    * form.
    *
@@ -184,12 +184,12 @@ export class Monorepo {
    */
   get config(): WorkspaceConfigObject {
     if (this.#config) return this.#config
-    const file = resolve(this.projectRoot, 'vlt-workspaces.json')
+    const file = resolve(this.projectRoot, 'nrz-workspaces.json')
     let confData: string
     try {
       confData = readFileSync(file, 'utf8')
     } catch (er) {
-      throw error('Not in a monorepo, no vlt-workspaces.json found', {
+      throw error('Not in a monorepo, no nrz-workspaces.json found', {
         path: this.projectRoot,
         cause: er,
       })
@@ -198,7 +198,7 @@ export class Monorepo {
     try {
       parsed = parse(confData)
     } catch (er) {
-      throw error('Invalid vlt-workspaces.json file', {
+      throw error('Invalid nrz-workspaces.json file', {
         path: this.projectRoot,
         cause: er,
       })
@@ -599,7 +599,7 @@ export class Monorepo {
     try {
       if (
         !statSync(
-          resolve(projectRoot, 'vlt-workspaces.json'),
+          resolve(projectRoot, 'nrz-workspaces.json'),
         ).isFile()
       ) {
         return

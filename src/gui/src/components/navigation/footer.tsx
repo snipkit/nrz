@@ -56,18 +56,18 @@ export const Footer = () => {
         {/* footer policies */}
         <div className="flex w-full flex-row items-center justify-between">
           <a
-            href="https://www.vlt.sh/"
+            href="https://www.khulnasoft.com/"
             className="text-sm text-muted-foreground no-underline transition-all hover:text-foreground">
-            &copy; {new Date().getFullYear()} vlt technology inc.
+            &copy; {new Date().getFullYear()} nrz technology inc.
           </a>
           <div className="flex flex-row gap-4">
             <a
-              href="https://www.vlt.sh/terms"
+              href="https://www.khulnasoft.com/terms"
               className="text-sm text-muted-foreground no-underline transition-all hover:text-foreground">
               Terms
             </a>
             <a
-              href="https://www.vlt.sh/privacy"
+              href="https://www.khulnasoft.com/privacy"
               className="text-sm text-muted-foreground no-underline transition-all hover:text-foreground">
               Privacy
             </a>

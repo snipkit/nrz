@@ -43,11 +43,11 @@ t.test('basic', async t => {
     '--runtime=node,bun,deno',
     '--compile=true,false',
   )
-  t.ok(args.find(a => /^node.*vlt\.js$/.exec(a)))
-  t.ok(args.find(a => /^bun.*vlt\.js$/.exec(a)))
-  t.ok(args.find(a => /^deno run -A.*vlt\.js$/.exec(a)))
-  t.ok(args.find(a => /compile-.*deno.*vlt$/.exec(a)))
-  t.ok(args.find(a => /compile-.*bun.*vlt$/.exec(a)))
+  t.ok(args.find(a => /^node.*nrz\.js$/.exec(a)))
+  t.ok(args.find(a => /^bun.*nrz\.js$/.exec(a)))
+  t.ok(args.find(a => /^deno run -A.*nrz\.js$/.exec(a)))
+  t.ok(args.find(a => /compile-.*deno.*nrz$/.exec(a)))
+  t.ok(args.find(a => /compile-.*bun.*nrz$/.exec(a)))
 })
 
 t.test('nothing', async t => {

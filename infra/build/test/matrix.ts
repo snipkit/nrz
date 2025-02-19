@@ -83,7 +83,7 @@ t.test('compile matrix', async t => {
 
 t.test('single bin', async t => {
   const { compiles } = await testGenerateMatrix(t, {
-    bin: [Bins.vlt],
+    bin: [Bins.nrz],
     platform: ['linux'],
     arch: ['arm64'],
     compile: [true],

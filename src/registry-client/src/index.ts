@@ -44,7 +44,7 @@ export { keychains, getKC, setToken, deleteToken, isToken }
 export type RegistryClientOptions = {
   /**
    * Path on disk where the cache should be stored
-   * @default `$HOME/.config/vlt/cache`
+   * @default `$HOME/.config/nrz/cache`
    */
   cache?: string
   /**
@@ -145,7 +145,7 @@ const agentOptions: Agent.Options = {
   pipelining: 10,
 }
 
-const xdg = new XDG('vlt')
+const xdg = new XDG('nrz')
 
 export class RegistryClient {
   agent: RetryAgent
@@ -352,7 +352,7 @@ export class RegistryClient {
       integrity,
       redirections = new Set(),
       signal,
-      otp = (process.env.VLT_OTP ?? '').trim(),
+      otp = (process.env.NRZ_OTP ?? '').trim(),
     } = options
 
     const { cache = method === 'GET' || method === 'HEAD' } = options

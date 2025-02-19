@@ -2,7 +2,7 @@
 
 # @nrz/query
 
-The **vlt** query syntax engine.
+The **nrz** query syntax engine.
 
 **[Usage](#usage)**
 ·
@@ -34,7 +34,7 @@ query.search(':root > *')
 
 ## Supported Syntax Reference
 
-The vlt query syntax enable usage of css-selector-like strings to filter
+The nrz query syntax enable usage of css-selector-like strings to filter
 packages.
 
 Many of the common elements of the CSS language are available, notably:
@@ -67,7 +67,7 @@ metadata for each of the nodes being queried to a arbitrary value you choose.
 - `.dev` Matches packages that are only used as dev dependencies in your current project.
 - `.optional` Matches packages that are optional to your current project.
 - `.peer` Matches peer dependencies to your current project.
-- `.workspace` Matches the current project worksacpes (listed in your `vlt-workspaces.json` file).
+- `.workspace` Matches the current project worksacpes (listed in your `nrz-workspaces.json` file).
 
 ### Combinators
 

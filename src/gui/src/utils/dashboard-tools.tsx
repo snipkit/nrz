@@ -7,7 +7,7 @@ import {
   Npm,
   Pnpm,
   Yarn,
-  Vlt,
+  Nrz,
 } from '@/components/icons/index.js'
 
 const runtimes: Partial<
@@ -25,7 +25,7 @@ const packageManagers: Partial<
   npm: Npm,
   pnpm: Pnpm,
   yarn: Yarn,
-  vlt: Vlt,
+  nrz: Nrz,
 }
 
 export const getIconSet = (tools: DashboardTools[]) => {

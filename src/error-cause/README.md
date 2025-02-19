@@ -2,7 +2,7 @@
 
 # @nrz/error-cause
 
-Utility functions for `Error` creation to help enforce vlt's `Error.cause` conventions.
+Utility functions for `Error` creation to help enforce nrz's `Error.cause` conventions.
 
 **[Usage](#usage)**
 ·
@@ -70,7 +70,7 @@ const checkBar = () => {
 
 The functions will create an error object with a `cause` property
 if set, and the type checks will ensure that the `cause` object
-matches vlt's conventions.
+matches nrz's conventions.
 
 ## Challenges of Error Reporting
 
@@ -102,7 +102,7 @@ matches vlt's conventions.
 ## Conventions
 
 The following conventions should be followed for all `Error`
-creation and handling throughout the vlt codebase.
+creation and handling throughout the nrz codebase.
 
 - **If you can't help, get out of the way.** Just let throws pass
   through to the top when nothing can be done to assist.

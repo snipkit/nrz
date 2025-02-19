@@ -2,4 +2,4 @@
 
 # @nrz/gui
 
-The vlt gui for visualizing dependencies in your project.
+The nrz gui for visualizing dependencies in your project.

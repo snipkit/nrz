@@ -9,8 +9,8 @@ const fooId = joinDepIDTuple(['registry', '', 'foo@1.2.3'])
 const diff = {
   nodes: {
     add: new Set([
-      { inVltStore: () => false },
-      { inVltStore: () => true, id: fooId },
+      { inNrzStore: () => false },
+      { inNrzStore: () => true, id: fooId },
     ]),
   },
   edges: { add: new Set([{ deleteThisEdge: true }]) },
@@ -52,7 +52,7 @@ t.test('rollback that works', async t => {
   t.strictSame(deletedEdges, [{ deleteThisEdge: true }])
   t.strictSame(removed, [
     scurry.resolve(
-      'node_modules/.vlt/' +
+      'node_modules/.nrz/' +
         joinDepIDTuple(['registry', '', 'foo@1.2.3']),
     ),
   ])

@@ -30,11 +30,11 @@ import { manifest } from '@nrz/package-info'
 
 {
   // not default registry
-  const spec = Spec.parse('x@vlt:y@latest', {
-    registries: { vlt: 'http://vlt.sh' },
+  const spec = Spec.parse('x@nrz:y@latest', {
+    registries: { nrz: 'http://khulnasoft.com' },
   })
   const mani = await manifest(spec)
-  const id = getId(spec, mani) // registry;vlt;y@latest
+  const id = getId(spec, mani) // registry;nrz;y@latest
 }
 
 {

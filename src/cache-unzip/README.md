@@ -2,7 +2,7 @@
 
 # @nrz/cache-unzip
 
-This is a script that can be run as a detached background process to un-gzip any cached response bodies in the vlt cache.
+This is a script that can be run as a detached background process to un-gzip any cached response bodies in the nrz cache.
 
 **[Usage](#usage)**
 ·
@@ -30,7 +30,7 @@ if (response.isGzip) {
 }
 ```
 
-On process exit, these registered keys will be passed as arguments to a detached deref'ed `vlt-cache-unzip` process. So,
+On process exit, these registered keys will be passed as arguments to a detached deref'ed `nrz-cache-unzip` process. So,
 the main program exits normally, but the worker ignores the `SIGHUP` and keeps going until it's done. The next time that
 cache entry is read, it won't have to be unzipped.
 

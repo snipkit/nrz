@@ -74,7 +74,7 @@ t.test('Node', async t => {
   const foo = new Node(opts, undefined, fooMani, fooSpec)
   t.strictSame(
     foo.location,
-    './node_modules/.vlt/' +
+    './node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
       '/node_modules/foo',
     'should return the expected location value',
@@ -153,7 +153,7 @@ t.test('Node', async t => {
   )
   t.strictSame(
     barNoMani.location,
-    './node_modules/.vlt/' +
+    './node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'bar@1.0.0']) +
       '/node_modules/bar',
     'should infer location url from id',
@@ -166,7 +166,7 @@ t.test('Node', async t => {
   const unnamed = new Node(opts, undefined, unnamedMani, unnamedSpec)
   t.strictSame(
     unnamed.location,
-    `./node_modules/.vlt/${delimiter}${delimiter}@0.0.0/node_modules/${delimiter}${delimiter}@0.0.0`,
+    `./node_modules/.nrz/${delimiter}${delimiter}@0.0.0/node_modules/${delimiter}${delimiter}@0.0.0`,
     'should have a location for unnamed manifests',
   )
 
@@ -285,7 +285,7 @@ t.test('Node', async t => {
   t.matchSnapshot(String(wsMani), 'should stringify workspace node')
 })
 
-t.test('nodeModules path and inVltStore flag', t => {
+t.test('nodeModules path and inNrzStore flag', t => {
   const opts = {
     ...options,
     projectRoot: t.testdirName,
@@ -306,17 +306,17 @@ t.test('nodeModules path and inVltStore flag', t => {
   )
   t.equal(
     foo.location,
-    './node_modules/.vlt/' +
+    './node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
       '/node_modules/foo',
   )
-  t.equal(foo.inVltStore(), true)
-  t.equal(foo.inVltStore(), true, 'test twice for caching')
+  t.equal(foo.inNrzStore(), true)
+  t.equal(foo.inNrzStore(), true, 'test twice for caching')
   t.equal(
     foo.nodeModules(scurry),
     scurry.resolve(
       opts.projectRoot,
-      './node_modules/.vlt/' +
+      './node_modules/.nrz/' +
         joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
         '/node_modules',
     ),
@@ -326,11 +326,11 @@ t.test('nodeModules path and inVltStore flag', t => {
     joinDepIDTuple(['registry', '', '@bar/bloo@1.2.3']),
     { name: '@bar/bloo', version: '1.2.3' },
   )
-  t.equal(bar.inVltStore(), true)
-  t.equal(bar.inVltStore(), true, 'test twice for caching')
+  t.equal(bar.inNrzStore(), true)
+  t.equal(bar.inNrzStore(), true, 'test twice for caching')
   t.equal(
     bar.location,
-    './node_modules/.vlt/' +
+    './node_modules/.nrz/' +
       joinDepIDTuple(['registry', '', '@bar/bloo@1.2.3']) +
       '/node_modules/@bar/bloo',
   )
@@ -338,7 +338,7 @@ t.test('nodeModules path and inVltStore flag', t => {
     bar.nodeModules(scurry),
     scurry.resolve(
       opts.projectRoot,
-      './node_modules/.vlt/' +
+      './node_modules/.nrz/' +
         joinDepIDTuple(['registry', '', '@bar/bloo@1.2.3']) +
         '/node_modules',
     ),

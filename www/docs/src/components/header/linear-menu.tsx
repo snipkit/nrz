@@ -26,18 +26,18 @@ const LinearMenu = () => {
         {
           icon: 'client',
           title: 'Client',
-          path: 'https://vlt.sh/client',
+          path: 'https://khulnasoft.com/client',
         },
         {
           icon: 'serverless-registry',
           title: 'Serverless Registry',
-          path: 'https://vlt.sh/serverless-registry',
+          path: 'https://khulnasoft.com/serverless-registry',
         },
       ],
     },
-    { title: 'Docs', path: 'https://docs.vlt.sh/' },
-    { title: 'Blog', path: 'https://blog.vlt.sh/' },
-    { title: 'Company', path: 'https://vlt.sh/company' },
+    { title: 'Docs', path: 'https://docs.khulnasoft.com/' },
+    { title: 'Blog', path: 'https://blog.khulnasoft.com/' },
+    { title: 'Company', path: 'https://khulnasoft.com/company' },
   ]
 
   return (

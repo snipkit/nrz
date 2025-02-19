@@ -1,7 +1,7 @@
 import { type IncomingHttpHeaders, type IncomingMessage } from 'http'
 
 /**
- * Codification of vlt's Error.cause conventions
+ * Codification of nrz's Error.cause conventions
  *
  * Add new properties to this list as needed.
  *

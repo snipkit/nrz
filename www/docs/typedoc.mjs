@@ -34,7 +34,7 @@ const { tsconfig, entryPoints } = await (async () => {
         typedocWorkspace(join(d.parentPath, d.name)),
     )
     .filter(d => {
-      const wanted = process.env.VLT_TYPEDOC_WORKSPACES?.split(',')
+      const wanted = process.env.NRZ_TYPEDOC_WORKSPACES?.split(',')
       return wanted?.length ? wanted.includes(d.name) : true
     })
 

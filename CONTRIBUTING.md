@@ -6,10 +6,10 @@ The workspaces are divided among a few top-level directories.
 
 ### [`src`](./src/)
 
-These workspaces are all are direct dependencies of the `vlt`
+These workspaces are all are direct dependencies of the `nrz`
 CLI.
 
-The actual CLI is also a workspace in [`src/vlt`](./src/vlt/).
+The actual CLI is also a workspace in [`src/nrz`](./src/nrz/).
 
 Most of these are also published separately under the `@nrz` scope.
 
@@ -23,7 +23,7 @@ are not published to any registry.
 
 ### [`www`](./www/)
 
-These are websites that get deployed. Currently only [docs.vlt.sh](https://docs.vlt.sh).
+These are websites that get deployed. Currently only [docs.khulnasoft.com](https://docs.khulnasoft.com).
 
 ## Linting / Formatting
 
@@ -69,11 +69,11 @@ can be run via `pnpm` for testing locally.
 These scripts set the corret `NODE_OPTIONS` to run the TypeScript
 source directly.
 
-In order to silence all the output from `pnpm` and only see the `vlt`
+In order to silence all the output from `pnpm` and only see the `nrz`
 output, it is helpful to pass the `-s` flag to `pnpm`.
 
 ```bash
-$ pnpm -s vlt --version
+$ pnpm -s nrz --version
 0.0.0-0
 ```
 

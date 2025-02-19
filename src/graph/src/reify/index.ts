@@ -142,5 +142,5 @@ const reify_ = async (
   saveImportersPackageJson?.()
 
   // write the ideal graph data to the lockfile
-  saveData(lfData, scurry.resolve('vlt-lock.json'), false)
+  saveData(lfData, scurry.resolve('nrz-lock.json'), false)
 }

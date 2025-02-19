@@ -9,7 +9,7 @@ import { type Graph } from '../graph.ts'
 
 /**
  * This is the main type definition for the contents of the
- * `vlt-lock.json` file.
+ * `nrz-lock.json` file.
  *
  * The nodes and edges information from the lockfile are used to reconstruct
  * a {@link Graph} representing a previous install.

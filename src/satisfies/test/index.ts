@@ -5,7 +5,7 @@ import t from 'tap'
 import { satisfies } from '../src/index.ts'
 
 const projectRoot = t.testdir({
-  'vlt-workspaces.json': JSON.stringify('src/*'),
+  'nrz-workspaces.json': JSON.stringify('src/*'),
   src: {
     a: {
       'package.json': JSON.stringify({

@@ -31,7 +31,7 @@ const wrapPartial = (page, partials, key, transformFn) => ({
     // Only log changes if enabled and content was modified
     if (
       originalResult !== transformedResult &&
-      process.env.VLT_TYPEDOC_LOG_MARKDOWN_FIXES
+      process.env.NRZ_TYPEDOC_LOG_MARKDOWN_FIXES
     ) {
       console.log('='.repeat(20), page.url, key, '='.repeat(20))
       console.log('Original:')

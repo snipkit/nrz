@@ -3,14 +3,14 @@ import { resolve } from 'path'
 import { type AstroIntegrationLogger } from 'astro'
 
 const rebuild = (key: string) => {
-  const { VLT_DOCS_REBUILD } = process.env
-  if (VLT_DOCS_REBUILD === 'true') {
+  const { NRZ_DOCS_REBUILD } = process.env
+  if (NRZ_DOCS_REBUILD === 'true') {
     return true
   }
-  if (VLT_DOCS_REBUILD === undefined) {
+  if (NRZ_DOCS_REBUILD === undefined) {
     return false
   }
-  return VLT_DOCS_REBUILD.split(',').includes(key)
+  return NRZ_DOCS_REBUILD.split(',').includes(key)
 }
 
 export const cacheEntries = <
@@ -50,7 +50,7 @@ export const cacheEntries = <
 
   if (resolved.map(v => existsSync(v)).every(Boolean)) {
     logger.info(
-      `using previously generated files, run with VLT_DOCS_REBUILD=${rebuildKey} to rebuild`,
+      `using previously generated files, run with NRZ_DOCS_REBUILD=${rebuildKey} to rebuild`,
     )
     return null
   }

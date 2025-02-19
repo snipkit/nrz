@@ -76,7 +76,7 @@
     "astro": "astro",
     "build": "astro check && astro build",
     "dev": "astro dev",
-    "dev:rebuild": "VLT_DOCS_REBUILD=true astro dev",
+    "dev:rebuild": "NRZ_DOCS_REBUILD=true astro dev",
     "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
     "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
     "lint": "eslint . --fix",

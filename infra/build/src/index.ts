@@ -17,7 +17,7 @@ export const EXT = '.js'
 const BUILD_ROOT = dirname(findPackageJson(import.meta.filename))
 const MONO_ROOT = resolve(BUILD_ROOT, '../..')
 const SRC = join(MONO_ROOT, 'src')
-const CLI = join(SRC, 'vlt')
+const CLI = join(SRC, 'nrz')
 // TODO(source-maps): this is a ./dist/ path which might need
 // to be changed to a src path to get proper sourcemaps
 // https://github.com/khulnasoft/nrz/issues/150

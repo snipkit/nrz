@@ -55,7 +55,7 @@ describe('Footer Component', () => {
 
     const currentYear = new Date().getFullYear()
     const copyrightText = screen.getByText(
-      `© ${currentYear} vlt technology inc.`,
+      `© ${currentYear} nrz technology inc.`,
     )
     expect(copyrightText).toBeDefined()
     expect(container.innerHTML).toMatchSnapshot()

@@ -131,7 +131,7 @@ t.test('build from a virtual graph', async t => {
     } as LockfileEdges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
     linked: {
       'package.json': JSON.stringify({
         name: 'linked',
@@ -199,7 +199,7 @@ t.test('add from manifest file only', async t => {
     },
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
     'package.json': JSON.stringify(mainManifest),
   })
 
@@ -259,7 +259,7 @@ t.test('remove from manifest file only', async t => {
     dependencies: {},
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
     'package.json': JSON.stringify(mainManifest),
     linked: {
       'package.json': JSON.stringify({
@@ -312,7 +312,7 @@ t.test('build from an actual graph', async t => {
       }),
     },
     node_modules: {
-      '.vlt': {
+      '.nrz': {
         [joinDepIDTuple(['registry', '', '@scoped/a@1.0.0'])]: {
           node_modules: {
             '@scoped': {
@@ -339,7 +339,7 @@ t.test('build from an actual graph', async t => {
               },
               c: t.fixture(
                 'symlink',
-                '../../../../.vlt/' +
+                '../../../../.nrz/' +
                   joinDepIDTuple([
                     'registry',
                     '',
@@ -435,26 +435,26 @@ t.test('build from an actual graph', async t => {
       '@scoped': {
         a: t.fixture(
           'symlink',
-          '../.vlt/' +
+          '../.nrz/' +
             joinDepIDTuple(['registry', '', '@scoped/a@1.0.0']) +
             '/node_modules/@scoped/a',
         ),
         b: t.fixture(
           'symlink',
-          '../.vlt/' +
+          '../.nrz/' +
             joinDepIDTuple(['registry', '', '@scoped/b@1.0.0']) +
             '/node_modules/@scoped/b',
         ),
       },
       aliased: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', 'custom', 'foo@1.0.0']) +
           '/node_modules/foo',
       ),
       bar: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'bar@1.0.0']) +
           '/node_modules/bar',
       ),
@@ -462,13 +462,13 @@ t.test('build from an actual graph', async t => {
       broken_symlink: t.fixture('symlink', './link-to-nowhere'),
       extraneous: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'extraneous@1.0.0']) +
           '/node_modules/extraneous',
       ),
       foo: t.fixture(
         'symlink',
-        '.vlt/' +
+        '.nrz/' +
           joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
           '/node_modules/foo',
       ),
@@ -488,13 +488,13 @@ t.test('build from an actual graph', async t => {
         node_modules: {
           foo: t.fixture(
             'symlink',
-            '../../../node_modules/.vlt/' +
+            '../../../node_modules/.nrz/' +
               joinDepIDTuple(['registry', '', 'foo@1.0.0']) +
               '/node_modules/foo',
           ),
           ipsum: t.fixture(
             'symlink',
-            '../../../node_modules/.vlt/' +
+            '../../../node_modules/.nrz/' +
               joinDepIDTuple(['registry', '', 'ipsum@1.0.0']) +
               '/node_modules/ipsum',
           ),
@@ -508,7 +508,7 @@ t.test('build from an actual graph', async t => {
         }),
       },
     },
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./packages/*'],
     }),
   })

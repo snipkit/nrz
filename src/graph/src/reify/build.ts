@@ -88,7 +88,7 @@ const visit = async (
 
   // if it's an importer or git, run prepare
   const prepable =
-    node.id.startsWith('git') || node.importer || !node.inVltStore()
+    node.id.startsWith('git') || node.importer || !node.inNrzStore()
   const runPrepare =
     !!(prepare || preprepare || postprepare) && prepable
 

@@ -10,8 +10,8 @@ vi.mock('@/components/ui/sidebar.jsx', () => ({
   SidebarMenuItem: 'gui-sidebar-menu-item',
 }))
 
-vi.mock('@/components/icons/vlt-v.jsx', () => ({
-  VLTV: 'gui-vlt-icon',
+vi.mock('@/components/icons/nrz-v.jsx', () => ({
+  NRZV: 'gui-nrz-icon',
 }))
 
 expect.addSnapshotSerializer({

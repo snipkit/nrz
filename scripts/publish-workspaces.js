@@ -12,7 +12,7 @@ const DATE_ID = `${Date.now()}`
 const TOKEN_NAME = 'SOME_ARBITRARY_TOKEN_NAME'
 const OP_TOKEN_KEY = 'global'
 const COMMIT_MESSAGE = 'chore: publish all workspaces'
-const NPM_USER = 'vltops'
+const NPM_USER = 'nrzops'
 
 const { forReal: FOR_REAL, filter: FILTER } = parseArgs({
   options: {

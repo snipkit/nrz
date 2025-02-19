@@ -7,7 +7,7 @@ exports[`AppSidebar project queries > renders correctly 1`] = `
     <gui-sidebar-menu-item>
       <gui-sidebar-menu-button aschild="true">
         <a
-          href="https://docs.vlt.sh"
+          href="https://docs.khulnasoft.com"
           target="_blank"
         >
           <gui-library-icon>

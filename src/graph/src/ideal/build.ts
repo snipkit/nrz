@@ -40,7 +40,7 @@ export type BuildIdealOptions = LoadActualOptions & {
 /**
  * Builds an ideal {@link Graph} representing the dependencies that
  * should be present in order to fulfill the requirements defined
- * by the `package.json` and `vlt-lock.json` files using either the
+ * by the `package.json` and `nrz-lock.json` files using either the
  * virtual or actual graph as a starting point. Also add / remove any
  * dependencies listed in the `add` and `remove` properties.
  */

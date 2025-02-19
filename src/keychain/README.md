@@ -15,7 +15,7 @@ This is a tool to store and retrieve private keys for use in the
 import { Keychain } from '@nrz/keychain'
 
 // define a keychain with a given application scope
-const kc = new Keychain('vlt/auth')
+const kc = new Keychain('nrz/auth')
 
 // fetch the auth for a given origin, for example.
 // will load file on demand when first get() called.

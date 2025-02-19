@@ -10,7 +10,7 @@ A library for unpacking JavaScript package tarballs (gzip-compressed or raw) int
 
 ## Overview
 
-If you are unpacking anything other than npm packages, in precisely the way that [vlt](https://vlt.sh) does, then this is
+If you are unpacking anything other than npm packages, in precisely the way that [nrz](https://khulnasoft.com) does, then this is
 probably not what you're looking for.
 
 For a very complete and battle-tested generic tar implementation in JavaScript, see [node-tar](http://npm.im/tar).

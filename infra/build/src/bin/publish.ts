@@ -76,7 +76,7 @@ const readFile = (path: string) => fs.readFileSync(path, 'utf8')
 const readPackageJson = (path: string): unknown =>
   JSON.parse(readFile(path))
 
-const TOKEN = process.env.VLT_CLI_PUBLISH_TOKEN
+const TOKEN = process.env.NRZ_CLI_PUBLISH_TOKEN
 const PRERELEASE_ID = `.${Date.now()}`
 const FILES = {
   README: readFile(join(Paths.CLI, 'README.md')),
@@ -295,7 +295,7 @@ const main = async () => {
 
   assert(
     action === 'publish' && !dryRun ? TOKEN : true,
-    'expected VLT_CLI_PUBLISH_TOKEN to be set in non-dry-run mode',
+    'expected NRZ_CLI_PUBLISH_TOKEN to be set in non-dry-run mode',
   )
 
   fs.rmSync(outdir, { recursive: true, force: true })
@@ -305,11 +305,11 @@ const main = async () => {
     action,
     tag: 'latest',
     files: {
-      'README.md': FILES.README.replaceAll('# @nrz/vlt', '# vlt'),
+      'README.md': FILES.README.replaceAll('# @nrz/nrz', '# nrz'),
       LICENSE: FILES.LICENSE,
       '.npmrc': `//registry.npmjs.org/:_authToken=\${NPM_PUBLISH_TOKEN}`,
       'package.json': {
-        name: 'vlt',
+        name: 'nrz',
         version: `${FILES.PACKAGE_JSON.version}${PRERELEASE_ID}`,
         description: FILES.PACKAGE_JSON.description,
         license: FILES.PACKAGE_JSON.license,
@@ -325,9 +325,9 @@ const main = async () => {
     outdir,
     verbose,
     matrix,
-    // Only publish the main `vlt` bin if it's a compilation because its probably too
+    // Only publish the main `nrz` bin if it's a compilation because its probably too
     // big to publish 5 * 80MB bins.
-    bin: matrix.compilations.length ? [types.Bins.vlt] : undefined,
+    bin: matrix.compilations.length ? [types.Bins.nrz] : undefined,
   })
 
   if (compilations.length) {

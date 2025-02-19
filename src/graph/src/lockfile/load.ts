@@ -44,7 +44,7 @@ export const load = (options: LoadOptions): Graph => {
   const { projectRoot } = options
   return loadObject(
     options,
-    loadLockfile(projectRoot, 'vlt-lock.json'),
+    loadLockfile(projectRoot, 'nrz-lock.json'),
   )
 }
 
@@ -52,7 +52,7 @@ export const loadHidden = (options: LoadOptions): Graph => {
   const { projectRoot } = options
   return loadObject(
     options,
-    loadLockfile(projectRoot, 'node_modules/.vlt-lock.json'),
+    loadLockfile(projectRoot, 'node_modules/.nrz-lock.json'),
   )
 }
 

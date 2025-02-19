@@ -47,7 +47,7 @@ export type LoadOptions = SpecOptions & {
   loadManifests?: boolean
   /**
    * If set to `true`, then do not shortcut the process by reading the
-   * hidden lockfile at `node_modules/.vlt-lock.json`
+   * hidden lockfile at `node_modules/.nrz-lock.json`
    */
   skipHiddenLockfile?: boolean
 }
@@ -74,7 +74,7 @@ const getPathBasedId = (
  * Retrieve the {@link DepID} for a given package from its location.
  */
 const findDepID = ({ parent, name }: Path): DepID | undefined =>
-  parent?.name === '.vlt' ? asDepID(name)
+  parent?.name === '.nrz' ? asDepID(name)
   : parent?.isCWD === false ? findDepID(parent)
   : undefined
 
@@ -87,7 +87,7 @@ const findNodeModules = ({
   isCWD,
 }: Path): Path | undefined =>
   parent?.name === 'node_modules' ? parent
-  : parent && name !== '.vlt' && !isCWD ? findNodeModules(parent)
+  : parent && name !== '.nrz' && !isCWD ? findNodeModules(parent)
   : undefined
 
 /**
@@ -352,7 +352,7 @@ export const load = (options: LoadOptions): Graph => {
         monorepo,
         scurry,
       })
-      // TODO: check mtime of lockfile vs .vlt folder
+      // TODO: check mtime of lockfile vs .nrz folder
       return graph
     } catch {}
   }

@@ -4,4 +4,4 @@
 
 > An internal only workspace that is not published to any registry.
 
-Utilized for building vlt.
+Utilized for building nrz.

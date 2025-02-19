@@ -83,8 +83,8 @@ const transferData: TransferData = {
     },
   },
   projectInfo: {
-    tools: ['vlt'],
-    vltInstalled: true,
+    tools: ['nrz'],
+    nrzInstalled: true,
   },
 }
 

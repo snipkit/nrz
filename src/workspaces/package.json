@@ -1,6 +1,6 @@
 {
   "name": "@nrz/workspaces",
-  "description": "Utility for working with vlt workspaces",
+  "description": "Utility for working with nrz workspaces",
   "version": "0.0.0-0.1730239248325",
   "repository": {
     "type": "git",

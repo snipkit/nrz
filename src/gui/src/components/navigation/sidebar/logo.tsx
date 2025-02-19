@@ -3,7 +3,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar.jsx'
-import { VLTV } from '@/components/icons/vlt-v.jsx'
+import { NRZV } from '@/components/icons/nrz-v.jsx'
 import { useTheme } from '@/components/ui/theme-provider.jsx'
 
 const SidebarLogo = () => {
@@ -18,14 +18,14 @@ const SidebarLogo = () => {
           asChild>
           <a href="/">
             <div className="flex aspect-square h-full items-center justify-center">
-              <VLTV
+              <NRZV
                 color={theme === 'dark' ? 'white' : 'black'}
                 className="flex items-center justify-center"
               />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">
-                vlt
+                nrz
                 <span className="ml-1 truncate font-light">
                   /volt/
                 </span>

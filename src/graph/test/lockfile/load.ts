@@ -95,7 +95,7 @@ t.test('load', async t => {
     edges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
   })
 
   const graph = load({
@@ -161,7 +161,7 @@ t.test('loadHidden', async t => {
   }
   const projectRoot = t.testdir({
     node_modules: {
-      '.vlt-lock.json': JSON.stringify(lockfileData),
+      '.nrz-lock.json': JSON.stringify(lockfileData),
     },
   })
 
@@ -196,8 +196,8 @@ t.test('workspaces', async t => {
     } as LockfileEdges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./packages/*'],
     }),
     packages: {
@@ -245,7 +245,7 @@ t.test('unknown dep type', async t => {
     } as LockfileEdges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
   })
 
   t.throws(
@@ -279,7 +279,7 @@ t.test('invalid dep id in edge', async t => {
     },
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
   })
 
   t.throws(
@@ -312,7 +312,7 @@ t.test('missing edge `from`', async t => {
     } as LockfileEdges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
   })
 
   t.throws(
@@ -347,7 +347,7 @@ t.test('load with custom git hosts', async t => {
     } as LockfileEdges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
   })
 
   const graph = load({
@@ -386,7 +386,7 @@ t.test('load with custom scope registry', async t => {
     } as LockfileEdges,
   }
   const projectRoot = t.testdir({
-    'vlt-lock.json': JSON.stringify(lockfileData),
+    'nrz-lock.json': JSON.stringify(lockfileData),
   })
 
   const graph = load({

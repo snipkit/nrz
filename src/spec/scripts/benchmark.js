@@ -101,6 +101,6 @@ console.log(
   numToFixed(runFor(npms, 1000).per, { padStart: 3, decimals: 3 }),
 )
 console.log(
-  'vlt',
+  'nrz',
   numToFixed(runFor(ours, 1000).per, { padStart: 3, decimals: 3 }),
 )

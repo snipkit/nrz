@@ -8,8 +8,8 @@ const Logo = () => {
     <img
       src={
         theme === 'dark' ?
-          '/logos/vlt-logo-light.png'
-        : '/logos/vlt-logo-dark.png'
+          '/logos/nrz-logo-light.png'
+        : '/logos/nrz-logo-dark.png'
       }
       height={43}
       width={94}

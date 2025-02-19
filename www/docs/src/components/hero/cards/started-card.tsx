@@ -51,7 +51,7 @@ export const StartedCard = ({
           <div className="px-2 py-2 text-muted-foreground">
             {/* welcome msg */}
             <p className="font-mono text-xs text-muted-foreground/50">
-              # welcome to vlt
+              # welcome to nrz
             </p>
 
             {/* cursor */}

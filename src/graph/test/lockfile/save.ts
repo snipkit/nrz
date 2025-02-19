@@ -89,7 +89,7 @@ t.test('save', async t => {
   baz.optional = true
   save({ ...configData, graph })
   t.matchSnapshot(
-    readFileSync(resolve(projectRoot, 'vlt-lock.json'), {
+    readFileSync(resolve(projectRoot, 'nrz-lock.json'), {
       encoding: 'utf8',
     }),
   )
@@ -97,7 +97,7 @@ t.test('save', async t => {
   await t.test('save normal (no manifests)', async t => {
     save({ ...configData, graph })
     t.matchSnapshot(
-      readFileSync(resolve(projectRoot, 'vlt-lock.json'), {
+      readFileSync(resolve(projectRoot, 'nrz-lock.json'), {
         encoding: 'utf8',
       }),
     )
@@ -107,7 +107,7 @@ t.test('save', async t => {
     saveHidden({ ...configData, graph })
     t.matchSnapshot(
       readFileSync(
-        resolve(projectRoot, 'node_modules/.vlt-lock.json'),
+        resolve(projectRoot, 'node_modules/.nrz-lock.json'),
         {
           encoding: 'utf8',
         },
@@ -241,7 +241,7 @@ t.test('workspaces', async t => {
   }
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./packages/*'],
     }),
     packages: {
@@ -290,7 +290,7 @@ t.test('workspaces', async t => {
   save({ ...configData, graph })
 
   t.matchSnapshot(
-    readFileSync(resolve(projectRoot, 'vlt-lock.json'), {
+    readFileSync(resolve(projectRoot, 'nrz-lock.json'), {
       encoding: 'utf8',
     }),
     'should save lockfile with workspaces nodes',
@@ -299,7 +299,7 @@ t.test('workspaces', async t => {
   await t.test('save manifests', async t => {
     save({ ...configData, graph, saveManifests: true })
     t.matchSnapshot(
-      readFileSync(resolve(projectRoot, 'vlt-lock.json'), {
+      readFileSync(resolve(projectRoot, 'nrz-lock.json'), {
         encoding: 'utf8',
       }),
     )

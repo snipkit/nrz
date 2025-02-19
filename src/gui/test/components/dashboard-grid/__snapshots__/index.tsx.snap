@@ -129,8 +129,8 @@ exports[`dashboard-grid with results 1`] = `
               </p>
             </div>
             <div class="absolute -inset-4 -right-2 flex flex-row items-center justify-end gap-2 bg-clip-content">
-              <gui-package-manager-vlt-icon classname="size-24 fill-neutral-200/40 dark:fill-neutral-900/80">
-              </gui-package-manager-vlt-icon>
+              <gui-package-manager-nrz-icon classname="size-24 fill-neutral-200/40 dark:fill-neutral-900/80">
+              </gui-package-manager-nrz-icon>
               <gui-runtime-node-icon classname="size-24 fill-neutral-200/40 dark:fill-neutral-900/80">
               </gui-runtime-node-icon>
             </div>

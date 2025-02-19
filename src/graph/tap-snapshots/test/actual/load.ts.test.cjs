@@ -14,11 +14,11 @@ exports[`test/actual/load.ts > TAP > cycle > should load an actual graph with cy
     edgesOut: [
       Edge spec(a@^1.0.0) -prod-> to: Node {
         id: '··a@1.0.0',
-        location: './node_modules/.vlt/··a@1.0.0/node_modules/a',
+        location: './node_modules/.nrz/··a@1.0.0/node_modules/a',
         edgesOut: [
           Edge spec(b@^1.0.0) -prod-> to: Node {
             id: '··b@1.0.0',
-            location: './node_modules/.vlt/··b@1.0.0/node_modules/b',
+            location: './node_modules/.nrz/··b@1.0.0/node_modules/b',
             edgesOut: [ Edge spec(a@^1.0.0) -prod-> to: Node { ref: '··a@1.0.0' } ]
           }
         ]
@@ -37,11 +37,11 @@ exports[`test/actual/load.ts > TAP > cycle > should load an actual graph with cy
     edgesOut: [
       Edge spec(a@1.0.0) -prod-> to: Node {
         id: '··a@1.0.0',
-        location: './node_modules/.vlt/··a@1.0.0/node_modules/a',
+        location: './node_modules/.nrz/··a@1.0.0/node_modules/a',
         edgesOut: [
           Edge spec(b@1.0.0) -prod-> to: Node {
             id: '··b@1.0.0',
-            location: './node_modules/.vlt/··b@1.0.0/node_modules/b',
+            location: './node_modules/.nrz/··b@1.0.0/node_modules/b',
             edgesOut: [ Edge spec(a@1.0.0) -prod-> to: Node { ref: '··a@1.0.0' } ]
           }
         ]
@@ -61,47 +61,47 @@ exports[`test/actual/load.ts > TAP > load actual > should load an actual graph c
       Edge spec(link@file:./linked) -prod-> to: Node { id: 'file·linked', location: './linked' },
       Edge spec(foo@^1.0.0) -prod-> to: Node {
         id: '··foo@1.0.0',
-        location: './node_modules/.vlt/··foo@1.0.0/node_modules/foo'
+        location: './node_modules/.nrz/··foo@1.0.0/node_modules/foo'
       },
       Edge spec(extraneous@*) -prod-> to: Node {
         id: '··extraneous@1.0.0',
-        location: './node_modules/.vlt/··extraneous@1.0.0/node_modules/extraneous'
+        location: './node_modules/.nrz/··extraneous@1.0.0/node_modules/extraneous'
       },
       Edge spec(bar@^1.0.0) -optional-> to: Node {
         id: '··bar@1.0.0',
-        location: './node_modules/.vlt/··bar@1.0.0/node_modules/bar',
+        location: './node_modules/.nrz/··bar@1.0.0/node_modules/bar',
         optional: true,
         edgesOut: [
           Edge spec(blooo@1) -prod-> to: Node {
             id: '··blooo@1.0.0',
-            location: './node_modules/.vlt/··blooo@1.0.0/node_modules/blooo',
+            location: './node_modules/.nrz/··blooo@1.0.0/node_modules/blooo',
             optional: true
           },
           Edge spec(baz@custom:baz@^1.0.0) -prod-> to: Node {
             id: '·custom·baz@1.0.0',
-            location: './node_modules/.vlt/·custom·baz@1.0.0/node_modules/baz',
+            location: './node_modules/.nrz/·custom·baz@1.0.0/node_modules/baz',
             optional: true
           }
         ]
       },
       Edge spec(aliased@custom:foo@^1.0.0) -dev-> to: Node {
         id: '·custom·foo@1.0.0',
-        location: './node_modules/.vlt/·custom·foo@1.0.0/node_modules/foo',
+        location: './node_modules/.nrz/·custom·foo@1.0.0/node_modules/foo',
         dev: true
       },
       Edge spec(@scoped/b@^1.0.0) -prod-> to: Node {
         id: '··@scoped§b@1.0.0',
-        location: './node_modules/.vlt/··@scoped§b@1.0.0/node_modules/@scoped/b',
+        location: './node_modules/.nrz/··@scoped§b@1.0.0/node_modules/@scoped/b',
         edgesOut: [
           Edge spec(@scoped/c@^1.0.0) -prod-> to: Node {
             id: '··@scoped§c@1.0.0',
-            location: './node_modules/.vlt/··@scoped§c@1.0.0/node_modules/@scoped/c'
+            location: './node_modules/.nrz/··@scoped§c@1.0.0/node_modules/@scoped/c'
           }
         ]
       },
       Edge spec(@scoped/a@^1.0.0) -prod-> to: Node {
         id: '··@scoped§a@1.0.0',
-        location: './node_modules/.vlt/··@scoped§a@1.0.0/node_modules/@scoped/a'
+        location: './node_modules/.nrz/··@scoped§a@1.0.0/node_modules/@scoped/a'
       },
       Edge spec(missing@^1.0.0) -prod-> to: [missing package]: <missing@^1.0.0>
     ]
@@ -119,7 +119,7 @@ exports[`test/actual/load.ts > TAP > load actual > should load an actual graph c
       Edge spec(workspace-b@workspace:*) -dev-> to: Node { ref: 'workspace·packages§workspace-b' },
       Edge spec(ipsum@^1.0.0) -dev-> to: Node {
         id: '··ipsum@1.0.0',
-        location: './node_modules/.vlt/··ipsum@1.0.0/node_modules/ipsum',
+        location: './node_modules/.nrz/··ipsum@1.0.0/node_modules/ipsum',
         dev: true
       },
       Edge spec(foo@^1.0.0) -dev-> to: Node { ref: '··foo@1.0.0' }
@@ -138,43 +138,43 @@ exports[`test/actual/load.ts > TAP > load actual > should load an actual graph w
       Edge spec(link@file:./linked) -prod-> to: Node { id: 'file·linked', location: './linked' },
       Edge spec(foo@1.0.0) -prod-> to: Node {
         id: '··foo@1.0.0',
-        location: './node_modules/.vlt/··foo@1.0.0/node_modules/foo'
+        location: './node_modules/.nrz/··foo@1.0.0/node_modules/foo'
       },
       Edge spec(extraneous@1.0.0) -prod-> to: Node {
         id: '··extraneous@1.0.0',
-        location: './node_modules/.vlt/··extraneous@1.0.0/node_modules/extraneous'
+        location: './node_modules/.nrz/··extraneous@1.0.0/node_modules/extraneous'
       },
       Edge spec(bar@1.0.0) -prod-> to: Node {
         id: '··bar@1.0.0',
-        location: './node_modules/.vlt/··bar@1.0.0/node_modules/bar',
+        location: './node_modules/.nrz/··bar@1.0.0/node_modules/bar',
         edgesOut: [
           Edge spec(blooo@1.0.0) -prod-> to: Node {
             id: '··blooo@1.0.0',
-            location: './node_modules/.vlt/··blooo@1.0.0/node_modules/blooo'
+            location: './node_modules/.nrz/··blooo@1.0.0/node_modules/blooo'
           },
           Edge spec(baz@custom:baz@1.0.0) -prod-> to: Node {
             id: '·custom·baz@1.0.0',
-            location: './node_modules/.vlt/·custom·baz@1.0.0/node_modules/baz'
+            location: './node_modules/.nrz/·custom·baz@1.0.0/node_modules/baz'
           }
         ]
       },
       Edge spec(aliased@custom:foo@1.0.0) -prod-> to: Node {
         id: '·custom·foo@1.0.0',
-        location: './node_modules/.vlt/·custom·foo@1.0.0/node_modules/foo'
+        location: './node_modules/.nrz/·custom·foo@1.0.0/node_modules/foo'
       },
       Edge spec(@scoped/b@1.0.0) -prod-> to: Node {
         id: '··@scoped§b@1.0.0',
-        location: './node_modules/.vlt/··@scoped§b@1.0.0/node_modules/@scoped/b',
+        location: './node_modules/.nrz/··@scoped§b@1.0.0/node_modules/@scoped/b',
         edgesOut: [
           Edge spec(@scoped/c@1.0.0) -prod-> to: Node {
             id: '··@scoped§c@1.0.0',
-            location: './node_modules/.vlt/··@scoped§c@1.0.0/node_modules/@scoped/c'
+            location: './node_modules/.nrz/··@scoped§c@1.0.0/node_modules/@scoped/c'
           }
         ]
       },
       Edge spec(@scoped/a@1.0.0) -prod-> to: Node {
         id: '··@scoped§a@1.0.0',
-        location: './node_modules/.vlt/··@scoped§a@1.0.0/node_modules/@scoped/a'
+        location: './node_modules/.nrz/··@scoped§a@1.0.0/node_modules/@scoped/a'
       },
       Edge spec(missing@^1.0.0) -prod-> to: [missing package]: <missing@^1.0.0>
     ]
@@ -192,7 +192,7 @@ exports[`test/actual/load.ts > TAP > load actual > should load an actual graph w
       Edge spec(workspace-b@workspace:*) -dev-> to: Node { ref: 'workspace·packages§workspace-b' },
       Edge spec(ipsum@1.0.0) -prod-> to: Node {
         id: '··ipsum@1.0.0',
-        location: './node_modules/.vlt/··ipsum@1.0.0/node_modules/ipsum'
+        location: './node_modules/.nrz/··ipsum@1.0.0/node_modules/ipsum'
       },
       Edge spec(foo@1.0.0) -prod-> to: Node { ref: '··foo@1.0.0' }
     ]

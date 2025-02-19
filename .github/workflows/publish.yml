@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Publish vlt CLI
+    name: Publish nrz CLI
 
     runs-on: ubuntu-latest
 
@@ -48,9 +48,9 @@ jobs:
       - name: Publish
         run: pnpm run build:bundle --action=publish ${{ !inputs.dryRun && '--forReal' || '' }}
         env:
-          VLT_CLI_PUBLISH_TOKEN: ${{ secrets.VLT_CLI_PUBLISH_TOKEN }}
+          NRZ_CLI_PUBLISH_TOKEN: ${{ secrets.NRZ_CLI_PUBLISH_TOKEN }}
 
       - name: Publish Compiled
         run: pnpm run build:compile --action=publish --platform=all --arch=all ${{ !inputs.dryRun && '--forReal' || '' }}
         env:
-          VLT_CLI_PUBLISH_TOKEN: ${{ secrets.VLT_CLI_PUBLISH_TOKEN }}
+          NRZ_CLI_PUBLISH_TOKEN: ${{ secrets.NRZ_CLI_PUBLISH_TOKEN }}

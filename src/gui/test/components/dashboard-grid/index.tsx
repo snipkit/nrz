@@ -20,7 +20,7 @@ vi.mock('@/utils/dashboard-tools.jsx', () => ({
       npm: 'gui-package-manager-npm-icon',
       pnpm: 'gui-package-manager-pnpm-icon',
       yarn: 'gui-package-manager-yarn-icon',
-      vlt: 'gui-package-manager-vlt-icon',
+      nrz: 'gui-package-manager-nrz-icon',
     }
 
     const runtimeKey = tools.find(tool => mockRuntimes[tool] ?? null)
@@ -120,7 +120,7 @@ test('dashboard-grid with results', async () => {
           readablePath: '~/project-foo',
           path: '/home/user/project-foo',
           manifest: { name: 'project-foo', version: '1.0.0' },
-          tools: ['node', 'vlt'],
+          tools: ['node', 'nrz'],
           mtime: 1730498483044,
         },
         {

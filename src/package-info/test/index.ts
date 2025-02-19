@@ -158,8 +158,8 @@ t.test('create git repo', { bail: true }, async () => {
   const git = (...cmd: string[]) => spawnGit(cmd, { cwd: repo })
   const write = (f: string, c: string) => writeFile(`${repo}/${f}`, c)
   await git('init', '-b', 'main')
-  await git('config', 'user.name', 'vltdev')
-  await git('config', 'user.email', 'vltdev@vlt.sh')
+  await git('config', 'user.name', 'nrzdev')
+  await git('config', 'user.email', 'nrzdev@khulnasoft.com')
   await git('config', 'tag.gpgSign', 'false')
   await git('config', 'commit.gpgSign', 'false')
   await git('config', 'tag.forceSignAnnotated', 'false')
@@ -745,7 +745,7 @@ t.test('fails on non-200 response', async t => {
 
 t.test('workspace specs', async t => {
   const dir = t.testdir({
-    'vlt-workspaces.json': JSON.stringify('p/*'),
+    'nrz-workspaces.json': JSON.stringify('p/*'),
     p: {
       a: { 'package.json': '{"name":"a"}' },
       b: { 'package.json': '{"name":"b"}' },
@@ -788,7 +788,7 @@ t.test('workspace specs', async t => {
 
 t.test('workspace group option', async t => {
   const dir = t.testdir({
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       a: 'p/a*',
       b: ['p/b', 'p/bb'],
       ab: 'p/?',
@@ -862,8 +862,8 @@ t.test('path git selector', async t => {
     const write = (f: string, c: string) =>
       writeFile(`${repo}/${f}`, c)
     await git('init', '-b', 'main')
-    await git('config', 'user.name', 'vltdev')
-    await git('config', 'user.email', 'vltdev@vlt.sh')
+    await git('config', 'user.name', 'nrzdev')
+    await git('config', 'user.email', 'nrzdev@khulnasoft.com')
     await git('config', 'tag.gpgSign', 'false')
     await git('config', 'commit.gpgSign', 'false')
     await git('config', 'tag.forceSignAnnotated', 'false')

@@ -43,7 +43,7 @@ const initialState: State = {
   nodes: [],
   projectInfo: {
     tools: [],
-    vltInstalled: undefined,
+    nrzInstalled: undefined,
   },
   query:
     new URL(

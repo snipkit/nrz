@@ -58,7 +58,7 @@ t.test('human-readable-output', async t => {
       name: 'baz',
       version: '1.0.0',
       dist: {
-        tarball: 'https://registry.vlt.sh/baz',
+        tarball: 'https://registry.khulnasoft.com/baz',
       },
     },
   )
@@ -118,7 +118,7 @@ t.test('workspaces', async t => {
   }
   const dir = t.testdir({
     'package.json': JSON.stringify(mainManifest),
-    'vlt-workspaces.json': JSON.stringify({
+    'nrz-workspaces.json': JSON.stringify({
       packages: ['./packages/*'],
     }),
     packages: {

@@ -8,7 +8,7 @@ export const keychains = new Map<string, Keychain<Token>>()
 export const getKC = (identity: string) => {
   const kc = keychains.get(identity)
   if (kc) return kc
-  const i = identity ? `vlt/auth/${identity}` : 'vlt/auth'
+  const i = identity ? `nrz/auth/${identity}` : 'nrz/auth'
   const nkc = new Keychain<Token>(i)
   keychains.set(identity, nkc)
   return nkc
@@ -43,14 +43,14 @@ export const getToken = async (
 ): Promise<Token | undefined> => {
   const kc = getKC(identity)
   registry = new URL(registry).origin
-  const envReg = process.env.VLT_REGISTRY
+  const envReg = process.env.NRZ_REGISTRY
   if (envReg && registry === new URL(envReg).origin) {
-    const envTok = process.env.VLT_TOKEN
+    const envTok = process.env.NRZ_TOKEN
     if (envTok) return `Bearer ${envTok}`
   }
   const tok =
     process.env[
-      `VLT_TOKEN_${registry.replace(/[^a-zA-Z0-9]+/g, '_')}`
+      `NRZ_TOKEN_${registry.replace(/[^a-zA-Z0-9]+/g, '_')}`
     ]
   if (tok) return `Bearer ${tok}`
   return kc.get(registry)

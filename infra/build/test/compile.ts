@@ -28,7 +28,7 @@ const testCompile = async (
   compile({
     source: join(dir, 'source'),
     outdir: join(dir, 'compile'),
-    bin: types.Bins.vlt,
+    bin: types.Bins.nrz,
     ...def,
     ...options,
   })

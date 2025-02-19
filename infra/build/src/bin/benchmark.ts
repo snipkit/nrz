@@ -22,7 +22,7 @@ const parseArgs = () => {
         ...matrixConfig,
       },
     }).values
-  const args = (command ?? 'vlt pkg get').split(' ')
+  const args = (command ?? 'nrz pkg get').split(' ')
   const bin = args.shift()
 
   assert(

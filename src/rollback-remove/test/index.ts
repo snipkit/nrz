@@ -70,11 +70,11 @@ t.test('delete some stuff', async t => {
   await remover.rm('noent')
   t.matchOnly(
     new Set(readdirSync('a')),
-    new Set([/^\.VLT\.DELETE\.[0-9]+\.b$/, 'c']),
+    new Set([/^\.NRZ\.DELETE\.[0-9]+\.b$/, 'c']),
   )
   t.matchOnly(
     new Set(readdirSync(t.testdirName)),
-    new Set([/^\.VLT\.DELETE\.[0-9]+\.d$/, 'a']),
+    new Set([/^\.NRZ\.DELETE\.[0-9]+\.d$/, 'a']),
   )
   remover.confirm()
   t.matchStrict(spawns, [
@@ -83,8 +83,8 @@ t.test('delete some stuff', async t => {
       args: [/[\\/]remove\.ts$/],
       options: { detached: true },
       written: [
-        /^a[\\/]\.VLT\.DELETE\.[0-9]+\.b\x00$/,
-        /^.[\\/]\.VLT\.DELETE\.[0-9]+\.d\x00$/,
+        /^a[\\/]\.NRZ\.DELETE\.[0-9]+\.b\x00$/,
+        /^.[\\/]\.NRZ\.DELETE\.[0-9]+\.d\x00$/,
       ],
       stdinEnded: true,
       reffed: false,
@@ -121,11 +121,11 @@ t.test('do not delete some stuff', async t => {
   await remover.rm('noent')
   t.matchOnly(
     new Set(readdirSync('a')),
-    new Set([/^\.VLT\.DELETE\.[0-9]+\.b$/, 'c']),
+    new Set([/^\.NRZ\.DELETE\.[0-9]+\.b$/, 'c']),
   )
   t.matchOnly(
     new Set(readdirSync(t.testdirName)),
-    new Set([/^\.VLT\.DELETE\.[0-9]+\.d$/, 'a']),
+    new Set([/^\.NRZ\.DELETE\.[0-9]+\.d$/, 'a']),
   )
   await remover.rollback()
   t.strictSame(spawns, [])

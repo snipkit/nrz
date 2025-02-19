@@ -29,7 +29,7 @@ exports[`explorer has project root info 1`] = `
 
 `;
 
-exports[`explorer not vlt installed 1`] = `
+exports[`explorer not nrz installed 1`] = `
 
 <div>
   <gui-setup-project>

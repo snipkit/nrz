@@ -10,10 +10,10 @@ Get appropriate data, cache, and config directories following the [XDG spec](htt
 import XDG from '@nrz/xdg'
 
 // instantiate with the name of your thing.
-const xdg = new XDG('vlt')
+const xdg = new XDG('nrz')
 
-const cachePath = xdg.cache('some-path') // ~/.cache/vlt/some-path
-const configFile = xdg.config('vlt.json') // ~/.config/vlt/vlt.json
-const dataFolder = xdg.data('blah') // ~/.local/share/vlt/blah
-const someState = xdg.state('foobar') // ~/.local/state/vlt/fooobar
+const cachePath = xdg.cache('some-path') // ~/.cache/nrz/some-path
+const configFile = xdg.config('nrz.json') // ~/.config/nrz/nrz.json
+const dataFolder = xdg.data('blah') // ~/.local/share/nrz/blah
+const someState = xdg.state('foobar') // ~/.local/state/nrz/fooobar
 ```

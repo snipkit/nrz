@@ -16,10 +16,10 @@ This is a library for parsing **package specifiers**.
 
 Specifiers are primarily used in the following cases:
 
-- On the command line, like `vlt add foo@1.x`
+- On the command line, like `nrz add foo@1.x`
 - In manifests (such as `package.json`) where dependencies are
   listed, like `"dependencies": { "foo": "1.x" }`
-- Internally within vlt, such as lockfiles and so on.
+- Internally within nrz, such as lockfiles and so on.
 
 ## Named vs Unnamed
 

@@ -2,7 +2,7 @@
 
 # @nrz/run
 
-Run a script defined in a `package.json` file (eg, `vlt run` and lifecycle scripts), or an arbitrary command as if it was (eg, `vlt exec`).
+Run a script defined in a `package.json` file (eg, `nrz run` and lifecycle scripts), or an arbitrary command as if it was (eg, `nrz exec`).
 
 ## Usage
 
@@ -11,7 +11,7 @@ import { run, exec } from '@nrz/run'
 
 const cwd = '/path/to/pkg'
 
-// to run a script, as with `vlt run blah`
+// to run a script, as with `nrz run blah`
 const runResult = await run({
   // the name of the thing in package.json#scripts
   event: 'build',
@@ -32,7 +32,7 @@ const runResult = await run({
   // - npm_lifecycle_event: the event name
   // - npm_lifecycle_script: the command in package.json#scripts
   // - npm_package_json: path to the package.json file
-  // - VLT_* envs for all vlt configuration values that are set
+  // - NRZ_* envs for all nrz configuration values that are set
   env: process.env,
 
   // set this to `true` to take over the terminal and run in the
@@ -52,7 +52,7 @@ const runResult = await run({
   packageJson: new PackageJson(),
 })
 
-// to execute an arbitrary command, as with `vlt exec whatever`
+// to execute an arbitrary command, as with `nrz exec whatever`
 const execResult = await exec({
   // the command to execute.
   command: 'do-something',
