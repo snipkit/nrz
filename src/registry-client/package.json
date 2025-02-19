@@ -1,0 +1,93 @@
+{
+  "name": "@nrz/registry-client",
+  "description": "Fetch package artifacts and metadata from registries",
+  "version": "0.0.0-0.1730239248325",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khulnasoft/nrz.git",
+    "directory": "src/registry-client"
+  },
+  "tshy": {
+    "selfLink": false,
+    "dialects": [
+      "esm"
+    ],
+    "sourceDialects": [
+      "@nrz/source"
+    ],
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts",
+      "./cache-entry": "./src/cache-entry.ts"
+    }
+  },
+  "dependencies": {
+    "@nrz/cache": "workspace:*",
+    "@nrz/cache-unzip": "workspace:*",
+    "@nrz/error-cause": "workspace:*",
+    "@nrz/keychain": "workspace:*",
+    "@nrz/output": "workspace:*",
+    "@nrz/promise-spawn": "workspace:*",
+    "@nrz/types": "workspace:*",
+    "@nrz/url-open": "workspace:*",
+    "@nrz/xdg": "workspace:*",
+    "cache-control-parser": "^2.0.5",
+    "package-json-from-dist": "catalog:",
+    "undici": "^6.20.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/eslint__js": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tshy": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "license": "BSD-2-Clause-Patent",
+  "engines": {
+    "node": ">=22",
+    "pnpm": "9"
+  },
+  "scripts": {
+    "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "prepare": "tshy",
+    "presnap": "tshy",
+    "snap": "tap",
+    "pretest": "tshy",
+    "test": "tap",
+    "posttest": "tsc --project tsconfig.test.json",
+    "watch": "tshy --watch"
+  },
+  "tap": {
+    "extends": "../../tap-config.yaml"
+  },
+  "prettier": "../../.prettierrc.js",
+  "module": "./dist/esm/index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "@nrz/source": "./src/index.ts",
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    },
+    "./cache-entry": {
+      "import": {
+        "@nrz/source": "./src/cache-entry.ts",
+        "types": "./dist/esm/cache-entry.d.ts",
+        "default": "./dist/esm/cache-entry.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

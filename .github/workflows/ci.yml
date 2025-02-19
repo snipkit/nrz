@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: 'run-script filter for tests'
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+          check-latest: true
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # TODO: if the lint job starts to take too long, it can be sped up
+      # by making any of the steps operate on only changed workspaces.
+      # For now any steps that dont use filters are run from the root
+      # on all workspaces.
+      - name: Formatting
+        run: pnpm run format:check
+        id: format
+        continue-on-error: true
+
+      - name: Linting
+        run: pnpm run lint:check
+        id: lint
+        continue-on-error: true
+
+      - name: Dependencies
+        run: node ./scripts/check-deps.js
+        id: deps
+        continue-on-error: true
+
+      - name: Docs
+        run: pnpm -F docs typedoc:check
+        id: docs
+        continue-on-error: true
+
+      - name: Consistent Workspaces
+        run: |
+          node ./scripts/consistent-package-json.js
+          if [ -n "$(git status --porcelain)" ]; then
+            git diff
+            exit 1
+          fi
+        id: workspaces
+        continue-on-error: true
+
+      - name: Check Results
+        run: |
+          declare -A OUTCOMES=(
+            [format]="${{ steps.format.outcome }}"
+            [lint]="${{ steps.lint.outcome }}"
+            [deps]="${{ steps.deps.outcome }}"
+            [docs]="${{ steps.docs.outcome }}"
+            [workspaces]="${{ steps.workspaces.outcome }}"
+          )
+          STATUS=0
+          for STEP in "${!OUTCOMES[@]}"; do
+            OUTCOME="${OUTCOMES[$STEP]}"
+            echo "$STEP: $OUTCOME"
+            if [ "$OUTCOME" != "success" ]; then
+              STATUS=1
+            fi
+          done
+          exit $STATUS
+
+  test:
+    name: Test - ${{ matrix.platform.name }} - ${{ matrix.node-version }}
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+        platform:
+          - name: Ubuntu
+            os: ubuntu-latest
+            shell: bash
+          - name: macOS
+            os: macos-latest
+            shell: bash
+          - name: macOS Intel
+            os: macos-13
+            shell: bash
+          - name: Windows
+            os: windows-latest
+            shell: bash
+          - name: Windows Powershell
+            os: windows-latest
+            shell: powershell
+        exclude:
+          - platform: ${{ fromJSON(github.event_name == 'pull_request' && '{"name":"macOS","os":"macos-latest","shell":"bash"}') }}
+          - platform: ${{ fromJSON(github.event_name == 'pull_request' && '{"name":"macOS Intel","os":"macos-13","shell":"bash"}') }}
+          - platform: ${{ fromJSON(github.event_name == 'pull_request' && '{"name":"Windows Powershell","os":"windows-latest","shell":"powershell"}') }}
+      fail-fast: false
+
+    runs-on: ${{ matrix.platform.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch base ref
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Use Nodejs ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+          check-latest: true
+
+      - name: Set run-script filters
+        id: filters
+        shell: bash
+        run: ./scripts/run-script-filter "${{ github.event_name }}" "${{ inputs.filter || github.base_ref }}"
+
+      - name: Install dependencies
+        if: steps.filters.outputs.prepare
+        run: pnpm ${{ steps.filters.outputs.prepare }} install --ignore-scripts
+
+      - name: Prepare
+        if: steps.filters.outputs.prepare
+        run: pnpm ${{ steps.filters.outputs.prepare }} prepare
+
+      - name: Run Tests
+        if: steps.filters.outputs.test
+        run: |
+          pnpm config set enable-pre-post-scripts false --location=project
+          pnpm ${{ steps.filters.outputs.test }} --no-bail --aggregate-output test
+          pnpm ${{ steps.filters.outputs.test }} --no-bail --aggregate-output posttest

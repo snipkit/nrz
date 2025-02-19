@@ -1,0 +1,204 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ResultItem render missing version and labels 1`] = `
+
+<div>
+  <div class="group relative z-10">
+    <a
+      href="#"
+      class="block rounded-lg border bg-card text-card-foreground shadow-sm relative group-hover:border-neutral-400 dark:group-hover:border-neutral-600 cursor-default"
+    >
+      <div class="p-6 m-0 flex flex-row items-center justify-between rounded-t-lg border-b-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="truncate"
+        >
+          <h3 class="font-semibold tracking-tight text-md truncate">
+            item
+          </h3>
+        </button>
+      </div>
+      <div class="flex h-12 w-full items-center justify-between gap-4 border-t-[1px] px-4 py-3">
+        <div class="flex gap-2">
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+`;
+
+exports[`ResultItem render stacked many 1`] = `
+
+<div>
+  <div class="group relative z-10">
+    <div class="absolute left-2 top-2 h-full w-[97.5%] rounded-lg border bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-600">
+    </div>
+    <div class="absolute left-1 top-1 h-full w-[99%] rounded-lg border bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-600">
+    </div>
+    <a
+      href="#"
+      class="block rounded-lg border bg-card text-card-foreground shadow-sm relative group-hover:border-neutral-400 dark:group-hover:border-neutral-600 cursor-default"
+    >
+      <div class="p-6 m-0 flex flex-row items-center justify-between rounded-t-lg border-b-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="truncate"
+        >
+          <h3 class="font-semibold tracking-tight text-md truncate">
+            many-edges-stacked
+          </h3>
+        </button>
+      </div>
+      <div class="flex h-12 w-full items-center justify-between gap-4 border-t-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="m-0 truncate rounded-sm border-[1px] px-2 py-1 align-baseline font-mono text-[0.65rem] text-muted-foreground"
+        >
+          1.1.1
+        </button>
+        <div class="flex gap-2">
+          <div>
+            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-lime-100 text-neutral-900 hover:bg-lime-100/80">
+              peer
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+`;
+
+exports[`ResultItem render stacked two 1`] = `
+
+<div>
+  <div class="group relative z-10">
+    <div class="absolute left-1 top-1 h-full w-[99%] rounded-lg border bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-600">
+    </div>
+    <a
+      href="#"
+      class="block rounded-lg border bg-card text-card-foreground shadow-sm relative group-hover:border-neutral-400 dark:group-hover:border-neutral-600 cursor-default"
+    >
+      <div class="p-6 m-0 flex flex-row items-center justify-between rounded-t-lg border-b-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="truncate"
+        >
+          <h3 class="font-semibold tracking-tight text-md truncate">
+            two-edges-stacked
+          </h3>
+        </button>
+      </div>
+      <div class="flex h-12 w-full items-center justify-between gap-4 border-t-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="m-0 truncate rounded-sm border-[1px] px-2 py-1 align-baseline font-mono text-[0.65rem] text-muted-foreground"
+        >
+          1.0.0
+        </button>
+        <div class="flex gap-2">
+          <div>
+            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-fuchsia-100 text-neutral-900 hover:bg-fuchsia-100/80">
+              dev
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+`;
+
+exports[`ResultItem render with item 1`] = `
+
+<div>
+  <div class="group relative z-10">
+    <a
+      href="#"
+      class="block rounded-lg border bg-card text-card-foreground shadow-sm relative group-hover:border-neutral-400 dark:group-hover:border-neutral-600 cursor-default"
+    >
+      <div class="p-6 m-0 flex flex-row items-center justify-between rounded-t-lg border-b-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="truncate"
+        >
+          <h3 class="font-semibold tracking-tight text-md truncate">
+            item
+          </h3>
+        </button>
+      </div>
+      <div class="flex h-12 w-full items-center justify-between gap-4 border-t-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="m-0 truncate rounded-sm border-[1px] px-2 py-1 align-baseline font-mono text-[0.65rem] text-muted-foreground"
+        >
+          1.0.0
+        </button>
+        <div class="flex gap-2">
+          <div>
+            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-cyan-100 text-neutral-900 hover:bg-cyan-100/80">
+              prod
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+`;
+
+exports[`ResultItem render with type 1`] = `
+
+<div>
+  <div class="group relative z-10">
+    <a
+      href="#"
+      class="block rounded-lg border bg-card text-card-foreground shadow-sm relative group-hover:border-neutral-400 dark:group-hover:border-neutral-600 cursor-pointer"
+    >
+      <div class="p-6 m-0 flex flex-row items-center justify-between rounded-t-lg border-b-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="truncate"
+        >
+          <h3 class="font-semibold tracking-tight text-md truncate">
+            item
+          </h3>
+        </button>
+        <div class="flex items-center justify-center text-pretty rounded-md border-[1px] px-2.5 py-0.5 text-xs text-muted-foreground">
+          <p class="font-semibold">
+            <span>
+              prod
+            </span>
+            <span class="px-1 font-medium text-muted-foreground">
+              dep of:
+            </span>
+            <span>
+              npm:from@1.0.0
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="flex h-12 w-full items-center justify-between gap-4 border-t-[1px] px-4 py-3">
+        <button
+          data-state="closed"
+          class="m-0 truncate rounded-sm border-[1px] px-2 py-1 align-baseline font-mono text-[0.65rem] text-muted-foreground"
+        >
+          1.0.0
+        </button>
+        <div class="flex gap-2">
+          <div>
+            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-cyan-100 text-neutral-900 hover:bg-cyan-100/80">
+              prod
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+`;

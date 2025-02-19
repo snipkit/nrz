@@ -1,0 +1,9 @@
+# vim: set filetype=yaml :
+
+coverage-map: './coverage-map.js'
+timeout: 600 # 10 minutes
+
+# globs are always relative to the project root regardless.
+exclude:
+  - 'scripts/**'
+  - 'test/fixtures/**'

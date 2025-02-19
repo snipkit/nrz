@@ -1,0 +1,149 @@
+{
+  "name": "@nrz/cli",
+  "description": "The vlt CLI",
+  "version": "0.0.0-0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khulnasoft/nrz.git",
+    "directory": "src/vlt"
+  },
+  "tshy": {
+    "selfLink": false,
+    "dialects": [
+      "esm"
+    ],
+    "sourceDialects": [
+      "@nrz/source"
+    ],
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts",
+      "./commands": "./src/commands",
+      "./commands/*": "./src/commands/*.ts",
+      "./config": "./src/config/index.ts",
+      "./config/definition": "./src/config/definition.ts",
+      "./types": "./src/types.ts"
+    }
+  },
+  "dependencies": {
+    "@nrz/dep-id": "workspace:*",
+    "@nrz/dot-prop": "workspace:*",
+    "@nrz/error-cause": "workspace:*",
+    "@nrz/git": "workspace:*",
+    "@nrz/graph": "workspace:*",
+    "@nrz/gui": "workspace:*",
+    "@nrz/output": "workspace:*",
+    "@nrz/package-info": "workspace:*",
+    "@nrz/package-json": "workspace:*",
+    "@nrz/promise-spawn": "workspace:*",
+    "@nrz/query": "workspace:*",
+    "@nrz/registry-client": "workspace:*",
+    "@nrz/run": "workspace:*",
+    "@nrz/spec": "workspace:*",
+    "@nrz/types": "workspace:*",
+    "@nrz/url-open": "workspace:*",
+    "@nrz/workspaces": "workspace:*",
+    "@nrz/xdg": "workspace:*",
+    "ansi-to-pre": "^1.0.5",
+    "chalk": "catalog:",
+    "ink": "^5.1.0",
+    "ink-spinner": "^5.0.0",
+    "jackspeak": "^4.0.2",
+    "package-json-from-dist": "catalog:",
+    "path-scurry": "catalog:",
+    "polite-json": "catalog:",
+    "react": "^18.3.1",
+    "serve-handler": "^6.1.5",
+    "walk-up-path": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/eslint__js": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/serve-handler": "^6.1.4",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "react-devtools-core": "^4.28.5",
+    "tap": "catalog:",
+    "tshy": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "license": "BSD-2-Clause-Patent",
+  "engines": {
+    "node": ">=22",
+    "pnpm": "9"
+  },
+  "scripts": {
+    "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "prepare": "tshy",
+    "presnap": "tshy",
+    "snap": "tap",
+    "pretest": "tshy",
+    "test": "tap",
+    "posttest": "tsc --project tsconfig.test.json",
+    "watch": "tshy --watch"
+  },
+  "tap": {
+    "extends": "../../tap-config.yaml",
+    "test-env": [
+      "VLT_TEST_GUI_DIR=/mock-path/to/gui/assets"
+    ]
+  },
+  "prettier": "../../.prettierrc.js",
+  "module": "./dist/esm/index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "@nrz/source": "./src/index.ts",
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    },
+    "./commands": {
+      "import": {
+        "@nrz/source": "./src/commands",
+        "types": "./dist/esm/commands",
+        "default": "./dist/esm/commands"
+      }
+    },
+    "./commands/*": {
+      "import": {
+        "@nrz/source": "./src/commands/*.ts",
+        "types": "./dist/esm/commands/*.d.ts",
+        "default": "./dist/esm/commands/*.js"
+      }
+    },
+    "./config": {
+      "import": {
+        "@nrz/source": "./src/config/index.ts",
+        "types": "./dist/esm/config/index.d.ts",
+        "default": "./dist/esm/config/index.js"
+      }
+    },
+    "./config/definition": {
+      "import": {
+        "@nrz/source": "./src/config/definition.ts",
+        "types": "./dist/esm/config/definition.d.ts",
+        "default": "./dist/esm/config/definition.js"
+      }
+    },
+    "./types": {
+      "import": {
+        "@nrz/source": "./src/types.ts",
+        "types": "./dist/esm/types.d.ts",
+        "default": "./dist/esm/types.js"
+      }
+    }
+  },
+  "keywords": [
+    "nrz"
+  ]
+}
