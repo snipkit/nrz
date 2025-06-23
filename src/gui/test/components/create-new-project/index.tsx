@@ -1,31 +1,44 @@
 import { vi, test, expect, afterEach } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import html from 'diffable-html'
-import { useGraphStore as useStore } from '@/state/index.js'
-import { CreateNewProjectContent } from '@/components/create-new-project/index.jsx'
+import { useGraphStore as useStore } from '@/state/index.ts'
+import { CreateNewProjectContent } from '@/components/create-new-project/index.tsx'
 
-vi.mock('@/components/ui/card.jsx', () => ({
-  Card: 'gui-card',
+vi.mock('react-router', () => ({
+  useNavigate: vi.fn(),
 }))
 
-vi.mock('@/components/ui/select.jsx', () => ({
-  Select: 'gui-select',
-  SelectContent: 'gui-select-content',
-  SelectItem: 'gui-select-item',
-  SelectTrigger: 'gui-select-trigger',
-  SelectValue: 'gui-select-value',
-}))
-
-vi.mock('@/components/ui/input.jsx', () => ({
+vi.mock('@/components/ui/input.tsx', () => ({
   Input: 'gui-input',
 }))
 
-vi.mock('@/components/ui/button.jsx', () => ({
+vi.mock('@/components/ui/button.tsx', () => ({
   Button: 'gui-button',
 }))
 
-vi.mock('@/components/ui/form-label.jsx', () => ({
+vi.mock('@/components/ui/form-label.tsx', () => ({
   Label: 'gui-label',
+}))
+
+vi.mock('@/components/grid/grid.tsx', () => ({
+  Grid: 'gui-grid',
+  System: 'gui-grid-system',
+  Cell: 'gui-grid-cell',
+}))
+
+vi.mock('@/components/icons/index.ts', () => ({
+  Next: 'gui-next-icon',
+  Vercel: 'gui-vercel-icon',
+  Nuxt: 'gui-nuxt-icon',
+  Node: 'gui-node-icon',
+}))
+
+vi.mock('@/components/animated-beam.tsx', () => ({
+  AnimatedBeam: 'gui-animated-beam',
+}))
+
+vi.mock('@/components/directory-select.tsx', () => ({
+  DirectorySelect: 'gui-directory-select',
 }))
 
 expect.addSnapshotSerializer({
@@ -40,15 +53,25 @@ afterEach(() => {
 })
 
 test('create-new-project-content render default', async () => {
-  render(<CreateNewProjectContent />)
+  const mockSetInProgress = vi.fn()
+  const mockInProgress = false
+
+  render(
+    <CreateNewProjectContent
+      setInProgress={mockSetInProgress}
+      inProgress={mockInProgress}
+    />,
+  )
   expect(window.document.body.innerHTML).toMatchSnapshot()
 })
 
 test('create-new-project-content with results', async () => {
+  const mockSetInProgress = vi.fn()
+  const mockInProgress = false
+
   const Container = () => {
     const updateDashboard = useStore(state => state.updateDashboard)
     updateDashboard({
-      buildVersion: '1.0.0',
       cwd: '/path/to/cwd',
       defaultAuthor: 'Ruy Adorno',
       dashboardProjectLocations: [
@@ -73,7 +96,12 @@ test('create-new-project-content with results', async () => {
         },
       ],
     })
-    return <CreateNewProjectContent />
+    return (
+      <CreateNewProjectContent
+        setInProgress={mockSetInProgress}
+        inProgress={mockInProgress}
+      />
+    )
   }
   render(<Container />)
   expect(window.document.body.innerHTML).toMatchSnapshot()

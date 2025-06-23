@@ -1,14 +1,17 @@
-import { type DepID, joinDepIDTuple } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
 import { PackageJson } from '@nrz/package-json'
-import { type Manifest } from '@nrz/types'
-import { readFileSync, statSync } from 'fs'
-import { type GlobOptionsWithFileTypesFalse, globSync } from 'glob'
-import { type DepResults, graphRun, graphRunSync } from 'graph-run'
-import { basename, resolve, posix } from 'path'
-import { type Path, PathScurry } from 'path-scurry'
-import { parse } from 'polite-json'
+import type { Manifest } from '@nrz/types'
+import { load } from '@nrz/nrz-json'
+import type { GlobOptionsWithFileTypesFalse } from 'glob'
+import { globSync } from 'glob'
+import type { DepResults } from 'graph-run'
+import { graphRun, graphRunSync } from 'graph-run'
 import { minimatch } from 'minimatch'
+import { basename, posix, resolve } from 'node:path'
+import type { Path } from 'path-scurry'
+import { PathScurry } from 'path-scurry'
 
 export type WorkspacesLoadedConfig = {
   workspace?: string[]
@@ -39,7 +42,7 @@ export type LoadQuery = {
 export type WorkspaceConfigObject = Record<string, string[]>
 
 /**
- * Allowed datatype in the `nrz-workspaces.json` file.
+ * Allowed datatype in the `workspaces` field of the `nrz.json` file.
  */
 export type WorkspaceConfig =
   | string[]
@@ -58,7 +61,12 @@ export const asWSConfig = (
   return (
     typeof conf === 'string' ? { packages: [conf] }
     : Array.isArray(conf) ? { packages: conf }
-    : conf
+    : Object.fromEntries(
+        Object.entries(conf).map(([k, v]) => [
+          k,
+          typeof v === 'string' ? [v] : v,
+        ]),
+      )
   )
 }
 
@@ -72,7 +80,7 @@ export const assertWSConfig: (
   conf: unknown,
   path?: string,
 ) => {
-  if (typeof conf === 'string') return conf
+  if (typeof conf === 'string') return
 
   if (Array.isArray(conf)) {
     for (const c of conf) {
@@ -130,7 +138,10 @@ export type MonorepoOptions = {
    * A {@link PathScurry} object, for use in globs
    */
   scurry?: PathScurry
-  /** Parsed normalized contents of a `nrz-workspaces.json` file */
+  /**
+   * Parsed normalized contents of the workspaces from a `nrz.json`
+   * file
+   */
   config?: WorkspaceConfigObject
   /**
    * If set, then {@link Monorepo#load} will be called immediately with
@@ -144,10 +155,10 @@ export type MonorepoOptions = {
  *
  * Does not automatically look up the root, but that can be provided by
  * running `Config.load()`, since it stops seeking the route when a
- * `nrz-workspaces.json` file is encountered.
+ * `nrz.json` file is encountered.
  */
 export class Monorepo {
-  /** The project root where nrz-workspaces.json is found */
+  /** The project root where nrz.json is found */
   projectRoot: string
   /** Scurry object to cache all filesystem calls (mostly globs) */
   scurry: PathScurry
@@ -174,7 +185,7 @@ export class Monorepo {
   }
 
   /**
-   * Load the workspace definitions from nrz-workspaces.json,
+   * Load the workspace definitions from nrz.json,
    * canonicalizing the result into the effective `{[group:string]:string[]}`
    * form.
    *
@@ -184,26 +195,9 @@ export class Monorepo {
    */
   get config(): WorkspaceConfigObject {
     if (this.#config) return this.#config
-    const file = resolve(this.projectRoot, 'nrz-workspaces.json')
-    let confData: string
-    try {
-      confData = readFileSync(file, 'utf8')
-    } catch (er) {
-      throw error('Not in a monorepo, no nrz-workspaces.json found', {
-        path: this.projectRoot,
-        cause: er,
-      })
-    }
-    let parsed: unknown
-    try {
-      parsed = parse(confData)
-    } catch (er) {
-      throw error('Invalid nrz-workspaces.json file', {
-        path: this.projectRoot,
-        cause: er,
-      })
-    }
-    this.#config = asWSConfig(parsed, file)
+    this.#config = asWSConfig(
+      load('workspaces', assertWSConfig) ?? {},
+    )
     return this.#config
   }
 
@@ -295,6 +289,18 @@ export class Monorepo {
       fromCache?.manifest ?? this.packageJson.read(fullpath)
     const ws = fromCache ?? new Workspace(path, manifest, fullpath)
     if (group) ws.groups.push(group)
+
+    // Check for duplicate workspace names
+    const existingWS = this.#workspaces.get(ws.name)
+    if (existingWS && existingWS.fullpath !== ws.fullpath) {
+      throw error('Duplicate workspace name found', {
+        name: ws.name,
+        path: this.projectRoot,
+        wanted: ws.fullpath,
+        found: existingWS.fullpath,
+      })
+    }
+
     this.#workspaces.set(ws.fullpath, ws)
     this.#workspaces.set(ws.path, ws)
     this.#workspaces.set(ws.name, ws)
@@ -596,19 +602,9 @@ export class Monorepo {
     projectRoot: string,
     options: MonorepoOptions = { load: {} },
   ) {
-    try {
-      if (
-        !statSync(
-          resolve(projectRoot, 'nrz-workspaces.json'),
-        ).isFile()
-      ) {
-        return
-      }
-    } catch {
-      return
-    }
-    const { load = {} } = options
-    return new Monorepo(projectRoot, { ...options, load })
+    const config = load('workspaces', assertWSConfig)
+    if (!config) return
+    return new Monorepo(projectRoot, { load: {}, ...options })
   }
 
   /**

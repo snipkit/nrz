@@ -1,20 +1,21 @@
-import { type DepID, splitDepID } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
+import { splitDepID } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
-import { type PackageJson } from '@nrz/package-json'
-import {
-  type Manifest,
-  type DependencyTypeLong,
-  type DependencyTypeShort,
-  longDependencyTypes,
+import type { PackageJson } from '@nrz/package-json'
+import type {
+  DependencyTypeLong,
+  DependencyTypeShort,
+  Manifest,
 } from '@nrz/types'
-import { type Graph } from '../graph.ts'
-import {
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
-  type Dependency,
+import { longDependencyTypes } from '@nrz/types'
+import type {
+  AddImportersDependenciesMap,
+  Dependency,
+  RemoveImportersDependenciesMap,
 } from '../dependencies.ts'
-
-const SAVE_PREFIX = '^'
+import type { Graph } from '../graph.ts'
+import { resolveSaveType } from '../resolve-save-type.ts'
+import { calculateSaveValue } from './calculate-save-value.ts'
 
 const depTypesMap = new Map<DependencyTypeShort, DependencyTypeLong>([
   ['prod', 'dependencies'],
@@ -83,17 +84,21 @@ const addOrRemoveDeps = (
   for (const deleteNameOrAddItem of deps) {
     if (typeof deleteNameOrAddItem === 'string') {
       const name = deleteNameOrAddItem
-      // TODO: needs to also remove any possible peerDependenciesMeta
       for (const depType of longDependencyTypes) {
         if (manifest[depType]?.[name]) {
           delete manifest[depType][name]
           manifestChanged = true
         }
       }
+      if (manifest.peerDependenciesMeta?.[name]) {
+        delete manifest.peerDependenciesMeta[name]
+        manifestChanged = true
+      }
     } else {
       const [name, dep] = deleteNameOrAddItem
-      // TODO: peerOptional also needs to add peerDependenciesMeta entry
-      const depType = depTypesMap.get(dep.type)
+      // peerOptional also needs to add peerDependenciesMeta entry
+      const depTypeShort = resolveSaveType(importer, name, dep.type)
+      const depType = depTypesMap.get(depTypeShort)
       if (!depType) {
         throw error('Failed to retrieve dependency type', {
           validOptions: [...depTypesMap.keys()],
@@ -105,16 +110,39 @@ const addOrRemoveDeps = (
         throw error('Dependency node could not be found')
       }
       const [nodeType] = splitDepID(node.id)
+
+      for (const dtype of longDependencyTypes) {
+        if (dtype === depType || !manifest[dtype]) continue
+        delete manifest[dtype][name]
+      }
+      if (depTypeShort === 'peerOptional') {
+        manifest.peerDependenciesMeta ??= {}
+        manifest.peerDependenciesMeta[name] = { optional: true }
+      } else if (manifest.peerDependenciesMeta?.[name]) {
+        delete manifest.peerDependenciesMeta[name]
+      }
+
       const dependencies =
         manifest[depType] ?? (manifest[depType] = {})
-      dependencies[name] =
-        (
-          nodeType === 'registry' &&
-          (!dep.spec.semver || !dep.spec.range)
-        ) ?
-          `${SAVE_PREFIX}${node.version}`
-        : dep.spec.bareSpec
-      manifestChanged = true
+      // check to see if we need to save a different version
+      // - If you install a single specific version, that is deliberate,
+      //   we save that exact version, no matter what.
+      // - If the requested spec matches the manifest, make no change
+      // If the requested spec had no bareSpec, and the manifest has
+      // a dependency entry, make no change.
+      // If the requested spec has a bareSpec that did NOT match the manifest,
+      // then update it.
+      // If the manifest does not contain anything, then update it.
+      // Only for registry dependencies
+      const existing = dependencies[name]
+      const saveValue = calculateSaveValue(
+        nodeType,
+        dep.spec,
+        existing,
+        node.version,
+      )
+      dependencies[name] = saveValue
+      manifestChanged = saveValue !== existing
     }
   }
   return manifestChanged ? manifest : undefined

@@ -2,8 +2,11 @@
 
 exports[`queries-empty-state > labels render default 1`] = `
 
-<div class="flex h-full w-full items-center justify-center bg-white dark:bg-black">
-  <div class="-mt-20 mt-10 flex flex-col items-center justify-center gap-3">
+<div class="flex h-full w-full items-center justify-center">
+  <div
+    class="-mt-20 flex flex-col items-center justify-center gap-3"
+    style="opacity: 1;"
+  >
     <div class="relative mb-20 flex items-center justify-center">
       <div
         class="absolute z-[1] h-[450px] w-[450px] rounded-full border-[1px] border-neutral-500/10"
@@ -20,8 +23,8 @@ exports[`queries-empty-state > labels render default 1`] = `
         style="opacity: 1;"
       >
       </div>
-      <div class="absolute z-[2] flex h-[50px] w-[400px] items-center justify-center rounded-[8px] bg-gradient-to-r from-white to-neutral-400 dark:from-black dark:to-neutral-800">
-        <div class="relative flex h-[48.25px] w-[398.25px] items-center rounded-[6.25px] bg-white shadow-2xl dark:bg-black">
+      <div class="absolute z-[2] flex h-[50px] w-[400px] items-center justify-center rounded-[8px] bg-gradient-to-r from-white to-card dark:from-card/0 dark:to-card/100">
+        <div class="relative flex h-[48.25px] w-[398.25px] items-center overflow-hidden rounded-[6.25px] shadow-2xl">
           <p class="absolute -ml-32 whitespace-nowrap bg-gradient-to-r from-white to-neutral-500 bg-clip-text text-transparent dark:from-black dark:to-neutral-500">
             [name="my-project"] &gt; :is(:project &gt; *[name="tap"])
           </p>
@@ -69,28 +72,33 @@ exports[`queries-empty-state > labels render default 1`] = `
         </div>
       </div>
     </div>
-    <h3 class="text-xl font-medium">
-      No saved Queries yet
-    </h3>
-    <p class="text-center text-sm text-neutral-500">
-      Looks like you haven't saved any Queries yet,
-      <br>
-      explore your Projects to add one!
-    </p>
-    <div class="flex gap-3">
+    <div class="flex flex-col items-center justify-center gap-3 text-center">
+      <h3 class="text-xl font-medium">
+        No saved Queries yet
+      </h3>
+      <p class="text-center text-sm text-neutral-500">
+        Looks like you haven't saved any Queries yet,
+        <br>
+        explore your Projects to add one!
+      </p>
+      <div class="z-[2] flex items-center justify-center gap-3 text-center">
+        <gui-button
+          aschild="true"
+          variant="outline"
+        >
+          <gui-nav-link to="/">
+            Explore Projects
+          </gui-nav-link>
+        </gui-button>
+        <gui-button>
+          <span>
+            New Query
+          </span>
+          <gui-plus-icon>
+          </gui-plus-icon>
+        </gui-button>
+      </div>
     </div>
-    <gui-button
-      aschild="true"
-      classname="z-[2]"
-    >
-      <a href="/">
-        <span>
-          Explore Projects
-        </span>
-        <gui-arrow-right-icon>
-        </gui-arrow-right-icon>
-      </a>
-    </gui-button>
   </div>
 </div>
 

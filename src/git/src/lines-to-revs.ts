@@ -1,8 +1,4 @@
-import {
-  type RevDoc,
-  type RevDocEntry,
-  type RefType,
-} from '@nrz/types'
+import type { RevDoc, RevDocEntry, RefType } from '@nrz/types'
 import { parse } from '@nrz/semver'
 import { error } from '@nrz/error-cause'
 

@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react'
-import { cn } from '@/lib/utils.js'
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils.ts'
 
 export const GridHeader = ({
   children,
@@ -11,7 +11,7 @@ export const GridHeader = ({
 }) => (
   <div
     className={cn(
-      'text-md flex flex-row items-center pt-6 font-medium',
+      'flex h-[3rem] cursor-default flex-row items-center text-sm font-medium',
       className,
     )}
     {...props}>

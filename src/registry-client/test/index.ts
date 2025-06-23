@@ -1,26 +1,23 @@
-import EventEmitter from 'events'
-import { readFileSync } from 'fs'
+import type { Cache } from '@nrz/cache'
 import { createServer } from 'http'
-import { resolve } from 'path'
-import t, { type Test } from 'tap'
-import { gzipSync } from 'zlib'
-import { type RegistryClientRequestOptions } from '../src/index.ts'
+import EventEmitter from 'node:events'
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { gzipSync } from 'node:zlib'
+import type { Test } from 'tap'
+import t from 'tap'
+import { CacheEntry } from '../src/cache-entry.ts'
+import type {
+  RegistryClient,
+  RegistryClientRequestOptions,
+} from '../src/index.ts'
+import { toRawHeaders } from './fixtures/to-raw-headers.ts'
 
 const PORT = (t.childId || 0) + 8080
 
-// need to keep the fixture, because the cache-unzip operation will
-// cause the rmdir to fail with ENOTEMPTY sporadically.
-t.saveFixture = true
-
 const etag = '"an etag is a gate in reverse, think about it"'
-const date = new Date('2023-01-20')
+const date = new Date(Date.now() - 1000 * 10 * 60)
 let dropConnection = false
-
-// verify that it works even if connections get dropped sometimes
-t.beforeEach(() => {
-  dropConnection = true
-  tokensActions.length = 0
-})
 
 const opened: Record<string, boolean> = {}
 const urlOpenEE = new EventEmitter<{
@@ -193,6 +190,7 @@ const registry = createServer((req, res) => {
     res.statusCode = 304
     return res.end('not modified (and this is not valid json)')
   }
+
   const ifs = req.headers['if-modified-since']
   if (ifs) {
     const difs = new Date(ifs)
@@ -220,6 +218,27 @@ const registry = createServer((req, res) => {
     res.setHeader('content-type', 'application/json')
   } else {
     resp = gzipSync(Buffer.from('this is a tarball lets pretend'))
+    const ai = req.headers['accept-integrity']
+    if (
+      ai &&
+      ai !==
+        'sha512-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000=='
+    ) {
+      res.statusCode = 406
+      res.setHeader('content-type', 'application/json')
+      return res.end(
+        JSON.stringify({
+          agent: 'lemongrab',
+          castle: { condition: 'UNACCEPTABLE' },
+          who: { did: 'THE THING!!!!!' },
+        }),
+      )
+    }
+    res.setHeader(
+      'integrity',
+      'sha512-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000==',
+    )
+
     res.setHeader('content-type', 'application/octet-stream')
   }
   res.setHeader('content-length', resp.length)
@@ -229,17 +248,50 @@ const registry = createServer((req, res) => {
 
 const registryURL = `http://localhost:${PORT}`
 
+const unzipRegistered: [string, string][] = []
+const unzipRegister = (path: string, key: string) =>
+  unzipRegistered.push([path, key])
+
+const revalRegistered: [string, 'GET' | 'HEAD', string | URL][] = []
+const revalRegister = (
+  path: string,
+  method: 'GET' | 'HEAD',
+  url: string | URL,
+) => revalRegistered.push([path, method, url])
+
+t.beforeEach(t => {
+  unzipRegistered.length = 0
+  // verify that it works even if connections get dropped sometimes
+  dropConnection = true
+  tokensActions.length = 0
+  // create a registry client for each test based on its testdir
+  t.context.rc = new RC({ cache: t.testdir() })
+})
+
+t.afterEach(async t => {
+  // always wait for the cache to resolve before trying to clean up
+  await (t.context.rc as RegistryClient).cache.promise()
+})
+
+const mockCacheUnzip = { register: unzipRegister }
+const mockCacheReval = { register: revalRegister }
+
 const mockIndex = async (t: Test, mocks?: Record<string, any>) =>
   t.mockImport<typeof import('../src/index.ts')>('../src/index.ts', {
     // always get fresh copy of env since it reads globalThis
-    '../src/env.js': await t.mockImport('../src/env.ts'),
+    '../src/env.ts':
+      await t.mockImport<typeof import('../src/env.ts')>(
+        '../src/env.ts',
+      ),
+    '@nrz/cache-unzip': mockCacheUnzip,
+    '../src/cache-revalidate.ts': mockCacheReval,
     '@nrz/url-open': mockUrlOpen,
-    '../src/otplease.js': { otplease },
+    '../src/otplease.ts': { otplease },
     ...mocks,
   })
 
 // default ones to use for tests that don't need their own mocks
-const { RegistryClient, getKC } = await mockIndex(t)
+const { RegistryClient: RC, getKC } = await mockIndex(t)
 
 t.teardown(() => registry.close())
 
@@ -248,7 +300,7 @@ t.before(
 )
 
 t.test('make a request', { saveFixture: true }, async t => {
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   const [result, result2] = await Promise.all([
     rc.request(`${registryURL}/abbrev`),
     rc.request(`${registryURL}/abbrev`),
@@ -262,8 +314,7 @@ t.test('make a request', { saveFixture: true }, async t => {
 
   // make it look like an old cache entry that's an etag match
   res2.setHeader('date', new Date('2020-01-01').toISOString())
-  const { origin, pathname } = new URL(`${registryURL}/abbrev`)
-  const key = JSON.stringify([origin, 'GET', pathname])
+  const key = `${registryURL}/abbrev`
   rc.cache.set(key, res2.encode())
 
   // make a cache hit request
@@ -272,24 +323,39 @@ t.test('make a request', { saveFixture: true }, async t => {
 })
 
 t.test('register unzipping for gzip responses', async t => {
-  const registered: [string, string][] = []
-  const register = (path: string, key: string) =>
-    registered.push([path, key])
-  const { RegistryClient } = await mockIndex(t, {
-    '@nrz/cache-unzip': { register },
-  })
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   const res = await rc.request(`${registryURL}/some/tarball`)
   t.equal(res.statusCode, 200)
   t.equal(res.isGzip, true)
   // only registers AFTER it's been written fully to the cache
   await rc.cache.promise()
-  t.strictSame(registered, [
+  t.strictSame(unzipRegistered, [
     [
-      t.testdirName,
-      JSON.stringify([registryURL, 'GET', '/some/tarball']),
+      resolve(t.testdirName, 'registry-client'),
+      String(new URL('/some/tarball', registryURL)),
     ],
   ])
+})
+
+t.test('integrity http header handling', async t => {
+  const rc = t.context.rc as RegistryClient
+  const ok = await rc.request(`${registryURL}/some/tarball`, {
+    integrity:
+      'sha512-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000==',
+  })
+  t.equal(
+    ok.integrity,
+    'sha512-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000==',
+  )
+  const notOk = await rc.request(
+    `${registryURL}/some/other/tarball`,
+    {
+      integrity:
+        'sha512-11111111111111111111111111111111111111111111111111111111111111111111111111111111111111==',
+    },
+  )
+  t.match(notOk, { statusCode: 406 })
+  await rc.cache.promise()
 })
 
 t.test('follow redirects', { saveFixture: true }, async t => {
@@ -297,7 +363,7 @@ t.test('follow redirects', { saveFixture: true }, async t => {
     'polite number of redirections',
     { saveFixture: true },
     async t => {
-      const rc = new RegistryClient({ cache: t.testdir() })
+      const rc = t.context.rc as RegistryClient
       const urls = [
         '301-redirect3',
         '302-redirect3',
@@ -318,7 +384,7 @@ t.test('follow redirects', { saveFixture: true }, async t => {
   )
 
   t.test('too many redirections', { saveFixture: true }, async t => {
-    const rc = new RegistryClient({ cache: t.testdir() })
+    const rc = t.context.rc as RegistryClient
     const urls = [
       '301-redirect300',
       '302-redirect300',
@@ -356,7 +422,7 @@ t.test('follow redirects', { saveFixture: true }, async t => {
       '308-cycle0',
     ]
     t.plan(urls.length)
-    const rc = new RegistryClient({ cache: t.testdir() })
+    const rc = t.context.rc as RegistryClient
     for (const u of urls) {
       await t.rejects(
         rc.request(`${registryURL}/${u}`),
@@ -379,7 +445,7 @@ t.test('follow redirects', { saveFixture: true }, async t => {
       for (const type of types) {
         const u = `${code}-${type}5`
         t.test(u, { saveFixture: true }, async t => {
-          const rc = new RegistryClient({ cache: t.testdir() })
+          const rc = t.context.rc as RegistryClient
           const res = await rc.request(`${registryURL}/${u}`, {
             maxRedirections: 0,
           })
@@ -388,7 +454,6 @@ t.test('follow redirects', { saveFixture: true }, async t => {
             String(res.getHeader('location')),
             `/${code}-${type}4`,
           )
-          t.end()
         })
       }
     }
@@ -469,7 +534,7 @@ t.test('user-agent', t => {
 t.test('client.login()', async t => {
   // login is actually not resilient to dropped connections, by design
   dropConnection = false
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   await rc.login(registryURL)
   await getKC('').save()
   const auths = JSON.parse(
@@ -488,7 +553,7 @@ t.test('client.login() with immediate retry', async t => {
   // login is actually not resilient to dropped connections, by design
   dropConnection = false
   doneUrlRetry = true
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   await rc.login(registryURL)
   await getKC('').save()
   const auths = JSON.parse(
@@ -507,7 +572,7 @@ t.test('client.login() with 100ms delayed retry', async t => {
   // login is actually not resilient to dropped connections, by design
   dropConnection = false
   doneUrlRetry = '0.1'
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   await rc.login(registryURL)
   await getKC('').save()
   const auths = JSON.parse(
@@ -524,7 +589,7 @@ t.test('client.login() with 100ms delayed retry', async t => {
 
 t.test('client.logout()', async t => {
   dropConnection = false
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   await rc.logout(registryURL)
   await getKC('').save()
   // do it again just to hit the 'no token' use case
@@ -549,7 +614,7 @@ t.test('client.login() with doneUrl invalid response', async t => {
   // login is actually not resilient to dropped connections, by design
   dropConnection = false
   doneUrlInvalid = true
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   await t.rejects(rc.login(registryURL))
 })
 
@@ -557,23 +622,23 @@ t.test('client.login() with doneUrl failure status code', async t => {
   // login is actually not resilient to dropped connections, by design
   dropConnection = false
   doneUrlFail = true
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   await t.rejects(rc.login(registryURL))
 })
 
 t.test('401 prompting otplease', async t => {
   dropConnection = false
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   const result = await rc.request(
     new URL('/-/401/yolo', registryURL),
-    { cache: false },
+    { useCache: false },
   )
   t.match(result, { statusCode: 200 })
 })
 
 t.test('sending request with PUT method', async t => {
   // this provides coverage for the "no default cache except HEAD/GET" path
-  const rc = new RegistryClient({ cache: t.testdir() })
+  const rc = t.context.rc as RegistryClient
   const result = await rc.request(new URL('/-/put', registryURL), {
     method: 'PUT',
   })
@@ -581,6 +646,55 @@ t.test('sending request with PUT method', async t => {
 })
 
 t.test('identity', async t => {
-  const rc = new RegistryClient({ identity: 'crisis' })
+  const rc = new RC({ identity: 'crisis' })
   t.equal(rc.identity, 'crisis')
+})
+
+t.test('staleWhileRevalidate', async t => {
+  const rc = t.context.rc as RegistryClient
+  // got the entry 10 minutes ago, no strictly valid, but swv ok
+  const date = String(new Date(Date.now() - 100 * 60 * 1000))
+  const swvEntry = new CacheEntry(
+    200,
+    toRawHeaders({
+      date,
+      'cache-control': 'maxage=300',
+      'content-type': 'application/json',
+    }),
+  )
+  swvEntry.addBody(Buffer.from('{"ok":true}'))
+
+  const cache = rc.cache
+  const staleCache = {
+    path: () => cache.path(),
+    fetch: async () => {
+      // rc.cache = cache
+      return swvEntry.encode()
+    },
+    promise: async () => {},
+    set: () => {},
+  } as unknown as Cache
+  rc.cache = staleCache
+
+  const stale = await rc.request(new URL('/abbrev', registryURL))
+  t.strictSame(stale.body, { ok: true })
+  t.equal(stale.staleWhileRevalidate, true)
+  t.equal(stale.valid, false)
+  t.strictSame(revalRegistered, [
+    [dirname(cache.path()), 'GET', new URL('/abbrev', registryURL)],
+  ])
+
+  rc.cache = staleCache
+  const refreshNow = await rc.request(
+    new URL('/abbrev', registryURL),
+    {
+      staleWhileRevalidate: false,
+    },
+  )
+  t.strictSame(
+    refreshNow.body,
+    { hello: 'world' },
+    'revalidated, got fresh response',
+  )
+  await cache.promise()
 })

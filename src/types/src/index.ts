@@ -8,6 +8,7 @@ export type JSONField =
   | string
   | { [k: string]: JSONField }
   | null
+  | undefined
 
 /** sha512 SRI string */
 export type Integrity = `sha512-${string}`
@@ -113,6 +114,8 @@ export type Manifest = {
   cpu?: string[] | string
   /** URLs that can be visited to fund this project */
   funding?: Funding
+  /** The homepage of the repository */
+  homepage?: string
   /**
    * Only present in Manifests served by a registry. Contains information
    * about the artifact served for this package release.
@@ -147,6 +150,8 @@ export type Manifest = {
   author?: Person
   /** contributors to the package */
   contributors?: Person[]
+  /** the license of the package */
+  license?: string
 }
 
 export type ManifestRegistry = Manifest &
@@ -190,7 +195,7 @@ export type RevDoc = Omit<Packument, 'versions'> & {
   shas: Record<string, string[]>
 }
 
-const integrityRE = /^sha512-[a-zA-Z0-9/+]{86}==$/
+export const integrityRE = /^sha512-[a-zA-Z0-9/+]{86}==$/
 export const isIntegrity = (i: unknown): i is Integrity =>
   typeof i === 'string' && integrityRE.test(i)
 
@@ -214,7 +219,7 @@ export const assertIntegrity: (
   asIntegrity(i)
 }
 
-const keyIDRE = /^SHA256:[a-zA-Z0-9/+]{43}$/
+export const keyIDRE = /^SHA256:[a-zA-Z0-9/+]{43}$/
 export const isKeyID = (k: unknown): k is KeyID =>
   typeof k === 'string' && keyIDRE.test(k)
 
@@ -236,34 +241,89 @@ export const assertKeyID: (k: unknown) => asserts k is KeyID = k => {
   asKeyID(k)
 }
 
-const isObj = (o: unknown): o is Record<string, unknown> =>
-  !!o && typeof o === 'object'
+/**
+ * Convert an unknown value to an error.
+ */
+export const asError = (
+  er: unknown,
+  fallbackMessage = 'Unknown error',
+): Error =>
+  er instanceof Error ? er : new Error(String(er) || fallbackMessage)
 
-const maybeRecordStringString = (
+/**
+ * Check if a value is an error.
+ */
+export const isError = (er: unknown): er is Error =>
+  er instanceof Error
+
+/**
+ * Check if an error has a cause property.
+ */
+export const isErrorWithCause = (
+  er: unknown,
+): er is Error & { cause: unknown } => isError(er) && 'cause' in er
+
+/**
+ * Check if an unknown value is a plain object.
+ */
+export const isObject = (v: unknown): v is Record<string, unknown> =>
+  !!v &&
+  typeof v === 'object' &&
+  (v.constructor === Object ||
+    (v.constructor as unknown) === undefined)
+
+export const maybeRecordStringString = (
   o: unknown,
 ): o is Record<string, string> | undefined =>
   o === undefined || isRecordStringString(o)
 
-const isRecordStringString = (
+export const isRecordStringString = (
   o: unknown,
 ): o is Record<string, string> =>
   isRecordStringT<string>(o, s => typeof s === 'string')
 
-const isRecordStringT = <T>(
+export const assertRecordStringString: (o: unknown) => void = (
   o: unknown,
-  check: (o: unknown) => boolean,
+): asserts o is Record<string, string> =>
+  assertRecordStringT<string>(
+    o,
+    s => typeof s === 'string',
+    'Record<string, string>',
+  )
+
+export const isRecordStringT = <T>(
+  o: unknown,
+  check: (o: unknown) => o is T,
 ): o is Record<string, T> =>
-  isObj(o) &&
+  isObject(o) &&
   Object.entries(o).every(
     ([k, v]) => typeof k === 'string' && check(v),
   )
 
-const isRecordStringManifest = (
+export const assertRecordStringT: <T>(
+  o: unknown,
+  check: (o: unknown) => o is T,
+  wanted: string,
+) => asserts o is Record<string, T> = <T>(
+  o: unknown,
+  check: (o: unknown) => o is T,
+  /** a type description, like 'Record<string, Record<string, string>>' */
+  wanted: string,
+): asserts o is Record<string, T> => {
+  if (!isRecordStringT(o, check)) {
+    throw error('Invalid record', {
+      found: o,
+      wanted,
+    })
+  }
+}
+
+export const isRecordStringManifest = (
   o: unknown,
 ): o is Record<string, Manifest> =>
   isRecordStringT<Manifest>(o, v => isManifest(v))
 
-const maybePeerDependenciesMetaSet = (
+export const maybePeerDependenciesMetaSet = (
   o: unknown,
 ): o is Record<string, PeerDependenciesMetaValue> | undefined =>
   o === undefined ||
@@ -271,22 +331,22 @@ const maybePeerDependenciesMetaSet = (
     isPeerDependenciesMetaValue(v),
   )
 
-const maybeBoolean = (o: unknown): o is boolean =>
+export const maybeBoolean = (o: unknown): o is boolean =>
   o === undefined || typeof o === 'boolean'
 
-const isPeerDependenciesMetaValue = (
+export const isPeerDependenciesMetaValue = (
   o: unknown,
 ): o is PeerDependenciesMetaValue =>
-  isObj(o) && maybeBoolean(o.optional)
+  isObject(o) && maybeBoolean(o.optional)
 
-const maybeString = (a: unknown): a is string | undefined =>
+export const maybeString = (a: unknown): a is string | undefined =>
   a === undefined || typeof a === 'string'
 
-const maybeDist = (a: unknown): a is Manifest['dist'] =>
-  a === undefined || (isObj(a) && maybeString(a.tarball))
+export const maybeDist = (a: unknown): a is Manifest['dist'] =>
+  a === undefined || (isObject(a) && maybeString(a.tarball))
 
 export const isManifest = (m: unknown): m is Manifest =>
-  isObj(m) &&
+  isObject(m) &&
   !Array.isArray(m) &&
   maybeString(m.name) &&
   maybeString(m.version) &&
@@ -339,7 +399,7 @@ export const assertManifestRegistry: (
 }
 
 export const isPackument = (p: unknown): p is Packument => {
-  if (!isObj(p) || typeof p.name !== 'string') return false
+  if (!isObject(p) || typeof p.name !== 'string') return false
   const { versions, 'dist-tags': distTags, time } = p
   return (
     isRecordStringString(distTags) &&
@@ -387,6 +447,17 @@ export type DependencyTypeShort =
   | 'peer'
   | 'peerOptional'
   | 'prod'
+
+/**
+ * Unique keys that indicate how a new or updated dependency should be saved
+ * back to a manifest.
+ *
+ * `'implicit'` is used to indicate that a dependency should be saved as
+ * whatever type it already exists as. If the dependency does not exist,
+ * then `'implicit'` is equivalent to `'prod'`, as that is the default
+ * save type.
+ */
+export type DependencySaveType = DependencyTypeShort | 'implicit'
 
 /**
  * A set of the possible long dependency type names,

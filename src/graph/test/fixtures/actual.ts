@@ -1,11 +1,12 @@
-import { Test } from 'tap'
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { SpecOptions } from '@nrz/spec'
-import { load } from '../../src/actual/load.ts'
-import { Graph } from '../../src/graph.ts'
-import { PathScurry } from 'path-scurry'
 import { PackageJson } from '@nrz/package-json'
+import type { SpecOptions } from '@nrz/spec'
+import { unload } from '@nrz/nrz-json'
 import { Monorepo } from '@nrz/workspaces'
+import { PathScurry } from 'path-scurry'
+import type { Test } from 'tap'
+import { load } from '../../src/actual/load.ts'
+import type { Graph } from '../../src/graph.ts'
 
 const configData = {
   registry: 'https://registry.npmjs.org/',
@@ -265,13 +266,17 @@ export const actualGraph = (t: Test): string =>
         }),
       },
     },
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
   })
 
 export const loadActualGraph = (t: Test): Graph => {
   const projectRoot = actualGraph(t)
+  t.chdir(projectRoot)
+  unload('project')
   return load({
     projectRoot,
     scurry: new PathScurry(projectRoot),

@@ -1,33 +1,62 @@
-import t, { type Test } from 'tap'
-import { relative, sep, join } from 'path'
-import type * as types from '../src/types.ts'
-import { defaultOptions } from '../src/index.ts'
-import bundle from '../src/bundle.ts'
+import { bundle } from '../src/bundle.ts'
+import t from 'tap'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
-const testBundle = async (
-  t: Test,
-  {
-    testdir,
-    ...options
-  }: Partial<types.BundleFactors> & { testdir?: object },
-) => {
-  const dir = t.testdir({ ...testdir, '.build': {} })
-  const outdir = join(dir, '.build')
-  const { outputs } = await bundle({
-    outdir,
-    ...defaultOptions(),
-    ...options,
+t.test('default', async t => {
+  const dir = t.testdir()
+  const res = await bundle({
+    outdir: dir,
   })
-  return {
-    dir,
-    outdir,
-    files: Object.keys(outputs).map(p => relative(outdir, p)),
-  }
-}
+  const contents = readdirSync(res.outdir)
 
-t.test('no external commands', async t => {
-  const { files: noCommands } = await testBundle(t, {
-    externalCommands: false,
+  t.ok(contents.includes('nrz.js'))
+  t.ok(contents.includes('nrr.js'))
+
+  const js = readdirSync(res.outdir)
+    .filter(f => /\.js$/.exec(f))
+    .map(f => [f, readFileSync(join(res.outdir, f), 'utf8')] as const)
+
+  const codeSplit = js
+    .filter(([, v]) =>
+      v.includes('var __CODE_SPLIT_SCRIPT_NAME = import'),
+    )
+    .map(([f]) => f)
+
+  const codeSplitCallers = js.filter(([, v]) =>
+    v.includes('var __CODE_SPLIT_SCRIPT_NAME = resolve'),
+  )
+
+  t.ok(codeSplit.length, 'code split files found')
+  t.ok(codeSplitCallers.length, 'code split callers found')
+  t.ok(
+    codeSplitCallers.every(([, v]) =>
+      codeSplit.some(c =>
+        v.includes(`(import.meta.dirname, "${c}")`),
+      ),
+    ),
+    'code split callers reference code split files',
+  )
+})
+
+t.test('bins', async t => {
+  const dir = t.testdir()
+  const res = await bundle({
+    outdir: dir,
+    bins: ['nrr'],
   })
-  t.notOk(noCommands.some(c => c.startsWith(`commands${sep}`)))
+  const contents = readdirSync(res.outdir)
+  t.notOk(contents.includes('nrz.js'))
+  t.ok(contents.includes('nrr.js'))
+})
+
+t.test('hashbangs', async t => {
+  const dir = t.testdir()
+  const res = await bundle({
+    outdir: dir,
+    bins: ['nrz'],
+    hashbang: true,
+  })
+  const contents = readFileSync(join(res.outdir, 'nrz.js'), 'utf8')
+  t.ok(contents.startsWith('#!/usr/bin/env -S node'))
 })

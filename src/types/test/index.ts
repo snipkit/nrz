@@ -1,4 +1,21 @@
+import type {
+  Bugs,
+  ConditionalValueObject,
+  Dist,
+  ExportsSubpaths,
+  Imports,
+  Integrity,
+  JSONField,
+  KeyID,
+  Manifest,
+  ManifestRegistry,
+  Packument,
+  PeerDependenciesMetaValue,
+  Person,
+  Repository,
+} from '../src/index.ts'
 import {
+  asError,
   asIntegrity,
   asKeyID,
   asManifest,
@@ -9,26 +26,18 @@ import {
   assertManifest,
   assertManifestRegistry,
   assertPackument,
-  type Bugs,
-  type ConditionalValueObject,
-  type Dist,
-  type ExportsSubpaths,
-  type Imports,
-  type Integrity,
+  assertRecordStringString,
+  assertRecordStringT,
+  dependencyTypes,
+  isErrorWithCause,
   isIntegrity,
   isKeyID,
   isManifest,
   isManifestRegistry,
+  isObject,
   isPackument,
-  type JSONField,
-  type KeyID,
-  type Manifest,
-  type ManifestRegistry,
-  type Packument,
-  type PeerDependenciesMetaValue,
-  type Person,
-  type Repository,
-  dependencyTypes,
+  isRecordStringString,
+  isRecordStringT,
   longDependencyTypes,
 } from '../src/index.ts'
 
@@ -229,6 +238,9 @@ t.test('type checks', t => {
   m
   //@ts-expect-error
   m = { name: true, dependencies: /x/ }
+  m = { name: 'x', version: '1.0.0', license: 'MIT' }
+  //@ts-expect-error
+  m = { name: 'x', version: '1.0.0', license: 123 }
 
   //@ts-expect-error
   let rm: ManifestRegistry = {}
@@ -294,4 +306,89 @@ t.test('dependency types', t => {
   })
 
   t.end()
+})
+
+t.test('asError', t => {
+  t.ok(asError(new Error('')) instanceof Error)
+  t.ok(asError(null) instanceof Error)
+  t.ok(asError('').message === 'Unknown error')
+  t.end()
+})
+
+t.test('isErrorWithCause type guard', async t => {
+  t.equal(isErrorWithCause(new Error('plain')), false)
+  t.equal(
+    isErrorWithCause(
+      new Error('with cause', { cause: new Error('inner cause') }),
+    ),
+    true,
+  )
+  t.equal(
+    isErrorWithCause(
+      new Error('with cause obj', { cause: { code: 'ENOENT' } }),
+    ),
+    true,
+  )
+  t.equal(isErrorWithCause({ cause: 'something' }), false)
+  t.equal(isErrorWithCause({ message: 'no cause' }), false)
+  t.equal(isErrorWithCause(null), false)
+  t.equal(isErrorWithCause(undefined), false)
+  t.equal(isErrorWithCause('a string'), false)
+  t.equal(isErrorWithCause(123), false)
+})
+
+t.test('isObject', async t => {
+  t.equal(isObject({}), true)
+  t.equal(isObject(null), false)
+  t.equal(isObject(undefined), false)
+  t.equal(isObject(Object.create(null)), true)
+  t.equal(isObject('a string'), false)
+  t.equal(isObject(123), false)
+})
+
+t.test('isRecordStringString', async t => {
+  t.equal(isRecordStringString({}), true)
+  t.equal(isRecordStringString({ a: '1' }), true)
+  t.equal(isRecordStringString({ a: 1 }), false)
+  t.equal(isRecordStringString(['1']), false)
+})
+
+t.test('isRecordStringT', async t => {
+  const isRegExp = (x: unknown): x is RegExp =>
+    !!x && typeof x === 'object' && x instanceof RegExp
+  t.equal(isRecordStringT({}, isRegExp), true)
+  t.equal(isRecordStringT({ a: /1/ }, isRegExp), true)
+  t.equal(isRecordStringT({ a: 1 }, isRegExp), false)
+  t.equal(isRecordStringT([/1/], isRegExp), false)
+})
+
+t.test('assertRecordStringString', async t => {
+  assertRecordStringString({})
+  assertRecordStringString({ a: '1' })
+  t.throws(() => assertRecordStringString({ a: 1 }))
+  t.throws(() => assertRecordStringString(['1']))
+})
+
+t.test('isRecordStringT', async t => {
+  const isRegExp = (x: unknown): x is RegExp =>
+    !!x && typeof x === 'object' && x instanceof RegExp
+  t.equal(isRecordStringT({}, isRegExp), true)
+  t.equal(isRecordStringT({ a: /1/ }, isRegExp), true)
+  t.equal(isRecordStringT({ a: 1 }, isRegExp), false)
+  t.equal(isRecordStringT([/1/], isRegExp), false)
+})
+
+t.test('assertRecordStringT', async t => {
+  const isRegExp = (x: unknown): x is RegExp =>
+    !!x && typeof x === 'object' && x instanceof RegExp
+
+  const wanted = 'Record<string, RegExp>'
+  assertRecordStringT({}, isRegExp, wanted)
+  assertRecordStringT({ a: /1/ }, isRegExp, wanted)
+  t.throws(() => assertRecordStringT({ a: 1 }, isRegExp, wanted), {
+    cause: { wanted },
+  })
+  t.throws(() => assertRecordStringT(['1'], isRegExp, wanted), {
+    cause: { wanted },
+  })
 })

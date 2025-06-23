@@ -1,14 +1,14 @@
 import { PackageJson } from '@nrz/package-json'
-import { type Manifest } from '@nrz/types'
+import type { Manifest } from '@nrz/types'
 import { Monorepo } from '@nrz/workspaces'
-import { type SpecOptions } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { type PathScurry } from 'path-scurry'
+import type { PathScurry } from 'path-scurry'
 import { loadEdges } from './load-edges.ts'
 import { loadNodes } from './load-nodes.ts'
 import { Graph } from '../graph.ts'
-import { type LockfileData } from './types.ts'
+import type { LockfileData } from './types.ts'
 
 export type LoadOptions = SpecOptions & {
   /**
@@ -58,7 +58,8 @@ export const loadHidden = (options: LoadOptions): Graph => {
 
 export const loadObject = (
   options: LoadOptions,
-  lockfileData: LockfileData,
+  lockfileData: Omit<LockfileData, 'options'> &
+    Partial<Pick<LockfileData, 'options'>>,
 ) => {
   const { mainManifest, scurry } = options
   const packageJson = options.packageJson ?? new PackageJson()
@@ -66,15 +67,18 @@ export const loadObject = (
     options.monorepo ??
     Monorepo.maybeLoad(options.projectRoot, { packageJson, scurry })
   const {
+    catalog = {},
+    catalogs = {},
     'scope-registries': scopeRegistries,
     registry,
     registries,
     'git-hosts': gitHosts,
     'git-host-archives': gitHostArchives,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  } = lockfileData.options || {}
+  } = lockfileData.options ?? {}
   const mergedOptions = {
     ...options,
+    catalog,
+    catalogs,
     'scope-registries': {
       ...options['scope-registries'],
       ...scopeRegistries,

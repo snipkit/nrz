@@ -2,23 +2,23 @@ import React from 'react'
 import { vi, test, expect, afterEach } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import html from 'diffable-html'
-import { useGraphStore as useStore } from '@/state/index.js'
-import { SetupProject } from '@/components/explorer-grid/setup-project.jsx'
+import { useGraphStore as useStore } from '@/state/index.ts'
+import { SetupProject } from '@/components/explorer-grid/setup-project.tsx'
 
-vi.mock('@/components/ui/button.jsx', () => ({
+vi.mock('react-router', () => ({
+  useNavigate: vi.fn(),
+}))
+
+vi.mock('@/components/ui/button.tsx', () => ({
   Button: 'gui-button',
 }))
 
-vi.mock('@/components/ui/card.jsx', () => ({
-  Card: 'gui-card',
-}))
-
-vi.mock('@/components/ui/loading-spinner.jsx', () => ({
+vi.mock('@/components/ui/loading-spinner.tsx', () => ({
   LoadingSpinner: 'gui-loading-spinner',
 }))
 
-vi.mock('lucide-react', () => ({
-  Download: 'gui-download',
+vi.mock('@/components/ui/inline-code.tsx', () => ({
+  InlineCode: 'gui-inline-code',
 }))
 
 expect.addSnapshotSerializer({

@@ -1,18 +1,17 @@
-import { type PackageInfoClient } from '@nrz/package-info'
-import {
-  load as loadActual,
-  type LoadOptions as LoadActualOptions,
-} from '../actual/load.ts'
-import {
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
-  type Dependency,
+import type { PackageInfoClient } from '@nrz/package-info'
+import { load as loadActual } from '../actual/load.ts'
+import type { LoadOptions as LoadActualOptions } from '../actual/load.ts'
+import type {
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
+  Dependency,
 } from '../dependencies.ts'
-import { type Graph } from '../graph.ts'
+import type { Graph } from '../graph.ts'
 import { load as loadVirtual } from '../lockfile/load.ts'
 import { buildIdealFromStartingGraph } from './build-ideal-from-starting-graph.ts'
-import { type DepID } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { graphStep } from '@nrz/output'
+import type { GraphModifier } from '../modifiers.ts'
 
 const getMap = <T extends Map<any, any>>(m?: T) =>
   m ?? (new Map() as T)
@@ -25,6 +24,10 @@ export type BuildIdealOptions = LoadActualOptions & {
    * represented by {@link DepID}.
    */
   add?: AddImportersDependenciesMap
+  /**
+   * The graph modifiers helper object.
+   */
+  modifiers?: GraphModifier
   /**
    * A `Map` object representing nodes to be removed from the ideal graph.
    * Each {@link DepID} key represents an importer node and the `Set` of

@@ -1,19 +1,17 @@
 {
   "name": "@nrz/semver",
   "description": "The semantic version parser used by nrz",
-  "version": "0.0.0-0.1730239248325",
+  "version": "0.0.0-15",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/khulnasoft/nrz.git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
     "directory": "src/semver"
   },
   "tshy": {
     "selfLink": false,
+    "liveDev": true,
     "dialects": [
       "esm"
-    ],
-    "sourceDialects": [
-      "@nrz/source"
     ],
     "exports": {
       "./package.json": "./package.json",
@@ -22,29 +20,29 @@
   },
   "dependencies": {
     "@nrz/error-cause": "workspace:*",
-    "@nrz/fast-split": "workspace:*"
+    "@nrz/fast-split": "workspace:*",
+    "@nrz/types": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@std/semver": "npm:@jsr/std__semver@^1.0.3",
-    "@types/eslint__js": "catalog:",
+    "@std/semver": "jsr:^1.0.5",
     "@types/node": "catalog:",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "semver": "catalog:",
     "tap": "catalog:",
     "tshy": "catalog:",
+    "typedoc": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
   },
   "license": "BSD-2-Clause-Patent",
   "engines": {
-    "node": ">=22",
-    "pnpm": "9"
+    "node": ">=22"
   },
   "scripts": {
-    "prebenchmark": "pnpm -F '@nrz/semver...' prepare",
+    "prebenchmark": "pnpm -F '@nrz/semver...' exec pnpm pack",
     "benchmark": "./test/fixtures/vs-node-semver.ts",
     "benchmark:bun": "hyperfine --warmup 3 'bun ./benchmarks/bun.js' 'bun ./benchmarks/npm.js' 'bun ./benchmarks/this.js'",
     "benchmark:node": "hyperfine --warmup 3 'node ./benchmarks/deno.js' 'node ./benchmarks/npm.js' 'node ./benchmarks/this.js'",
@@ -52,13 +50,12 @@
     "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "prepare": "tshy",
-    "presnap": "tshy",
+    "prepack": "tshy",
     "snap": "tap",
-    "pretest": "tshy",
     "test": "tap",
-    "posttest": "tsc --project tsconfig.test.json",
-    "watch": "tshy --watch"
+    "posttest": "tsc --noEmit",
+    "tshy": "tshy",
+    "typecheck": "tsc --noEmit"
   },
   "tap": {
     "extends": "../../tap-config.yaml"
@@ -70,7 +67,6 @@
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "@nrz/source": "./src/index.ts",
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
       }

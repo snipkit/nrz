@@ -1,5 +1,5 @@
 import { splitDepID } from '@nrz/dep-id/browser'
-import { type NodeLike } from './types.ts'
+import type { NodeLike } from './types.ts'
 
 export const stringifyNode = (node?: NodeLike) => {
   if (!node) return ''

@@ -477,6 +477,732 @@ exports[`test/browser.ts > TAP > basic parsing tests > @foo/bar@git+ssh://notgit
 @foo/bar@git+ssh://notgithub.com/user/foo
 `
 
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr: > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '',
+          tokens: [],
+          tuples: [
+            {
+              isAny: true,
+              toString: [Function: toString],
+              includePrerelease: false,
+              test: [Function: test]
+            }
+          ],
+          isNone: false,
+          isAny: true
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr: > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr: > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@luca/cases@jsr:'[39m,
+  name: [32m'@luca/cases'[39m,
+  scope: [32m'@luca'[39m,
+  bareSpec: [32m'jsr:'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases@'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m''[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m''[39m,
+    semver: [32m''[39m,
+    range: Range {
+      raw: [32m''[39m,
+      isAny: [33mtrue[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr: > toString 1`] = `
+@luca/cases@jsr:
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '',
+          tokens: [],
+          tuples: [
+            {
+              isAny: true,
+              toString: [Function: toString],
+              includePrerelease: false,
+              test: [Function: test]
+            }
+          ],
+          isNone: false,
+          isAny: true
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@luca/cases@jsr:'[39m,
+  name: [32m'@luca/cases'[39m,
+  scope: [32m'@luca'[39m,
+  bareSpec: [32m'jsr:'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m''[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m''[39m,
+    semver: [32m''[39m,
+    range: Range {
+      raw: [32m''[39m,
+      isAny: [33mtrue[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases > toString 1`] = `
+@luca/cases@jsr:
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases@1 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '1',
+          tokens: [ '1' ],
+          tuples: [
+            [
+              '>=',
+              Version {
+                raw: '1',
+                major: 1,
+                minor: 0,
+                patch: 0,
+                prerelease: undefined,
+                build: undefined
+              }
+            ],
+            [
+              '<',
+              Version {
+                raw: '1',
+                major: 2,
+                minor: 0,
+                patch: 0,
+                prerelease: [ 0 ],
+                build: undefined
+              }
+            ]
+          ],
+          isNone: false,
+          isAny: false
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases@1 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@luca/cases@jsr:1'[39m,
+  name: [32m'@luca/cases'[39m,
+  scope: [32m'@luca'[39m,
+  bareSpec: [32m'jsr:1'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases@1'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m'1'[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m'1'[39m,
+    semver: [32m'1'[39m,
+    range: Range {
+      raw: [32m'1'[39m,
+      isAny: [33mfalse[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:@luca/cases@1 > toString 1`] = `
+@luca/cases@jsr:1
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:1 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '1',
+          tokens: [ '1' ],
+          tuples: [
+            [
+              '>=',
+              Version {
+                raw: '1',
+                major: 1,
+                minor: 0,
+                patch: 0,
+                prerelease: undefined,
+                build: undefined
+              }
+            ],
+            [
+              '<',
+              Version {
+                raw: '1',
+                major: 2,
+                minor: 0,
+                patch: 0,
+                prerelease: [ 0 ],
+                build: undefined
+              }
+            ]
+          ],
+          isNone: false,
+          isAny: false
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:1 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@luca/cases@jsr:1'[39m,
+  name: [32m'@luca/cases'[39m,
+  scope: [32m'@luca'[39m,
+  bareSpec: [32m'jsr:1'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases@1'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m'1'[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m'1'[39m,
+    semver: [32m'1'[39m,
+    range: Range {
+      raw: [32m'1'[39m,
+      isAny: [33mfalse[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @luca/cases@jsr:1 > toString 1`] = `
+@luca/cases@jsr:1
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@other/xyz@jsr:@luca/cases',
+  name: '@other/xyz',
+  scope: '@other',
+  bareSpec: 'jsr:@luca/cases',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '',
+          tokens: [],
+          tuples: [
+            {
+              isAny: true,
+              toString: [Function: toString],
+              includePrerelease: false,
+              test: [Function: test]
+            }
+          ],
+          isNone: false,
+          isAny: true
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@other/xyz@jsr:@luca/cases',
+  name: '@other/xyz',
+  scope: '@other',
+  bareSpec: 'jsr:@luca/cases',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@other/xyz@jsr:@luca/cases'[39m,
+  name: [32m'@other/xyz'[39m,
+  scope: [32m'@other'[39m,
+  bareSpec: [32m'jsr:@luca/cases'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m''[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m''[39m,
+    semver: [32m''[39m,
+    range: Range {
+      raw: [32m''[39m,
+      isAny: [33mtrue[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases > toString 1`] = `
+@other/xyz@jsr:@luca/cases
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases@1 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@other/xyz@jsr:@luca/cases@1',
+  name: '@other/xyz',
+  scope: '@other',
+  bareSpec: 'jsr:@luca/cases@1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '1',
+          tokens: [ '1' ],
+          tuples: [
+            [
+              '>=',
+              Version {
+                raw: '1',
+                major: 1,
+                minor: 0,
+                patch: 0,
+                prerelease: undefined,
+                build: undefined
+              }
+            ],
+            [
+              '<',
+              Version {
+                raw: '1',
+                major: 2,
+                minor: 0,
+                patch: 0,
+                prerelease: [ 0 ],
+                build: undefined
+              }
+            ]
+          ],
+          isNone: false,
+          isAny: false
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@other/xyz@jsr:@luca/cases@1',
+  name: '@other/xyz',
+  scope: '@other',
+  bareSpec: 'jsr:@luca/cases@1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases@1 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@other/xyz@jsr:@luca/cases@1'[39m,
+  name: [32m'@other/xyz'[39m,
+  scope: [32m'@other'[39m,
+  bareSpec: [32m'jsr:@luca/cases@1'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases@1'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m'1'[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m'1'[39m,
+    semver: [32m'1'[39m,
+    range: Range {
+      raw: [32m'1'[39m,
+      isAny: [33mfalse[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > @other/xyz@jsr:@luca/cases@1 > toString 1`] = `
+@other/xyz@jsr:@luca/cases@1
+`
+
 exports[`test/browser.ts > TAP > basic parsing tests > @x/y@workspace:@a/b@ > inspect deep 1`] = `
 @nrz/spec.Spec {
   type: 'workspace',
@@ -515,6 +1241,242 @@ exports[`test/browser.ts > TAP > basic parsing tests > @x/y@workspace:@a/b@ > in
 
 exports[`test/browser.ts > TAP > basic parsing tests > @x/y@workspace:@a/b@ > toString 1`] = `
 @x/y@workspace:@a/b@
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'cases@jsr:@luca/cases',
+  name: 'cases',
+  bareSpec: 'jsr:@luca/cases',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '',
+          tokens: [],
+          tuples: [
+            {
+              isAny: true,
+              toString: [Function: toString],
+              includePrerelease: false,
+              test: [Function: test]
+            }
+          ],
+          isNone: false,
+          isAny: true
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'cases@jsr:@luca/cases',
+  name: 'cases',
+  bareSpec: 'jsr:@luca/cases',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'cases@jsr:@luca/cases'[39m,
+  name: [32m'cases'[39m,
+  bareSpec: [32m'jsr:@luca/cases'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m''[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m''[39m,
+    semver: [32m''[39m,
+    range: Range {
+      raw: [32m''[39m,
+      isAny: [33mtrue[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases > toString 1`] = `
+cases@jsr:@luca/cases
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases@1 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'cases@jsr:@luca/cases@1',
+  name: 'cases',
+  bareSpec: 'jsr:@luca/cases@1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '1',
+          tokens: [ '1' ],
+          tuples: [
+            [
+              '>=',
+              Version {
+                raw: '1',
+                major: 1,
+                minor: 0,
+                patch: 0,
+                prerelease: undefined,
+                build: undefined
+              }
+            ],
+            [
+              '<',
+              Version {
+                raw: '1',
+                major: 2,
+                minor: 0,
+                patch: 0,
+                prerelease: [ 0 ],
+                build: undefined
+              }
+            ]
+          ],
+          isNone: false,
+          isAny: false
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'cases@jsr:@luca/cases@1',
+  name: 'cases',
+  bareSpec: 'jsr:@luca/cases@1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases@1 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'cases@jsr:@luca/cases@1'[39m,
+  name: [32m'cases'[39m,
+  bareSpec: [32m'jsr:@luca/cases@1'[39m,
+  namedJsrRegistry: [32m'jsr'[39m,
+  registry: [32m'https://npm.jsr.io/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@jsr/luca__cases@1'[39m,
+    name: [32m'@jsr/luca__cases'[39m,
+    scope: [32m'@jsr'[39m,
+    scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+    bareSpec: [32m'1'[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    registrySpec: [32m'1'[39m,
+    semver: [32m'1'[39m,
+    range: Range {
+      raw: [32m'1'[39m,
+      isAny: [33mfalse[39m,
+      isSingle: [33mfalse[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > cases@jsr:@luca/cases@1 > toString 1`] = `
+cases@jsr:@luca/cases@1
 `
 
 exports[`test/browser.ts > TAP > basic parsing tests > foo > inspect deep 1`] = `
@@ -1455,6 +2417,124 @@ exports[`test/browser.ts > TAP > basic parsing tests > foo@bitbucket:user/foo-js
 foo@bitbucket:user/foo-js
 `
 
+exports[`test/browser.ts > TAP > basic parsing tests > foo@gh:@org/bar@1.0.0 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'foo@gh:@org/bar@1.0.0',
+  name: 'foo',
+  bareSpec: 'gh:@org/bar@1.0.0',
+  namedRegistry: 'gh',
+  registry: 'https://npm.pkg.github.com/',
+  conventionalRegistryTarball: 'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@org/bar@1.0.0',
+    name: '@org/bar',
+    scope: '@org',
+    bareSpec: '1.0.0',
+    namedRegistry: 'gh',
+    registry: 'https://npm.pkg.github.com/',
+    registrySpec: '1.0.0',
+    conventionalRegistryTarball: 'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz',
+    semver: '1.0.0',
+    range: Range {
+      raw: '1.0.0',
+      isAny: false,
+      isSingle: true,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '1.0.0',
+          tokens: [ '1.0.0' ],
+          tuples: [
+            [
+              '',
+              Version {
+                raw: '1.0.0',
+                major: 1,
+                minor: 0,
+                patch: 0,
+                prerelease: undefined,
+                build: undefined
+              }
+            ]
+          ],
+          isNone: false,
+          isAny: false
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > foo@gh:@org/bar@1.0.0 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'foo@gh:@org/bar@1.0.0',
+  name: 'foo',
+  bareSpec: 'gh:@org/bar@1.0.0',
+  namedRegistry: 'gh',
+  registry: 'https://npm.pkg.github.com/',
+  conventionalRegistryTarball: 'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@org/bar@1.0.0',
+    name: '@org/bar',
+    scope: '@org',
+    bareSpec: '1.0.0',
+    namedRegistry: 'gh',
+    registry: 'https://npm.pkg.github.com/',
+    registrySpec: '1.0.0',
+    conventionalRegistryTarball: 'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz',
+    semver: '1.0.0',
+    range: Range {
+      raw: '1.0.0',
+      isAny: false,
+      isSingle: true,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > foo@gh:@org/bar@1.0.0 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'foo@gh:@org/bar@1.0.0'[39m,
+  name: [32m'foo'[39m,
+  bareSpec: [32m'gh:@org/bar@1.0.0'[39m,
+  namedRegistry: [32m'gh'[39m,
+  registry: [32m'https://npm.pkg.github.com/'[39m,
+  conventionalRegistryTarball: [32m'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@org/bar@1.0.0'[39m,
+    name: [32m'@org/bar'[39m,
+    scope: [32m'@org'[39m,
+    bareSpec: [32m'1.0.0'[39m,
+    namedRegistry: [32m'gh'[39m,
+    registry: [32m'https://npm.pkg.github.com/'[39m,
+    registrySpec: [32m'1.0.0'[39m,
+    conventionalRegistryTarball: [32m'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz'[39m,
+    semver: [32m'1.0.0'[39m,
+    range: Range {
+      raw: [32m'1.0.0'[39m,
+      isAny: [33mfalse[39m,
+      isSingle: [33mtrue[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > foo@gh:@org/bar@1.0.0 > toString 1`] = `
+foo@gh:@org/bar@1.0.0
+`
+
 exports[`test/browser.ts > TAP > basic parsing tests > foo@gitlab:user/foo-js > inspect deep 1`] = `
 @nrz/spec.Spec {
   type: 'git',
@@ -1634,6 +2714,162 @@ exports[`test/browser.ts > TAP > basic parsing tests > foo@latest > toString 1`]
 foo@latest
 `
 
+exports[`test/browser.ts > TAP > basic parsing tests > foo@npm:@luca/cases@jsr:1 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'foo@npm:@luca/cases@jsr:1',
+  name: 'foo',
+  bareSpec: 'npm:@luca/cases@jsr:1',
+  namedRegistry: 'npm',
+  registry: 'https://registry.npmjs.org/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@luca/cases@jsr:1',
+    name: '@luca/cases',
+    scope: '@luca',
+    bareSpec: 'jsr:1',
+    namedRegistry: 'npm',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    subspec: @nrz/spec.Spec {
+      type: 'registry',
+      spec: '@jsr/luca__cases@1',
+      name: '@jsr/luca__cases',
+      scope: '@jsr',
+      scopeRegistry: 'https://npm.jsr.io/',
+      bareSpec: '1',
+      namedJsrRegistry: 'jsr',
+      registry: 'https://npm.jsr.io/',
+      registrySpec: '1',
+      semver: '1',
+      range: Range {
+        raw: '1',
+        isAny: false,
+        isSingle: false,
+        set: [
+          Comparator {
+            includePrerelease: false,
+            raw: '1',
+            tokens: [ '1' ],
+            tuples: [
+              [
+                '>=',
+                Version {
+                  raw: '1',
+                  major: 1,
+                  minor: 0,
+                  patch: 0,
+                  prerelease: undefined,
+                  build: undefined
+                }
+              ],
+              [
+                '<',
+                Version {
+                  raw: '1',
+                  major: 2,
+                  minor: 0,
+                  patch: 0,
+                  prerelease: [ 0 ],
+                  build: undefined
+                }
+              ]
+            ],
+            isNone: false,
+            isAny: false
+          }
+        ],
+        includePrerelease: false
+      }
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > foo@npm:@luca/cases@jsr:1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'foo@npm:@luca/cases@jsr:1',
+  name: 'foo',
+  bareSpec: 'npm:@luca/cases@jsr:1',
+  namedRegistry: 'npm',
+  registry: 'https://registry.npmjs.org/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@luca/cases@jsr:1',
+    name: '@luca/cases',
+    scope: '@luca',
+    bareSpec: 'jsr:1',
+    namedRegistry: 'npm',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    subspec: @nrz/spec.Spec {
+      type: 'registry',
+      spec: '@jsr/luca__cases@1',
+      name: '@jsr/luca__cases',
+      scope: '@jsr',
+      scopeRegistry: 'https://npm.jsr.io/',
+      bareSpec: '1',
+      namedJsrRegistry: 'jsr',
+      registry: 'https://npm.jsr.io/',
+      registrySpec: '1',
+      semver: '1',
+      range: Range {
+        raw: '1',
+        isAny: false,
+        isSingle: false,
+        set: [ [Comparator] ],
+        includePrerelease: false
+      }
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > foo@npm:@luca/cases@jsr:1 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'foo@npm:@luca/cases@jsr:1'[39m,
+  name: [32m'foo'[39m,
+  bareSpec: [32m'npm:@luca/cases@jsr:1'[39m,
+  namedRegistry: [32m'npm'[39m,
+  registry: [32m'https://registry.npmjs.org/'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@luca/cases@jsr:1'[39m,
+    name: [32m'@luca/cases'[39m,
+    scope: [32m'@luca'[39m,
+    bareSpec: [32m'jsr:1'[39m,
+    namedRegistry: [32m'npm'[39m,
+    namedJsrRegistry: [32m'jsr'[39m,
+    registry: [32m'https://npm.jsr.io/'[39m,
+    subspec: @nrz/spec.Spec {
+      type: [32m'registry'[39m,
+      spec: [32m'@jsr/luca__cases@1'[39m,
+      name: [32m'@jsr/luca__cases'[39m,
+      scope: [32m'@jsr'[39m,
+      scopeRegistry: [32m'https://npm.jsr.io/'[39m,
+      bareSpec: [32m'1'[39m,
+      namedJsrRegistry: [32m'jsr'[39m,
+      registry: [32m'https://npm.jsr.io/'[39m,
+      registrySpec: [32m'1'[39m,
+      semver: [32m'1'[39m,
+      range: Range {
+        raw: [32m'1'[39m,
+        isAny: [33mfalse[39m,
+        isSingle: [33mfalse[39m,
+        set: [ [36m[Comparator][39m ],
+        includePrerelease: [33mfalse[39m
+      }
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > foo@npm:@luca/cases@jsr:1 > toString 1`] = `
+foo@jsr:1
+`
+
 exports[`test/browser.ts > TAP > basic parsing tests > foo@npm:bar@ > inspect deep 1`] = `
 @nrz/spec.Spec {
   type: 'registry',
@@ -1776,6 +3012,124 @@ exports[`test/browser.ts > TAP > basic parsing tests > foo@user/foo-js > inspect
 
 exports[`test/browser.ts > TAP > basic parsing tests > foo@user/foo-js > toString 1`] = `
 foo@github:user/foo-js
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > gh:@octocat/hello-world@1.0.0 > inspect deep 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@octocat/hello-world@gh:@octocat/hello-world@1.0.0',
+  name: '@octocat/hello-world',
+  bareSpec: 'gh:@octocat/hello-world@1.0.0',
+  namedRegistry: 'gh',
+  registry: 'https://npm.pkg.github.com/',
+  conventionalRegistryTarball: 'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@octocat/hello-world@1.0.0',
+    name: '@octocat/hello-world',
+    scope: '@octocat',
+    bareSpec: '1.0.0',
+    namedRegistry: 'gh',
+    registry: 'https://npm.pkg.github.com/',
+    registrySpec: '1.0.0',
+    conventionalRegistryTarball: 'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz',
+    semver: '1.0.0',
+    range: Range {
+      raw: '1.0.0',
+      isAny: false,
+      isSingle: true,
+      set: [
+        Comparator {
+          includePrerelease: false,
+          raw: '1.0.0',
+          tokens: [ '1.0.0' ],
+          tuples: [
+            [
+              '',
+              Version {
+                raw: '1.0.0',
+                major: 1,
+                minor: 0,
+                patch: 0,
+                prerelease: undefined,
+                build: undefined
+              }
+            ]
+          ],
+          isNone: false,
+          isAny: false
+        }
+      ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > gh:@octocat/hello-world@1.0.0 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@octocat/hello-world@gh:@octocat/hello-world@1.0.0',
+  name: '@octocat/hello-world',
+  bareSpec: 'gh:@octocat/hello-world@1.0.0',
+  namedRegistry: 'gh',
+  registry: 'https://npm.pkg.github.com/',
+  conventionalRegistryTarball: 'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@octocat/hello-world@1.0.0',
+    name: '@octocat/hello-world',
+    scope: '@octocat',
+    bareSpec: '1.0.0',
+    namedRegistry: 'gh',
+    registry: 'https://npm.pkg.github.com/',
+    registrySpec: '1.0.0',
+    conventionalRegistryTarball: 'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz',
+    semver: '1.0.0',
+    range: Range {
+      raw: '1.0.0',
+      isAny: false,
+      isSingle: true,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > gh:@octocat/hello-world@1.0.0 > inspect with color 1`] = `
+@nrz/spec.Spec {
+  type: [32m'registry'[39m,
+  spec: [32m'@octocat/hello-world@gh:@octocat/hello-world@1.0.0'[39m,
+  name: [32m'@octocat/hello-world'[39m,
+  bareSpec: [32m'gh:@octocat/hello-world@1.0.0'[39m,
+  namedRegistry: [32m'gh'[39m,
+  registry: [32m'https://npm.pkg.github.com/'[39m,
+  conventionalRegistryTarball: [32m'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz'[39m,
+  subspec: @nrz/spec.Spec {
+    type: [32m'registry'[39m,
+    spec: [32m'@octocat/hello-world@1.0.0'[39m,
+    name: [32m'@octocat/hello-world'[39m,
+    scope: [32m'@octocat'[39m,
+    bareSpec: [32m'1.0.0'[39m,
+    namedRegistry: [32m'gh'[39m,
+    registry: [32m'https://npm.pkg.github.com/'[39m,
+    registrySpec: [32m'1.0.0'[39m,
+    conventionalRegistryTarball: [32m'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz'[39m,
+    semver: [32m'1.0.0'[39m,
+    range: Range {
+      raw: [32m'1.0.0'[39m,
+      isAny: [33mfalse[39m,
+      isSingle: [33mtrue[39m,
+      set: [ [36m[Comparator][39m ],
+      includePrerelease: [33mfalse[39m
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > basic parsing tests > gh:@octocat/hello-world@1.0.0 > toString 1`] = `
+@octocat/hello-world@gh:@octocat/hello-world@1.0.0
 `
 
 exports[`test/browser.ts > TAP > basic parsing tests > x@./foo > inspect deep 1`] = `
@@ -6257,6 +7611,212 @@ exports[`test/browser.ts > TAP > parse args > @foo/bar@git+ssh://notgithub.com/u
 }
 `
 
+exports[`test/browser.ts > TAP > parse args > @luca/cases@jsr: > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > @luca/cases@jsr:@a/b@jsr:1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:@a/b@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:@a/b@jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/a__b@jsr:1',
+    name: '@jsr/a__b',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: 'jsr:1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    subspec: @nrz/spec.Spec {
+      type: 'registry',
+      spec: '@jsr/jsr__a__b@1',
+      name: '@jsr/jsr__a__b',
+      scope: '@jsr',
+      scopeRegistry: 'https://npm.jsr.io/',
+      bareSpec: '1',
+      namedJsrRegistry: 'jsr',
+      registry: 'https://npm.jsr.io/',
+      registrySpec: '1',
+      semver: '1',
+      range: Range {
+        raw: '1',
+        isAny: false,
+        isSingle: false,
+        set: [ [Comparator] ],
+        includePrerelease: false
+      }
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > @luca/cases@jsr:@luca/cases@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > @luca/cases@jsr:@luca/cases@jsr:@x/y@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:jsr:@x/y@1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:jsr:@x/y@1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@jsr:@x/y@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: 'jsr:@x/y@1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    subspec: @nrz/spec.Spec {
+      type: 'registry',
+      spec: '@jsr/x__y@1',
+      name: '@jsr/x__y',
+      scope: '@jsr',
+      scopeRegistry: 'https://npm.jsr.io/',
+      bareSpec: '1',
+      namedJsrRegistry: 'jsr',
+      registry: 'https://npm.jsr.io/',
+      registrySpec: '1',
+      semver: '1',
+      range: Range {
+        raw: '1',
+        isAny: false,
+        isSingle: false,
+        set: [ [Comparator] ],
+        includePrerelease: false
+      }
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > @luca/cases@jsr:1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > @luca/cases@jsr:1 > inspect default 2`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  scope: '@luca',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
 exports[`test/browser.ts > TAP > parse args > @x/y@workspace:@a/b@ > inspect default 1`] = `
 @nrz/spec.Spec {
   type: 'workspace',
@@ -6296,6 +7856,66 @@ exports[`test/browser.ts > TAP > parse args > /path/to/foo.tgz > inspect default
   name: '(unknown)',
   bareSpec: 'file:.//path/to/foo.tgz',
   file: './/path/to/foo.tgz'
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > cases@jsr:@luca/cases > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'cases@jsr:@luca/cases',
+  name: 'cases',
+  bareSpec: 'jsr:@luca/cases',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > cases@jsr:@luca/cases@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'cases@jsr:@luca/cases@1',
+  name: 'cases',
+  bareSpec: 'jsr:@luca/cases@1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
 }
 `
 
@@ -6794,6 +8414,37 @@ exports[`test/browser.ts > TAP > parse args > foo@bitbucket:user/foo-js > inspec
 }
 `
 
+exports[`test/browser.ts > TAP > parse args > foo@gh:@org/bar@1.0.0 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'foo@gh:@org/bar@1.0.0',
+  name: 'foo',
+  bareSpec: 'gh:@org/bar@1.0.0',
+  namedRegistry: 'gh',
+  registry: 'https://npm.pkg.github.com/',
+  conventionalRegistryTarball: 'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@org/bar@1.0.0',
+    name: '@org/bar',
+    scope: '@org',
+    bareSpec: '1.0.0',
+    namedRegistry: 'gh',
+    registry: 'https://npm.pkg.github.com/',
+    registrySpec: '1.0.0',
+    conventionalRegistryTarball: 'https://npm.pkg.github.com/@org/bar/-/bar-1.0.0.tgz',
+    semver: '1.0.0',
+    range: Range {
+      raw: '1.0.0',
+      isAny: false,
+      isSingle: true,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
 exports[`test/browser.ts > TAP > parse args > foo@gitlab:user/foo-js > inspect default 1`] = `
 @nrz/spec.Spec {
   type: 'git',
@@ -6836,6 +8487,46 @@ exports[`test/browser.ts > TAP > parse args > foo@latest > inspect default 1`] =
   registry: 'https://registry.npmjs.org/',
   registrySpec: 'latest',
   distTag: 'latest'
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > foo@npm:@luca/cases@jsr:1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'foo@npm:@luca/cases@jsr:1',
+  name: 'foo',
+  bareSpec: 'npm:@luca/cases@jsr:1',
+  namedRegistry: 'npm',
+  registry: 'https://registry.npmjs.org/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@luca/cases@jsr:1',
+    name: '@luca/cases',
+    scope: '@luca',
+    bareSpec: 'jsr:1',
+    namedRegistry: 'npm',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    subspec: @nrz/spec.Spec {
+      type: 'registry',
+      spec: '@jsr/luca__cases@1',
+      name: '@jsr/luca__cases',
+      scope: '@jsr',
+      scopeRegistry: 'https://npm.jsr.io/',
+      bareSpec: '1',
+      namedJsrRegistry: 'jsr',
+      registry: 'https://npm.jsr.io/',
+      registrySpec: '1',
+      semver: '1',
+      range: Range {
+        raw: '1',
+        isAny: false,
+        isSingle: false,
+        set: [ [Comparator] ],
+        includePrerelease: false
+      }
+    }
+  }
 }
 `
 
@@ -6886,6 +8577,37 @@ exports[`test/browser.ts > TAP > parse args > foo/bar/baz > inspect default 1`] 
   name: '(unknown)',
   bareSpec: 'file:./foo/bar/baz',
   file: './foo/bar/baz'
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > gh:@octocat/hello-world@1.0.0 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@octocat/hello-world@gh:@octocat/hello-world@1.0.0',
+  name: '@octocat/hello-world',
+  bareSpec: 'gh:@octocat/hello-world@1.0.0',
+  namedRegistry: 'gh',
+  registry: 'https://npm.pkg.github.com/',
+  conventionalRegistryTarball: 'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@octocat/hello-world@1.0.0',
+    name: '@octocat/hello-world',
+    scope: '@octocat',
+    bareSpec: '1.0.0',
+    namedRegistry: 'gh',
+    registry: 'https://npm.pkg.github.com/',
+    registrySpec: '1.0.0',
+    conventionalRegistryTarball: 'https://npm.pkg.github.com/@octocat/hello-world/-/hello-world-1.0.0.tgz',
+    semver: '1.0.0',
+    range: Range {
+      raw: '1.0.0',
+      isAny: false,
+      isSingle: true,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
 }
 `
 
@@ -7146,6 +8868,96 @@ exports[`test/browser.ts > TAP > parse args > github:a/b > inspect default 1`] =
 }
 `
 
+exports[`test/browser.ts > TAP > parse args > jsr:@luca/cases > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:',
+  name: '@luca/cases',
+  bareSpec: 'jsr:',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > jsr:@luca/cases@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > jsr:@luca/cases@1 > inspect default 2`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@jsr:1',
+  name: '@luca/cases',
+  bareSpec: 'jsr:1',
+  namedJsrRegistry: 'jsr',
+  registry: 'https://npm.jsr.io/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@jsr/luca__cases@1',
+    name: '@jsr/luca__cases',
+    scope: '@jsr',
+    scopeRegistry: 'https://npm.jsr.io/',
+    bareSpec: '1',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
 exports[`test/browser.ts > TAP > parse args > no options > no options 1`] = `
 @nrz/spec.Spec {
   type: 'registry',
@@ -7161,6 +8973,102 @@ exports[`test/browser.ts > TAP > parse args > no options > no options 1`] = `
     isSingle: false,
     set: [ [Comparator] ],
     includePrerelease: false
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > npm:@luca/cases@jsr:1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: '@luca/cases@npm:@luca/cases@jsr:1',
+  name: '@luca/cases',
+  bareSpec: 'npm:@luca/cases@jsr:1',
+  namedRegistry: 'npm',
+  registry: 'https://registry.npmjs.org/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: '@luca/cases@jsr:1',
+    name: '@luca/cases',
+    scope: '@luca',
+    bareSpec: 'jsr:1',
+    namedRegistry: 'npm',
+    namedJsrRegistry: 'jsr',
+    registry: 'https://npm.jsr.io/',
+    subspec: @nrz/spec.Spec {
+      type: 'registry',
+      spec: '@jsr/luca__cases@1',
+      name: '@jsr/luca__cases',
+      scope: '@jsr',
+      scopeRegistry: 'https://npm.jsr.io/',
+      bareSpec: '1',
+      namedJsrRegistry: 'jsr',
+      registry: 'https://npm.jsr.io/',
+      registrySpec: '1',
+      semver: '1',
+      range: Range {
+        raw: '1',
+        isAny: false,
+        isSingle: false,
+        set: [ [Comparator] ],
+        includePrerelease: false
+      }
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > npm:abbrev > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'abbrev@npm:abbrev',
+  name: 'abbrev',
+  bareSpec: 'npm:abbrev',
+  namedRegistry: 'npm',
+  registry: 'https://registry.npmjs.org/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: 'abbrev',
+    name: 'abbrev',
+    bareSpec: '',
+    namedRegistry: 'npm',
+    registry: 'https://registry.npmjs.org/',
+    registrySpec: '',
+    semver: '',
+    range: Range {
+      raw: '',
+      isAny: true,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
+  }
+}
+`
+
+exports[`test/browser.ts > TAP > parse args > npm:abbrev@1 > inspect default 1`] = `
+@nrz/spec.Spec {
+  type: 'registry',
+  spec: 'abbrev@npm:abbrev@1',
+  name: 'abbrev',
+  bareSpec: 'npm:abbrev@1',
+  namedRegistry: 'npm',
+  registry: 'https://registry.npmjs.org/',
+  subspec: @nrz/spec.Spec {
+    type: 'registry',
+    spec: 'abbrev@1',
+    name: 'abbrev',
+    bareSpec: '1',
+    namedRegistry: 'npm',
+    registry: 'https://registry.npmjs.org/',
+    registrySpec: '1',
+    semver: '1',
+    range: Range {
+      raw: '1',
+      isAny: false,
+      isSingle: false,
+      set: [ [Comparator] ],
+      includePrerelease: false
+    }
   }
 }
 `
@@ -8596,9 +10504,9 @@ exports[`test/browser.ts > TAP > parse args > x@workspace:y@1.x > inspect defaul
 
 exports[`test/browser.ts > TAP > reverse-lookup registry: specifiers if named > must match snapshot 1`] = `
 Array [
-  "x@registry:http://khulnasoft.com#x@latest",
-  "x@registry:http://khulnasoft.com#x@latest",
-  "x@registry:http://khulnasoft.com/#x@latest",
-  "x@registry:http://khulnasoft.com/#x@latest",
+  "x@registry:http://nrz.sh#x@latest",
+  "x@registry:http://nrz.sh#x@latest",
+  "x@registry:http://nrz.sh/#x@latest",
+  "x@registry:http://nrz.sh/#x@latest",
 ]
 `

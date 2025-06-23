@@ -1,9 +1,10 @@
-import { type RollbackRemove } from '@nrz/rollback-remove'
-import { type Manifest } from '@nrz/types'
-import { mkdir, symlink } from 'fs/promises'
-import { dirname, relative } from 'path'
-import { type PathScurry } from 'path-scurry'
-import { type Edge } from '../edge.ts'
+import { cmdShimIfExists } from '@nrz/cmd-shim'
+import type { RollbackRemove } from '@nrz/rollback-remove'
+import type { Manifest } from '@nrz/types'
+import { mkdir, symlink } from 'node:fs/promises'
+import { dirname, relative } from 'node:path'
+import type { PathScurry } from 'path-scurry'
+import type { Edge } from '../edge.ts'
 import { binPaths } from './bin-paths.ts'
 
 const clobberSymlink = async (
@@ -15,16 +16,29 @@ const clobberSymlink = async (
   await mkdir(dirname(link), { recursive: true })
   try {
     await symlink(target, link, type)
-  } catch (e) {
-    const er = e as NodeJS.ErrnoException
-    if (er.code === 'EEXIST') {
-      return remover.rm(link).then(() => symlink(target, link))
-      /* c8 ignore start */
-    } else {
+  } catch (er) {
+    /* c8 ignore start */
+    if ((er as NodeJS.ErrnoException).code !== 'EEXIST') {
       throw er
     }
+    /* c8 ignore stop */
+
+    // if the symlink exists, remove it
+    await remover.rm(link)
+
+    try {
+      // then try to create it again
+      await symlink(target, link, type)
+      /* c8 ignore start */
+    } catch (er) {
+      // if the symlink still exists, then multiple paths could be writing to it
+      // so now just ignore that error. See https://github.com/khulnasoft-lab/nrz/issues/797
+      if ((er as NodeJS.ErrnoException).code !== 'EEXIST') {
+        throw er
+      }
+    }
+    /* c8 ignore stop */
   }
-  /* c8 ignore stop */
 }
 
 /**
@@ -52,13 +66,24 @@ export const addEdge = async (
     dirname(path),
     edge.to.resolvedLocation(scurry),
   )
-  promises.push(clobberSymlink(target, path, remover, 'dir'))
+
+  // can only parallelize this on posix, because the win32 shims
+  // need to know that they will exist before being created.
+  const p = clobberSymlink(target, path, remover, 'dir')
+  if (process.platform === 'win32') await p
+  else promises.push(p)
+
   const bp = binPaths(manifest)
   for (const [key, val] of Object.entries(bp)) {
     const link = scurry.resolve(binRoot, key)
-    const target = relative(binRoot, scurry.resolve(path, val))
-    // TODO: bash/cmd/pwsh shims on Windows
-    promises.push(clobberSymlink(target, link, remover))
+    const absTarget = scurry.resolve(path, val)
+    const target = relative(binRoot, absTarget)
+    // TODO: bash/cmd/ps1 shims on Windows
+    promises.push(
+      process.platform === 'win32' ?
+        cmdShimIfExists(absTarget, link, remover)
+      : clobberSymlink(target, link, remover),
+    )
   }
-  await Promise.all(promises)
+  if (promises.length) await Promise.all(promises)
 }

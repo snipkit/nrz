@@ -1,11 +1,11 @@
-import { type DepID } from '@nrz/dep-id'
-import { type Spec, type SpecOptions } from '@nrz/spec'
-import {
-  type Integrity,
-  type Manifest,
-  type DependencyTypeShort,
+import type { DepID } from '@nrz/dep-id'
+import type { Spec, SpecOptions } from '@nrz/spec'
+import type {
+  Integrity,
+  Manifest,
+  DependencyTypeShort,
 } from '@nrz/types'
-import { type Graph } from '../graph.ts'
+import type { Graph } from '../graph.ts'
 
 /**
  * This is the main type definition for the contents of the
@@ -54,6 +54,7 @@ export type LockfileNode = [
   resolved?: string | null,
   location?: string | null,
   manifest?: Manifest | null,
+  rawManifest?: Manifest | null,
 ]
 
 /**

@@ -1,22 +1,23 @@
+import { useNavigate } from 'react-router'
 import { useEffect, useState } from 'react'
-import { Checkbox } from '@/components/ui/checkbox.jsx'
-import { Button } from '@/components/ui/button.jsx'
-import { LabelBadge } from '@/components/labels/label-badge.jsx'
+import { Checkbox } from '@/components/ui/checkbox.tsx'
+import { Button } from '@/components/ui/button.tsx'
+import { LabelBadge } from '@/components/labels/label-badge.tsx'
 import { ArrowUpRight, Palette } from 'lucide-react'
-import { Label as FormLabel } from '@/components/ui/label.jsx'
-import { Input } from '@/components/ui/input.jsx'
+import { Label as FormLabel } from '@/components/ui/label.tsx'
+import { Input } from '@/components/ui/input.tsx'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover.jsx'
+} from '@/components/ui/popover.tsx'
 import {
   ColorPicker,
   DEFAULT_COLOR,
-} from '@/components/ui/color-picker.jsx'
-import { type Color, type QueryLabel } from '@/state/types.js'
-import { useGraphStore } from '@/state/index.js'
-import { useToast } from '@/components/hooks/use-toast.js'
+} from '@/components/ui/color-picker.tsx'
+import type { Color, QueryLabel } from '@/state/types.ts'
+import { useGraphStore } from '@/state/index.ts'
+import { useToast } from '@/components/hooks/use-toast.ts'
 
 interface LabelProps {
   queryLabel: QueryLabel
@@ -25,6 +26,7 @@ interface LabelProps {
 }
 
 const Label = ({ queryLabel, checked, handleSelect }: LabelProps) => {
+  const navigate = useNavigate()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const [editDescription, setEditDescription] = useState<string>('')
   const [editName, setEditName] = useState<string>('')
@@ -36,7 +38,6 @@ const Label = ({ queryLabel, checked, handleSelect }: LabelProps) => {
   const [queriesReferenced, setQueriesReferenced] =
     useState<number>(0)
   const savedQueries = useGraphStore(state => state.savedQueries)
-  const updateRoute = useGraphStore(state => state.updateActiveRoute)
 
   const handleEdit = () => {
     setIsExpanded(!isExpanded)
@@ -57,12 +58,7 @@ const Label = ({ queryLabel, checked, handleSelect }: LabelProps) => {
   }
 
   const navigateToRef = () => {
-    updateRoute('/queries')
-    history.pushState(
-      { route: '/queries' },
-      '',
-      `/queries?label=${encodeURIComponent(editName)}`,
-    )
+    void navigate(`/queries?label=${encodeURIComponent(editName)}`)
   }
 
   useEffect(() => {
@@ -86,13 +82,14 @@ const Label = ({ queryLabel, checked, handleSelect }: LabelProps) => {
   }, [queryLabel])
 
   return (
-    <div className="group rounded-sm border border-[1px] border-muted-foreground/25 bg-neutral-50/50 transition-all hover:border-foreground/50 dark:bg-neutral-950">
+    <div
+      className={`group rounded-sm border border-[1px] bg-card transition-all hover:bg-card-accent ${isExpanded ? 'border-muted-foreground' : 'border-muted'}`}>
       <div className="flex grid grid-cols-8 items-center px-3 py-2">
         <div className="col-span-2 flex items-center gap-3">
           <Checkbox
             onCheckedChange={() => handleSelect(queryLabel)}
             checked={checked}
-            className="border-muted-foreground/25 group-hover:border-muted-foreground/50"
+            className={`border-muted-foreground/25 opacity-0 group-hover:border-muted-foreground/50 group-hover:opacity-100 ${checked ? 'opacity-100' : 'opacity-0'}`}
           />
           <LabelBadge
             name={editName.trim() !== '' ? editName : 'Label preview'}

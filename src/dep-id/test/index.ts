@@ -1,18 +1,19 @@
 import { Spec } from '@nrz/spec'
-import { type Manifest } from '@nrz/types'
+import type { Manifest } from '@nrz/types'
 import t from 'tap'
 import {
   asDepID,
   delimiter,
-  type DepID,
   getId,
   getTuple,
   hydrate,
   hydrateTuple,
   isDepID,
+  isPackageNameConfused,
   joinDepIDTuple,
   splitDepID,
 } from '../src/index.ts'
+import type { DepID } from '../src/index.ts'
 
 const mani: Manifest = { name: 'manifest-name', version: '1.2.3' }
 t.test('valid specs', t => {
@@ -49,7 +50,8 @@ t.test('valid specs', t => {
       const spec = Spec.parse(s, { registries })
       const tuple = getTuple(spec, mani)
       const id = getId(spec, mani)
-      t.matchSnapshot([id, tuple])
+      const idWithExtra = getId(spec, mani, ':root > #extra')
+      t.matchSnapshot([id, tuple, idWithExtra])
       t.equal(joinDepIDTuple(tuple), id)
       t.strictSame(splitDepID(id), tuple)
       const h = hydrate(id, 'x', { registries })
@@ -97,6 +99,15 @@ t.test('valid specs', t => {
     })
   }
 
+  const prefixedVersionManifest = {
+    name: 'manifest-name',
+    version: 'v1.2.3',
+  }
+  const pSpec = Spec.parse('manifest-name@^1.0.0')
+  const pTuple = getTuple(pSpec, prefixedVersionManifest)
+  const pId = getId(pSpec, prefixedVersionManifest)
+  t.matchSnapshot([pId, pTuple])
+
   t.end()
 })
 
@@ -127,7 +138,7 @@ t.test('hydrate only', t => {
 })
 
 t.test('named registry', t => {
-  const options = { registries: { nrz: 'http://khulnasoft.com' } }
+  const options = { registries: { nrz: 'http://nrz.sh' } }
   t.equal(
     String(
       hydrate(`${delimiter}nrz${delimiter}x@1.2.3`, 'x', options),
@@ -142,6 +153,7 @@ t.test('getId when manifest empty, fields just blank', t => {
     'registry',
     '',
     'x@1.2.3',
+    undefined,
   ])
   t.end()
 })
@@ -238,5 +250,73 @@ t.test('isDepID', t => {
   for (const id of invalidDepIDs) {
     t.notOk(isDepID(id), id)
   }
+  t.end()
+})
+
+t.test('isPackageNameConfused', t => {
+  t.equal(
+    isPackageNameConfused(),
+    false,
+    'should return false when missing args',
+  )
+
+  // Test registry type with matching names
+  const matchingSpec = Spec.parse('foo', '^1.0.0')
+  t.equal(
+    isPackageNameConfused(matchingSpec, 'foo'),
+    false,
+    'should return false when names match',
+  )
+
+  // Test registry type with different names
+  const differentSpec = Spec.parse('foo', '^1.0.0')
+  t.equal(
+    isPackageNameConfused(differentSpec, 'bar'),
+    true,
+    'should return true when names differ',
+  )
+
+  // Test with undefined name
+  t.equal(
+    isPackageNameConfused(differentSpec),
+    true,
+    'should return true when name is undefined',
+  )
+
+  // Test with nameless spec
+  const namelessSpec = Spec.parse('', 'file:./local-package')
+  t.equal(
+    isPackageNameConfused(namelessSpec, 'local-package'),
+    false,
+    'should return false for non-registry types',
+  )
+
+  // Test with non-registry type
+  const fileSpec = Spec.parse('local-package', 'file:./local-package')
+  t.equal(
+    isPackageNameConfused(fileSpec, 'confused-package'),
+    false,
+    'should return false for non-registry types',
+  )
+
+  // Test with subspec (aliased package)
+  const aliasedSpec = Spec.parse('bar', 'npm:foo@1.0.0')
+  t.equal(
+    isPackageNameConfused(aliasedSpec, 'bar'),
+    false,
+    'should return false for aliased packages',
+  )
+
+  t.test('getTuple', t => {
+    t.strictSame(
+      getTuple(Spec.parse('bar', 'npm:foo@^1.0.0'), {
+        version: '1.0.0',
+      }),
+      ['registry', 'npm', 'foo@1.0.0', undefined],
+      'should default to final spec name if mani name is missing',
+    )
+    t.end()
+  })
+
   t.end()
 })

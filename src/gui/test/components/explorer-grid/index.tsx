@@ -1,17 +1,51 @@
 import { vi, test, expect, afterEach } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import html from 'diffable-html'
-import { useGraphStore as useStore } from '@/state/index.js'
+import { useGraphStore as useStore } from '@/state/index.ts'
 import { joinDepIDTuple } from '@nrz/dep-id'
 import { Spec } from '@nrz/spec/browser'
-import { type EdgeLike, type NodeLike } from '@nrz/graph'
-import { ExplorerGrid } from '@/components/explorer-grid/index.jsx'
-import { load } from '@/state/load-graph.js'
-import { type RawNode } from '@/state/types.js'
+import type { QueryResponseEdge, QueryResponseNode } from '@nrz/query'
+import { ExplorerGrid } from '@/components/explorer-grid/index.tsx'
+import { load } from '@/state/load-graph.ts'
+import type { RawNode } from '@/state/types.ts'
 import { Query } from '@nrz/query'
 
-vi.mock('@/components/explorer-grid/empty-results-state.jsx', () => ({
-  EmptyResultsState: 'gui-empty-results-state',
+vi.mock('lucide-react', () => ({
+  Package: 'gui-package-icon',
+}))
+
+vi.mock('@/components/explorer-grid/results/result-item.tsx', () => ({
+  ResultItem: 'gui-result-item',
+}))
+
+vi.mock('@/components/explorer-grid/side-item.tsx', () => ({
+  SideItem: 'gui-side-item',
+}))
+
+vi.mock('@/components/explorer-grid/selected-item/index.tsx', () => ({
+  SelectedItem: 'gui-selected-item',
+}))
+
+vi.mock('@/components/explorer-grid/header.tsx', () => ({
+  GridHeader: 'gui-grid-header',
+}))
+
+vi.mock(
+  '@/components/explorer-grid/dependency-sidebar/index.tsx',
+  () => ({
+    DependencySideBar: 'gui-dependency-side-bar',
+  }),
+)
+
+vi.mock(
+  '@/components/explorer-grid/results/empty-results-state.tsx',
+  () => ({
+    EmptyResultsState: 'gui-empty-results-state',
+  }),
+)
+
+vi.mock('@/components/ui/badge.tsx', () => ({
+  Badge: 'gui-badge',
 }))
 
 expect.addSnapshotSerializer({
@@ -25,12 +59,12 @@ afterEach(() => {
   cleanup()
 })
 
-test('explorer-grid render default', async () => {
+test('ExplorerGrid render default', async () => {
   render(<ExplorerGrid />)
   expect(window.document.body.innerHTML).toMatchSnapshot()
 })
 
-test('explorer-grid with results', async () => {
+test('ExplorerGrid with results', async () => {
   const Container = () => {
     const updateEdges = useStore(state => state.updateEdges)
     const updateNodes = useStore(state => state.updateNodes)
@@ -38,33 +72,39 @@ test('explorer-grid with results', async () => {
       id: joinDepIDTuple(['file', '.']),
       name: 'root',
       version: '1.0.0',
-    } as NodeLike
+      insights: {},
+      toJSON() {},
+    } as QueryResponseNode
     const aNode = {
       id: joinDepIDTuple(['registry', '', 'a@1.0.0']),
       name: 'a',
       version: '1.0.0',
-    } as NodeLike
+      insights: {},
+      toJSON() {},
+    } as QueryResponseNode
     const bNode = {
       id: joinDepIDTuple(['registry', '', 'b@1.0.0']),
       name: 'b',
       version: '1.0.0',
-    } as NodeLike
+      insights: {},
+      toJSON() {},
+    } as QueryResponseNode
     const nodes = [rootNode, aNode, bNode]
-    const edges = [
+    const edges: QueryResponseEdge[] = [
       {
         from: rootNode,
         to: aNode,
         type: 'prod',
         spec: Spec.parse('a', '^1.0.0'),
         name: 'a',
-      } as EdgeLike,
+      },
       {
         from: rootNode,
         to: bNode,
         type: 'dev',
         spec: Spec.parse('b', '^1.0.0'),
         name: 'b',
-      } as EdgeLike,
+      },
     ]
     updateEdges(edges)
     updateNodes(nodes)
@@ -74,7 +114,7 @@ test('explorer-grid with results', async () => {
   expect(window.document.body.innerHTML).toMatchSnapshot()
 })
 
-test('explorer-grid with stack', async () => {
+test('ExplorerGrid with stack', async () => {
   const Container = () => {
     const updateEdges = useStore(state => state.updateEdges)
     const updateNodes = useStore(state => state.updateNodes)
@@ -82,40 +122,46 @@ test('explorer-grid with stack', async () => {
       id: joinDepIDTuple(['file', '.']),
       name: 'root',
       version: '1.0.0',
-    } as NodeLike
+      insights: {},
+      toJSON() {},
+    } as QueryResponseNode
     const aNode = {
       id: joinDepIDTuple(['registry', '', 'a@1.0.0']),
       name: 'a',
       version: '1.0.0',
-    } as NodeLike
+      insights: {},
+      toJSON() {},
+    } as QueryResponseNode
     const bNode = {
       id: joinDepIDTuple(['registry', '', 'b@1.0.0']),
       name: 'b',
       version: '1.0.0',
-    } as NodeLike
+      insights: {},
+      toJSON() {},
+    } as QueryResponseNode
     const nodes = [rootNode, aNode, bNode]
-    const edges = [
+    const edges: QueryResponseEdge[] = [
       {
         from: rootNode,
         to: aNode,
         type: 'prod',
         spec: Spec.parse('a', '^1.0.0'),
         name: 'a',
-      } as EdgeLike,
+      },
       {
         from: rootNode,
         to: bNode,
         type: 'dev',
         spec: Spec.parse('b', '^1.0.0'),
         name: 'b',
-      } as EdgeLike,
+      },
       {
         from: aNode,
         to: bNode,
         type: 'prod',
         spec: Spec.parse('b', '^1.0.0'),
         name: 'b',
-      } as EdgeLike,
+      },
     ]
     updateEdges(edges)
     updateNodes(nodes)
@@ -125,7 +171,7 @@ test('explorer-grid with stack', async () => {
   expect(window.document.body.innerHTML).toMatchSnapshot()
 })
 
-test('explorer-grid renders workspace with edges in', async () => {
+test('ExplorerGrid renders workspace with edges in', async () => {
   const { graph } = load({
     lockfile: {
       options: {},
@@ -173,9 +219,16 @@ test('explorer-grid renders workspace with edges in', async () => {
       tools: ['nrz'],
       nrzInstalled: true,
     },
+    securityArchive: undefined,
   })
-  const q = new Query({ graph })
-  const result = await q.search(':project[name=b]')
+  const q = new Query({
+    graph,
+    specOptions: {},
+    securityArchive: undefined,
+  })
+  const result = await q.search(':project[name=b]', {
+    signal: new AbortController().signal,
+  })
 
   const Container = () => {
     const updateEdges = useStore(state => state.updateEdges)

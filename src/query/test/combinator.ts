@@ -7,9 +7,9 @@ import {
   getGraphSelectionState,
   selectorFixture,
 } from './fixtures/selector.ts'
-import { type TestCase } from './fixtures/types.ts'
-import { type EdgeLike, type NodeLike } from '@nrz/graph'
-import { type GraphSelectionState } from '../src/types.ts'
+import type { TestCase } from './fixtures/types.ts'
+import type { EdgeLike, NodeLike } from '@nrz/graph'
+import type { GraphSelectionState } from '../src/types.ts'
 
 const testCombinator = selectorFixture(combinator)
 
@@ -141,7 +141,7 @@ t.test('combinator', async t => {
 
 t.test('bad selector type', async t => {
   await t.rejects(
-    testCombinator('.dev'),
+    testCombinator(':dev'),
     /Mismatching query node/,
     'should throw an error',
   )

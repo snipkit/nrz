@@ -1,7 +1,7 @@
-import { type PickManifestOptions } from '@nrz/pick-manifest'
-import { type Spec } from '@nrz/spec'
-import { type SpawnOptions } from 'child_process'
-import { type WrapOptions } from 'retry'
+import type { PickManifestOptions } from '@nrz/pick-manifest'
+import type { Spec } from '@nrz/spec'
+import type { SpawnOptions } from 'node:child_process'
+import type { WrapOptions } from 'retry'
 
 export * from './clone.ts'
 export * from './find.ts'

@@ -8,13 +8,12 @@
 
 import { Spec } from '@nrz/spec'
 import t from 'tap'
-
-import {
-  PackageInfoClient,
+import { PackageInfoClient } from '@nrz/package-info'
+import type {
   PackageInfoClientRequestOptions,
   Resolution,
 } from '@nrz/package-info'
-import { Manifest } from '@nrz/types'
+import type { Manifest } from '@nrz/types'
 import {
   existsSync,
   lstatSync,
@@ -22,9 +21,9 @@ import {
   readFileSync,
   symlinkSync,
   writeFileSync,
-} from 'fs'
-import { statSync } from 'node:fs'
-import { basename, resolve } from 'path'
+  statSync,
+} from 'node:fs'
+import { basename, resolve } from 'node:path'
 import { extract } from 'tar'
 
 const realPackageInfo = new PackageInfoClient({})
@@ -117,7 +116,7 @@ export const mockPackageInfo = {
       extract({ sync: true, file: artifact, strip: 1, cwd: target })
     }
   },
-} as unknown as PackageInfoClient
+}
 
 const addFixture = async (spec: Spec) => {
   const fixture = await fixtureName(spec)

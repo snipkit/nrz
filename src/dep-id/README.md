@@ -2,11 +2,10 @@
 
 # @nrz/dep-id
 
-A library for serializing dependencies into terse string identifiers, and turning those serialized identifiers back into `Spec` objects.
+A library for serializing dependencies into terse string identifiers,
+and turning those serialized identifiers back into `Spec` objects.
 
-**[Usage](#usage)**
-·
-**[Note](#note)**
+**[Usage](#usage)** · **[Note](#note)**
 
 ## Usage
 
@@ -31,7 +30,7 @@ import { manifest } from '@nrz/package-info'
 {
   // not default registry
   const spec = Spec.parse('x@nrz:y@latest', {
-    registries: { nrz: 'http://khulnasoft.com' },
+    registries: { nrz: 'http://nrz.sh' },
   })
   const mani = await manifest(spec)
   const id = getId(spec, mani) // registry;nrz;y@latest
@@ -50,12 +49,12 @@ const spec = hydrate('git;github:a/b;branch', 'x') // x@github:a/b#branch
 
 ### Note
 
-multiple different spec/manifest combinations _can_ result
-in the same identifier. For example, the specifiers
-`x@npm:y@latest` and `asdf@npm:y@1.x` might both ultimately
-resolve to the same package, so they only need to appear in the
-store once.
+multiple different spec/manifest combinations _can_ result in the same
+identifier. For example, the specifiers `x@npm:y@latest` and
+`asdf@npm:y@1.x` might both ultimately resolve to the same package, so
+they only need to appear in the store once.
 
 ## BROWSER API
 
-An isomorphic API `@nrz/dep-id/browser` is provided for use in the browser.
+An isomorphic API `@nrz/dep-id/browser` is provided for use in the
+browser.

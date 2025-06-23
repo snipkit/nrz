@@ -1,19 +1,28 @@
-import { type DepID } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
-import { type Spec } from '@nrz/spec'
+import type { Spec } from '@nrz/spec'
+import type {
+  DependencySaveType,
+  DependencyTypeLong,
+  DependencyTypeShort,
+  Manifest,
+} from '@nrz/types'
 import {
-  type Manifest,
-  type DependencyTypeLong,
-  type DependencyTypeShort,
+  dependencyTypes,
   longDependencyTypes,
   shortDependencyTypes,
-  dependencyTypes,
 } from '@nrz/types'
 
 export const isDependencyTypeShort = (
   obj: unknown,
 ): obj is DependencyTypeShort =>
   shortDependencyTypes.has(obj as DependencyTypeShort)
+
+export const isDependencySaveType = (
+  obj: unknown,
+): obj is DependencyTypeShort =>
+  shortDependencyTypes.has(obj as DependencyTypeShort) ||
+  obj === 'implicit'
 
 export const asDependencyTypeShort = (
   obj: unknown,
@@ -46,9 +55,10 @@ export type Dependency = {
    */
   spec: Spec
   /**
-   * The {@link DependencyTypeShort}, describing the type of dependency.
+   * The {@link DependencySaveType}, describing the way this dependency should
+   * be saved back to the manifest.
    */
-  type: DependencyTypeShort
+  type: DependencySaveType
 }
 
 /**
@@ -87,7 +97,7 @@ export const isDependency = (o: unknown): o is Dependency =>
   isObj(o) &&
   isObj(o.spec) &&
   !!o.spec.type &&
-  isDependencyTypeShort(o.type)
+  isDependencySaveType(o.type)
 
 export const asDependency = (obj: unknown): Dependency => {
   if (!isDependency(obj)) {

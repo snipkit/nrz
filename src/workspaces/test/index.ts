@@ -1,18 +1,14 @@
-import { mkdirSync, rmdirSync, writeFileSync } from 'fs'
-import { type DepResults } from 'graph-run'
-import t from 'tap'
-import {
-  assertWSConfig,
-  asWSConfig,
-  Monorepo,
-  type Workspace,
-} from '../src/index.ts'
+import { unload } from '@nrz/nrz-json'
+import type { DepResults } from 'graph-run'
 import { resolve } from 'node:path'
+import t from 'tap'
+import type { Workspace } from '../src/index.ts'
+import { asWSConfig, Monorepo } from '../src/index.ts'
 
 t.test('load some workspaces', async t => {
   const dir = t.testdir({
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./src/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: { packages: ['./src/*'] },
     }),
     src: {
       foo: {
@@ -44,11 +40,12 @@ t.test('load some workspaces', async t => {
       },
     },
   })
+  t.chdir(dir)
+  unload()
   const m = Monorepo.load(dir)
   t.equal(m.size, 3)
   t.equal(m.get('foo'), m.get('src/foo'))
   t.equal(m.get('@company/bar'), m.get('src/bar'))
-  //console.error([...m.keys()])
   t.strictSame(
     new Set([...m.keys()]),
     new Set([
@@ -193,10 +190,12 @@ t.test('cyclic intra-project ws deps are handled', async t => {
   // goes into Monorepo.onCycle, but for now just load a cyclic
   // monorepo and verify with coverage.
   const dir = t.testdir({
-    'nrz-workspaces.json': JSON.stringify({
-      utils: 'utils/*',
-      // use ** so that we exercise the 'remove child ws' path
-      apps: ['app/bar/*', 'app/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        utils: 'utils/*',
+        // use ** so that we exercise the 'remove child ws' path
+        apps: ['app/bar/*', 'app/*'],
+      },
     }),
     utils: {
       // this if course still an actual problem for the app 😅
@@ -260,6 +259,8 @@ export const isOdd = (n) => !isEven(n)
       },
     },
   })
+  t.chdir(dir)
+  unload()
 
   const m = new Monorepo(dir, {
     load: { groups: 'utils', paths: './{utils,app}/**' },
@@ -360,78 +361,12 @@ export const isOdd = (n) => !isEven(n)
   t.end()
 })
 
-t.test('missing/invalid nrz-workspaces.json file', t => {
-  const dir = t.testdir({
-    'package.json': JSON.stringify({
-      name: 'just a package',
-      version: 'nomono',
-    }),
-  })
-  const m = new Monorepo(dir)
-  t.equal(Monorepo.maybeLoad(m.projectRoot), undefined)
-  t.throws(() => m.load(), {
-    message: 'Not in a monorepo, no nrz-workspaces.json found',
-  })
-
-  mkdirSync(dir + '/nrz-workspaces.json')
-  t.equal(Monorepo.maybeLoad(m.projectRoot), undefined)
-  t.throws(() => m.load(), {
-    message: 'Not in a monorepo, no nrz-workspaces.json found',
-  })
-
-  rmdirSync(dir + '/nrz-workspaces.json')
-
-  writeFileSync(dir + '/nrz-workspaces.json', 'hello, world')
-  t.throws(() => Monorepo.maybeLoad(m.projectRoot), {
-    message: 'Invalid nrz-workspaces.json file',
-  })
-  t.throws(() => m.load(), {
-    message: 'Invalid nrz-workspaces.json file',
-  })
-  writeFileSync(
-    dir + '/nrz-workspaces.json',
-    JSON.stringify({
-      hello: { world: true },
-    }),
-  )
-  t.throws(() => Monorepo.maybeLoad(m.projectRoot), {
-    message: 'Invalid workspace definition',
-    cause: {
-      path: dir,
-      found: { world: true },
-      wanted: 'string',
-    },
-  })
-  t.throws(() => m.load(), {
-    message: 'Invalid workspace definition',
-    cause: {
-      path: dir,
-      found: { world: true },
-      wanted: 'string',
-    },
-  })
-  // other type assertions
-  t.throws(() => assertWSConfig(123))
-  t.throws(() => assertWSConfig([1, 2, 3]))
-  t.throws(() => assertWSConfig(true))
-  t.throws(() => assertWSConfig(undefined))
-  t.throws(() => assertWSConfig({ hello: ['world', true] }), {
-    cause: {
-      name: 'hello',
-      found: true,
-      wanted: 'string',
-    },
-  })
-  assertWSConfig(['src/x', 'src/y'])
-  t.strictSame(asWSConfig('hello'), { packages: ['hello'] })
-  t.strictSame(asWSConfig(['hello']), { packages: ['hello'] })
-  t.end()
-})
-
 t.test('iterating empty monorepo is no-op', async t => {
   const dir = t.testdir({
-    'nrz-workspaces.json': JSON.stringify('utils'),
+    'nrz.json': JSON.stringify({ workspaces: 'utils' }),
   })
+  t.chdir(dir)
+  unload()
 
   const m = new Monorepo(dir)
   for (const _ of m) {
@@ -449,7 +384,7 @@ t.test('iterating empty monorepo is no-op', async t => {
 
 t.test('force a full load, but still not found', t => {
   const dir = t.testdir({
-    'nrz-workspaces.json': JSON.stringify('src/*'),
+    'nrz.json': JSON.stringify({ workspaces: 'src/*' }),
     src: {
       ws: {
         'package.json': JSON.stringify({
@@ -462,8 +397,77 @@ t.test('force a full load, but still not found', t => {
       },
     },
   })
-  const m = new Monorepo(dir).load()
+  t.chdir(dir)
+  unload()
+  const m = Monorepo.maybeLoad(dir)
+  if (!m) throw new Error('failed to maybeLoad')
   t.strictSame(m.getDeps(m.get('src/ws')!), [])
   t.strictSame(m.getDeps(m.get('src/ws')!, true), [])
+  t.end()
+})
+
+t.test('various asWSConfig failures', async t => {
+  t.throws(() => asWSConfig(null), {
+    message: 'Invalid workspace definition',
+  })
+  t.throws(() => asWSConfig({ a: 1 }), {
+    message: 'Invalid workspace definition',
+  })
+  t.throws(() => asWSConfig({ a: [1] }), {
+    message: 'Invalid workspace definition',
+  })
+  t.throws(() => asWSConfig([1]), {
+    message: 'Invalid workspace definition',
+  })
+  t.strictSame(asWSConfig(['a']), {
+    packages: ['a'],
+  })
+})
+
+t.test(
+  'maybeLoad in a folder with no workspaces, no load',
+  async t => {
+    const dir = t.testdir({ 'nrz.json': JSON.stringify({}) })
+    t.chdir(dir)
+    unload()
+    const m = Monorepo.maybeLoad(dir)
+    t.equal(m, undefined)
+    const mm = new Monorepo(dir)
+    t.strictSame(mm.load().config, {})
+  },
+)
+
+t.test('duplicate workspace names are not allowed', t => {
+  const dir = t.testdir({
+    'nrz.json': JSON.stringify({
+      workspaces: { packages: ['./src/*'] },
+    }),
+    src: {
+      foo: {
+        'package.json': JSON.stringify({
+          name: 'foo',
+          version: '1.2.3',
+        }),
+      },
+      foo1: {
+        'package.json': JSON.stringify({
+          name: 'foo', // Same name as foo
+          version: '1.2.3',
+        }),
+      },
+    },
+  })
+  t.chdir(dir)
+  unload()
+
+  t.throws(() => Monorepo.load(dir), {
+    message: 'Duplicate workspace name found',
+    cause: {
+      name: 'foo',
+      wanted: resolve(dir, 'src/foo'),
+      found: resolve(dir, 'src/foo1'),
+    },
+  })
+
   t.end()
 })

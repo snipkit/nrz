@@ -1,14 +1,15 @@
 import { asDepID } from '@nrz/dep-id/browser'
 import { error } from '@nrz/error-cause'
 import { fastSplit } from '@nrz/fast-split'
-import { Spec, type SpecOptions } from '@nrz/spec/browser'
+import { Spec } from '@nrz/spec/browser'
+import type { SpecOptions } from '@nrz/spec/browser'
 import { longDependencyTypes } from '@nrz/types'
 import { isDependencyTypeShort } from '../dependencies.ts'
-import { type GraphLike } from '../types.ts'
-import {
-  type LockfileData,
-  type LockfileEdgeKey,
-  type LockfileEdgeValue,
+import type { GraphLike } from '../types.ts'
+import type {
+  LockfileData,
+  LockfileEdgeKey,
+  LockfileEdgeValue,
 } from './types.ts'
 
 export const loadEdges = (

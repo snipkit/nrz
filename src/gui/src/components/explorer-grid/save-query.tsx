@@ -1,32 +1,29 @@
-import { type ChangeEvent, useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
+import type { ChangeEvent } from 'react'
 import { Star, ChevronsUpDown } from 'lucide-react'
-import { CardHeader, CardTitle } from '@/components/ui/card.jsx'
-import { useTheme } from '@/components/ui/theme-provider.jsx'
+import { CardHeader, CardTitle } from '@/components/ui/card.tsx'
+import { useTheme } from '@/components/ui/theme-provider.tsx'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover.jsx'
+} from '@/components/ui/popover.tsx'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip.jsx'
-import { Button } from '@/components/ui/button.jsx'
-import { Label } from '@/components/ui/label.jsx'
-import { Input } from '@/components/ui/input.jsx'
+} from '@/components/ui/tooltip.tsx'
+import { Button } from '@/components/ui/button.tsx'
+import { Label } from '@/components/ui/label.tsx'
+import { Input } from '@/components/ui/input.tsx'
 import { useAnimate } from 'framer-motion'
-import { useGraphStore } from '@/state/index.js'
-import {
-  type Color,
-  type QueryLabel,
-  type SavedQuery,
-} from '@/state/types.js'
-import { LabelSelect } from '@/components/labels/label-select.jsx'
-import { LabelBadge } from '@/components/labels/label-badge.jsx'
+import { useGraphStore } from '@/state/index.ts'
+import type { QueryLabel, SavedQuery } from '@/state/types.ts'
+import { LabelSelect } from '@/components/labels/label-select.tsx'
+import { LabelBadge } from '@/components/labels/label-badge.tsx'
 import { v4 as uuidv4 } from 'uuid'
-import { DeleteQuery } from '@/components/queries/delete-query.jsx'
+import { DeleteQuery } from '@/components/queries/delete-query.tsx'
 
 interface SaveQueryPopoverProps {
   isOpen: boolean
@@ -39,27 +36,23 @@ const SaveQueryButton = () => {
   const [scope, animate] = useAnimate()
   const savedQueries = useGraphStore(state => state.savedQueries)
   const activeQuery = useGraphStore(state => state.query)
-  const [starColor, setStarColor] = useState<Color>()
   const { resolvedTheme } = useTheme()
 
   /** Once the save button is clicked, the query is saved. */
   useEffect(() => {
+    animate(scope.current, {
+      rotate: showSaveQueryPopover ? -71.5 : 0,
+    })
+  }, [showSaveQueryPopover, animate, scope])
+
+  const starColor = useMemo(() => {
     const foundQuery = savedQueries?.find(
       query => query.query === activeQuery,
     )
-    setStarColor(
-      foundQuery && resolvedTheme === 'dark' ? '#fafafa' : '#212121',
-    )
-    if (showSaveQueryPopover) {
-      animate(scope.current, {
-        rotate: -71.5,
-      })
-    } else {
-      animate(scope.current, {
-        rotate: 0,
-      })
-    }
-  }, [showSaveQueryPopover, savedQueries, activeQuery, resolvedTheme])
+    return foundQuery && resolvedTheme === 'dark' ?
+        '#fafafa'
+      : '#212121'
+  }, [savedQueries, activeQuery, resolvedTheme])
 
   return (
     <Popover
@@ -70,7 +63,7 @@ const SaveQueryButton = () => {
           <Tooltip>
             <TooltipTrigger
               asChild
-              className="flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-sm border border-muted-foreground/20 bg-muted">
+              className="flex h-[1.5rem] w-[1.5rem] cursor-default items-center justify-center rounded-sm bg-input transition-colors hover:bg-neutral-300 dark:hover:bg-neutral-700">
               <div
                 onClick={() =>
                   setShowSaveQueryPopover(!showSaveQueryPopover)
@@ -164,7 +157,16 @@ const SaveQueryPopover = ({
         })
       }
     }
-  }, [])
+  }, [
+    activeQuery,
+    nodes,
+    saveQuery,
+    savedQueries,
+    updateQuery,
+    editContext,
+    queryName,
+    selectedLabels,
+  ])
 
   /**
    * Set the default state of the text inputs
@@ -195,7 +197,16 @@ const SaveQueryPopover = ({
         updateQuery(item)
       }
     }
-  }, [isOpen])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- causes infinite loop
+  }, [
+    isOpen,
+    activeQuery,
+    nodes,
+    updateQuery,
+    editContext,
+    queryName,
+    selectedLabels,
+  ])
 
   /**
    * Update the UI inputs
@@ -204,7 +215,7 @@ const SaveQueryPopover = ({
     setSelectedLabels(savedQuery?.labels ?? [])
     setQueryName(savedQuery?.name ?? nodes[0]?.manifest?.name ?? '')
     setEditContext(savedQuery?.context ?? nodes[0]?.projectRoot ?? '')
-  }, [savedQuery])
+  }, [savedQuery, nodes])
 
   // exit early to avoid UI flash
   if (!isOpen) return null

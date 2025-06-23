@@ -1,0 +1,121 @@
+{
+  "name": "@nrz/cli-sdk",
+  "description": "The source for the nrz CLI",
+  "version": "0.0.0-15",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
+    "directory": "src/cli-sdk"
+  },
+  "tshy": {
+    "selfLink": false,
+    "liveDev": true,
+    "dialects": [
+      "esm"
+    ],
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts",
+      "./config": "./src/config/index.ts",
+      "./definition": "./src/config/definition.ts",
+      "./view": "./src/view.ts"
+    }
+  },
+  "dependencies": {
+    "@nrz/dep-id": "workspace:*",
+    "@nrz/dot-prop": "workspace:*",
+    "@nrz/error-cause": "workspace:*",
+    "@nrz/graph": "workspace:*",
+    "@nrz/init": "workspace:*",
+    "@nrz/output": "workspace:*",
+    "@nrz/package-info": "workspace:*",
+    "@nrz/package-json": "workspace:*",
+    "@nrz/query": "workspace:*",
+    "@nrz/registry-client": "workspace:*",
+    "@nrz/rollback-remove": "workspace:*",
+    "@nrz/run": "workspace:*",
+    "@nrz/security-archive": "workspace:*",
+    "@nrz/server": "workspace:*",
+    "@nrz/spec": "workspace:*",
+    "@nrz/types": "workspace:*",
+    "@nrz/url-open": "workspace:*",
+    "@nrz/nrz-json": "workspace:*",
+    "@nrz/nrx": "workspace:*",
+    "@nrz/workspaces": "workspace:*",
+    "@nrz/xdg": "workspace:*",
+    "ansi-to-pre": "^1.0.6",
+    "graph-run": "catalog:",
+    "ink": "^5.2.1",
+    "ink-spinner": "^5.0.0",
+    "jackspeak": "^4.1.1",
+    "package-json-from-dist": "catalog:",
+    "path-scurry": "catalog:",
+    "pretty-bytes": "^6.1.1",
+    "react": "^18.3.1",
+    "react-devtools-core": "^4.28.5",
+    "supports-color": "^10.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "^18.3.23",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tshy": "catalog:",
+    "typedoc": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "license": "BSD-2-Clause-Patent",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "prepack": "tshy",
+    "snap": "tap",
+    "test": "tap",
+    "posttest": "tsc --noEmit",
+    "tshy": "tshy",
+    "typecheck": "tsc --noEmit"
+  },
+  "tap": {
+    "extends": "../../tap-config.yaml"
+  },
+  "prettier": "../../.prettierrc.js",
+  "module": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "default": "./src/index.ts"
+      }
+    },
+    "./config": {
+      "import": {
+        "default": "./src/config/index.ts"
+      }
+    },
+    "./definition": {
+      "import": {
+        "default": "./src/config/definition.ts"
+      }
+    },
+    "./view": {
+      "import": {
+        "default": "./src/view.ts"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "nrz"
+  ]
+}

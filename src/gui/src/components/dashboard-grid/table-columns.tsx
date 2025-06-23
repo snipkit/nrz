@@ -1,15 +1,15 @@
-import { type Column, type ColumnDef } from '@tanstack/react-table'
-import { type DashboardDataProject } from '@/state/types.js'
+import type { Column, ColumnDef } from '@tanstack/react-table'
+import type { DashboardDataProject } from '@/state/types.ts'
 import { ArrowUpDown } from 'lucide-react'
-import { Button } from '@/components/ui/button.jsx'
+import { Button } from '@/components/ui/button.tsx'
 import { format } from 'date-fns'
 import {
   Tooltip,
   TooltipProvider,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip.jsx'
-import { Badge } from '../ui/badge.jsx'
+} from '@/components/ui/tooltip.tsx'
+import { Badge } from '../ui/badge.tsx'
 
 const SortingHeader = ({
   column,
@@ -22,8 +22,7 @@ const SortingHeader = ({
 }) => {
   return (
     <Button
-      className={`px-0 py-0 hover:bg-transparent ${className}`}
-      variant="ghost"
+      className={`bg-transparent px-0 py-0 text-foreground hover:bg-transparent ${className}`}
       onClick={() =>
         column.toggleSorting(column.getIsSorted() === 'asc')
       }>
@@ -69,7 +68,7 @@ export const dashboardColumns: ColumnDef<DashboardDataProject>[] = [
       return (
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger className="w-[500px] truncate text-left">
+            <TooltipTrigger className="w-[300px] truncate text-left">
               {path}
             </TooltipTrigger>
             <TooltipContent align="start">{path}</TooltipContent>
@@ -77,9 +76,9 @@ export const dashboardColumns: ColumnDef<DashboardDataProject>[] = [
         </TooltipProvider>
       )
     },
-    size: 500,
-    maxSize: 500,
-    minSize: 500,
+    size: 300,
+    maxSize: 300,
+    minSize: 300,
     enableSorting: true,
     sortingFn: (a, b) => {
       return a.original.path.localeCompare(b.original.path)

@@ -1,9 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ThemeProvider } from '@/components/ui/theme-provider.jsx'
-import Layout from './layout.jsx'
+import { ThemeProvider } from '@/components/ui/theme-provider.tsx'
+import { Router } from '@/routes.tsx'
 
-const App = () => <Layout />
+const App = () => <Router />
 
 const rootElement = document.getElementById('app')
 if (rootElement) {

@@ -1,8 +1,8 @@
 import { error } from '@nrz/error-cause'
-import fs from 'fs'
-import { resolve } from 'path'
+import fs from 'node:fs'
+import { resolve } from 'node:path'
 import t from 'tap'
-import { type GitOptions } from '../src/index.ts'
+import type { GitOptions } from '../src/index.ts'
 import { spawn } from '../src/spawn.ts'
 
 t.test('no git', async t => {
@@ -31,14 +31,13 @@ t.test('argument test for allowReplace', async t => {
   // test/clone.js, since it covers the use case that is relevant
   // for our purposes.  This just tests that the argument is added
   // by default.
-  const { spawn: mockedSpawn } = await t.mockImport(
-    '../src/spawn.ts',
-    {
-      '@nrz/promise-spawn': {
-        promiseSpawn: async (_: string, args: string[]) => args,
-      },
+  const { spawn: mockedSpawn } = await t.mockImport<
+    typeof import('../src/spawn.ts')
+  >('../src/spawn.ts', {
+    '@nrz/promise-spawn': {
+      promiseSpawn: async (_: string, args: string[]) => args,
     },
-  )
+  })
   const result = await mockedSpawn(['a', 'b', 'c'])
   t.same(
     result,

@@ -2,38 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.sl-markdown-content h2 {
-  font-size: 1.25rem;
+*,
+*::before,
+*::after {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-smooth: auto;
 }
 
-.sl-markdown-content h3 {
-  font-size: 1rem;
-}
-
-.dark-wave {
-  background-image:
-    linear-gradient(to bottom, #000000, rgba(0, 0, 0, 0.5)),
-    linear-gradient(to right, #000000, rgba(0, 0, 0, 0)),
-    url('/images/wave-dark.png');
-  background-position: bottom right !important;
-  background-size:
-    100% 100%,
-    100% 100%,
-    90% 150%;
-}
-
-.light-wave {
-  background-image:
-    linear-gradient(to bottom, #ffffff, rgba(255, 255, 255, 0)),
-    linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0)),
-    url('/images/wave-light.png');
-  background-position: bottom right !important;
-  background-size:
-    100% 100%,
-    100% 100%,
-    90% 150%;
-}
-
+/* ***************************************************** */
+/*                  STARLIGHT COMPONENTS                 */
+/* ***************************************************** */
+/** Search Button */
 button[aria-label='Search'] {
   height: 56.25px;
   border-radius: 1rem;
@@ -98,6 +78,9 @@ button[aria-label='Search'] {
   }
 }
 
+/* ***************************************************** */
+/*                       DEFAULTS                        */
+/* ***************************************************** */
 html {
   scroll-behavior: smooth !important;
   -webkit-font-smoothing: auto;
@@ -107,13 +90,17 @@ html {
 @font-face {
   font-family: 'inter';
   src: url('/fonts/inter.ttf');
-  font-weight: normal;
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'geistMono';
   src: url('/fonts/geist-mono.ttf');
-  font-weight: normal;
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @layer base {
@@ -197,4 +184,155 @@ html {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ***************************************************** */
+/*                    MARKDOWN STYLES                    */
+/* ***************************************************** */
+.sl-markdown-content h2 {
+  font-size: 1.25rem;
+}
+
+.sl-markdown-content h3 {
+  font-size: 1rem;
+  padding-top: 1rem;
+}
+
+.sl-markdown-content p {
+  @apply text-muted-foreground;
+}
+
+.sl-markdown-content ul {
+  @apply text-muted-foreground;
+}
+
+.sl-markdown-content li {
+  @apply text-muted-foreground;
+}
+
+.sl-markdown-content a {
+  @apply text-foreground transition-all duration-200;
+}
+
+.sl-markdown-content code {
+  @apply overflow-x-auto whitespace-nowrap rounded-sm border-[1px] border-border bg-background px-1 font-medium text-foreground;
+}
+
+/* ***************************************************** */
+/*                    EXPRESSIVE CODE                    */
+/* ***************************************************** */
+body .expressive-code figure code {
+  @apply text-foreground;
+}
+
+body .expressive-code .frame {
+  box-shadow: none;
+  background: #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  outline: none !important;
+  padding: 0 !important;
+}
+
+body .expressive-code .frame:not(.is-terminal) {
+  line-height: 1.5rem;
+}
+
+body .expressive-code .frame {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+body .expressive-code .frame figcaption.header,
+body .expressive-code .frame.is-terminal figcaption.header {
+  background: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+body .expressive-code .frame pre {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body .expressive-code .frame pre code {
+  font-family: 'geistMono', monospace !important;
+  font-weight: bold !important;
+}
+
+body .expressive-code .frame pre code span {
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+body .expressive-code .header {
+  height: 40px;
+}
+
+body .expressive-code .header::before,
+body .expressive-code .header::after,
+body .expressive-code .header .title::before {
+  box-sizing: border-box !important;
+  border: none !important;
+  overflow: hidden !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  width: 8px !important;
+  height: 8px !important;
+  max-width: auto !important;
+  max-height: auto !important;
+  position: absolute !important;
+  top: 14px !important;
+  left: 15px !important;
+  bottom: auto !important;
+  right: auto !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: rgb(255, 59, 25) !important;
+  opacity: 1 !important;
+  border-radius: 50% !important;
+  line-height: 100% !important;
+}
+
+body .expressive-code .frame.is-terminal .header:after {
+  left: 28px !important;
+  background: rgb(255, 213, 0) !important;
+}
+
+body .expressive-code .frame.is-terminal .header .title::before {
+  content: '';
+  left: 41px !important;
+  background: rgb(20, 191, 23) !important;
+}
+
+body .expressive-code .frame .copy button {
+  background: none !important;
+  opacity: 1 !important;
+}
+
+body .expressive-code .frame .title {
+  font-family: 'geistMono', monospace !important;
+  font-size: 11px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+body .expressive-code .frame .copy button:after {
+  mask: unset !important;
+  background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNvcHkiPjxyZWN0IHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeD0iOCIgeT0iOCIgcng9IjIiIHJ5PSIyIi8+PHBhdGggZD0iTTQgMTZjLTEuMSAwLTItLjktMi0yVjRjMC0xLjEuOS0yIDItMmgxMGMxLjEgMCAyIC45IDIgMiIvPjwvc3ZnPg==);
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+  background-size: contain;
+  color: white;
+  fill: white;
+  filter: invert(1);
+}
+
+body .expressive-code .frame .copy button::before,
+body .expressive-code .frame .copy button::after {
+  border: none !important;
+}
+
+body .expressive-code .frame.is-terminal .copy {
+  margin-top: 6px !important;
 }

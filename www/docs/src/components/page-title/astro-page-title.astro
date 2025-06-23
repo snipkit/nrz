@@ -1,9 +1,0 @@
----
-import PageTitle from './page-title.tsx'
-import type { Props } from '@astrojs/starlight/props'
----
-
-<PageTitle
-  crumbs={Astro.url.pathname.replace(/^\/|\/$/g, '').split('/')}
-  {...Astro.props}
-/>

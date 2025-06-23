@@ -1,19 +1,17 @@
 {
   "name": "@nrz/keychain",
   "description": "The filesystem keychain for `@nrz/registry-client`",
-  "version": "0.0.0-0.1730239248325",
+  "version": "0.0.0-15",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/khulnasoft/nrz.git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
     "directory": "src/keychain"
   },
   "tshy": {
     "selfLink": false,
+    "liveDev": true,
     "dialects": [
       "esm"
-    ],
-    "sourceDialects": [
-      "@nrz/source"
     ],
     "exports": {
       "./package.json": "./package.json",
@@ -21,54 +19,46 @@
     }
   },
   "dependencies": {
-    "@nrz/error-cause": "workspace:*",
-    "@nrz/types": "workspace:*",
-    "@nrz/xdg": "workspace:*",
-    "lru-cache": "catalog:",
-    "rimraf": "catalog:"
+    "@nrz/xdg": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@types/eslint__js": "catalog:",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tap": "catalog:",
     "tshy": "catalog:",
+    "typedoc": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
   },
   "license": "BSD-2-Clause-Patent",
   "engines": {
-    "node": ">=22",
-    "pnpm": "9"
+    "node": ">=22"
   },
   "scripts": {
     "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
     "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "prepare": "tshy",
-    "presnap": "tshy",
+    "prepack": "tshy",
     "snap": "tap",
-    "pretest": "tshy",
     "test": "tap",
-    "posttest": "tsc --project tsconfig.test.json",
-    "watch": "tshy --watch"
+    "posttest": "tsc --noEmit",
+    "tshy": "tshy",
+    "typecheck": "tsc --noEmit"
   },
   "tap": {
     "extends": "../../tap-config.yaml"
   },
   "prettier": "../../.prettierrc.js",
-  "module": "./dist/esm/index.js",
+  "module": "./src/index.ts",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "@nrz/source": "./src/index.ts",
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "default": "./src/index.ts"
       }
     }
   },

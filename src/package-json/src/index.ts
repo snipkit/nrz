@@ -1,9 +1,7 @@
-import { error, type ErrorCauseObject } from '@nrz/error-cause'
-import {
-  asManifest,
-  type Manifest,
-  longDependencyTypes,
-} from '@nrz/types'
+import { error } from '@nrz/error-cause'
+import type { ErrorCauseOptions } from '@nrz/error-cause'
+import { asManifest, longDependencyTypes } from '@nrz/types'
+import type { Manifest } from '@nrz/types'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { parse, stringify } from 'polite-json'
@@ -22,7 +20,7 @@ export class PackageJson {
   /**
    * cache of load errors
    */
-  #errCache = new Map<string, ErrorCauseObject>()
+  #errCache = new Map<string, ErrorCauseOptions>()
 
   /**
    * Reads and parses contents of a `package.json` file at a directory `dir`.
@@ -36,7 +34,7 @@ export class PackageJson {
 
     const filename = resolve(dir, 'package.json')
 
-    const fail = (err: ErrorCauseObject) =>
+    const fail = (err: ErrorCauseOptions) =>
       error('Could not read package.json file', err, this.read)
 
     const cachedError = !reload && this.#errCache.get(dir)
@@ -52,7 +50,7 @@ export class PackageJson {
       this.#pathCache.set(res, dir)
       return res
     } catch (err) {
-      const ec: ErrorCauseObject = {
+      const ec: ErrorCauseOptions = {
         path: filename,
         cause: err,
       }

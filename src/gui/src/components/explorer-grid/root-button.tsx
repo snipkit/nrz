@@ -1,22 +1,21 @@
-import { Button } from '@/components/ui/button.jsx'
+import { useNavigate } from 'react-router'
+import { Button } from '@/components/ui/button.tsx'
 import { House } from 'lucide-react'
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from '@/components/ui/tooltip.jsx'
-import { DEFAULT_QUERY, useGraphStore } from '@/state/index.js'
+} from '@/components/ui/tooltip.tsx'
+import { DEFAULT_QUERY, useGraphStore } from '@/state/index.ts'
 
 const RootButton = () => {
-  const updateActiveRoute = useGraphStore(
-    state => state.updateActiveRoute,
-  )
+  const navigate = useNavigate()
   const updateQuery = useGraphStore(state => state.updateQuery)
   const query = useGraphStore(state => state.query)
 
   const onClick = () => {
-    updateActiveRoute('/explore')
+    void navigate('/explore')
     updateQuery(':root')
   }
 
@@ -28,7 +27,8 @@ const RootButton = () => {
             disabled={query === DEFAULT_QUERY}
             onClick={onClick}
             size="icon"
-            variant="secondary">
+            variant="ghost"
+            className="rounded-md">
             <House />
           </Button>
         </TooltipTrigger>

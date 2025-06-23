@@ -1,13 +1,14 @@
-import { type EdgeLike } from '@nrz/graph'
+import type { QueryResponseEdge } from '@nrz/query'
 
 /**
  * A looser representation of an edge, it contains optional properties that
  * are meant to be used alongside importer nodes where they might be missing.
  */
-export type EdgeLoose = Pick<EdgeLike, 'name' | 'to'> & {
-  type?: EdgeLike['type']
-  spec?: EdgeLike['spec']
-  from?: EdgeLike['from']
+export type EdgeLoose = Pick<QueryResponseEdge, 'name'> & {
+  type?: QueryResponseEdge['type']
+  spec?: QueryResponseEdge['spec']
+  from?: QueryResponseEdge['from']
+  to?: QueryResponseEdge['to']
 }
 
 /**
@@ -15,6 +16,10 @@ export type EdgeLoose = Pick<EdgeLike, 'name' | 'to'> & {
  * both the main result column, selected node and side panel views.
  */
 export type GridItemData = EdgeLoose & {
+  /**
+   * The original dependency name as defined in its parent manifest.
+   */
+  depName?: string
   /**
    * An index value shared between installed and uninstalled dependencies
    * to keep track of the order they were added to the UI.

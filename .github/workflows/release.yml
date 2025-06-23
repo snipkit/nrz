@@ -1,0 +1,348 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Override action to take instead of reading from latest commit'
+        type: choice
+        options:
+          - pr
+          - publish
+      dry-run:
+        description: 'Dry run the PR creation or release'
+        type: boolean
+
+jobs:
+  pre-check:
+    name: Pre-Check
+    runs-on: ubuntu-latest
+    outputs:
+      dry-run: ${{ steps.dry-run.outputs.value }}
+      action: ${{ steps.action.outputs.value }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Dry Run
+        id: dry-run
+        run: echo "value=${{ inputs.dry-run }}" >> $GITHUB_OUTPUT
+
+      - name: Action
+        id: action
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.action }}" ]]; then
+            echo "value=${{ inputs.action }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          if [[ "$(git log -1 --pretty=%B | head -n 1)" =~ ^Release\ v ]]; then
+            echo "value=publish" >> $GITHUB_OUTPUT
+          else
+            echo "value=pr" >> $GITHUB_OUTPUT
+          fi
+
+  pr:
+    name: Release PR
+    runs-on: ubuntu-latest
+    needs: pre-check
+    if: needs.pre-check.outputs.action == 'pr'
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '^22.14.0'
+          cache: pnpm
+          check-latest: true
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Get Previous CLI Version Number
+        id: previous-version
+        run: echo "value=$(jq -r .version ./infra/cli/package.json)" >> $GITHUB_OUTPUT
+
+      - name: Version CLI Packages
+        run: pnpm --filter="./infra/cli*" exec npm version prerelease --no-git-tag-version
+
+      - name: Get CLI Version Number
+        id: version
+        run: echo "value=$(jq -r .version ./infra/cli/package.json)" >> $GITHUB_OUTPUT
+
+      # TODO: use git history to determine other packages to bump
+      - name: Version Workspaces
+        run: pnpm --filter "./src/*" exec npm version ${{ steps.version.outputs.value }} --no-git-tag-version
+
+      - name: Version Root
+        run: pnpm exec npm version ${{ steps.version.outputs.value }} --no-git-tag-version
+
+      - name: Commit Version Bumps
+        run: |
+          git config --global user.email "nrzops@users.noreply.github.com"
+          git config --global user.name "nrzops"
+          git add -A
+          git commit -m "Release v${{ steps.version.outputs.value }}"
+
+      - name: Pack
+        run: pnpm --filter="[$(git rev-parse HEAD~1)]" --workspace-concurrency=1 exec pnpm pack
+
+      - name: Full integrity
+        id: integrity
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          integrity=$(./scripts/tgz-ssri.ts)
+
+          echo "$integrity"
+          {
+            echo "value<<${delimiter}"
+            echo "$integrity"
+            echo "${delimiter}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: List Packages
+        id: packages
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          commit="$(git rev-parse HEAD~1)"
+
+          format() {
+            local name="$1"
+            local filter="$2"
+
+            local packages
+            packages=$(pnpm --shell-mode --filter="{./$filter/}[$commit]" exec "pwd" | sort)
+
+            echo "$packages"
+            {
+              echo "${name}<<${delimiter}"
+              while IFS= read -r package_dir; do
+                local package_json="$package_dir/package.json"
+                local package_name=$(jq -r '.name' "$package_json")
+                local package_version=$(jq -r '.version' "$package_json")
+                local integrity=$(./scripts/tgz-ssri.ts "$package_dir")
+                echo "- \`$package_name@$package_version\` (\`${integrity:0:20}...\`)"
+              done <<< "$packages"
+              echo "${delimiter}"
+            } >> "${GITHUB_OUTPUT}"
+          }
+
+          format "clis" "infra"
+          format "workspaces" "src"
+
+      - name: Undo Pack Local Changes
+        run: |
+          git status
+          git diff
+          git checkout -- 'src/*/package.json'
+
+      - name: Create or Update PR
+        id: pr
+        if: needs.pre-check.outputs.dry-run != 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: 'Release v${{ steps.version.outputs.value }}'
+          commit-message: 'Release v${{ steps.version.outputs.value }}'
+          branch: release
+          base: main
+          labels: release
+          author: 'nrzops <nrzops@users.noreply.github.com>'
+          committer: 'nrzops <nrzops@users.noreply.github.com>'
+          token: ${{ secrets.RELEASE_WORKFLOW_TOKEN }}
+          draft: always-true
+          body: |
+            ## Release v${{ steps.version.outputs.value }}
+
+            :rotating_light: Merging this PR will publish these packages :rotating_light:
+
+            [Compare to v${{ steps.previous-version.outputs.value }}](https://github.com/khulnasoft-lab/nrz/compare/v${{ steps.previous-version.outputs.value }}...release)
+
+            ### CLI
+            ${{ steps.packages.outputs.clis }}
+
+            ### Workspaces
+            ${{ steps.packages.outputs.workspaces }}
+
+            <details><summary>Integrity</summary>
+            <p>
+
+            ```
+            ${{ steps.integrity.outputs.value }}
+            ```
+
+            </p>
+            </details>
+
+            ---
+
+            Steps to merge:
+
+            ```bash
+            gh pr ready -R khulnasoft-lab/nrz release
+            ```
+
+            ```bash
+            gh pr review -R khulnasoft-lab/nrz --approve release
+            ```
+
+            ```bash
+            gh pr merge -R khulnasoft-lab/nrz --rebase release
+            ```
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: pre-check
+    if: needs.pre-check.outputs.action == 'publish'
+    outputs:
+      version: ${{ steps.versions.outputs.version }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '^22.14.0'
+          cache: pnpm
+          check-latest: true
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: List Packages to Publish
+        run: pnpm --shell-mode --filter="[$(git rev-parse HEAD~1)]" exec "cat package.json | jq -r '\"\(.name)@\(.version)\"'" | sort
+
+      - name: Versions
+        id: versions
+        run: |
+          # Previous version is the name of the latest release
+          PREVIOUS_VERSION=$(gh release list --json name --limit 1 | jq -r ".[0].name")
+          if [[ -z "$PREVIOUS_VERSION" || "$PREVIOUS_VERSION" == "null" ]]; then
+            exit 1
+          fi
+          echo "previous-version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
+          # Make sure version has leading v
+          echo "version=v$(jq -r .version ./infra/cli/package.json)" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Publish
+        run: |
+          echo "//registry.npmjs.org/:_authToken=\${NPM_AUTH_TOKEN}" > .npmrc
+          pnpm publish \
+            --filter="[$(git rev-parse HEAD~1)]" \
+            --access=public \
+            --no-git-checks \
+            --publish-branch="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" \
+            ${{ needs.pre-check.outputs.dry-run == 'true' && '--dry-run' }}
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NRZ_CLI_PUBLISH_TOKEN }}
+
+      - name: Create Git Tag
+        if: needs.pre-check.outputs.dry-run != 'true'
+        run: |
+          git config --global user.email "nrzops@users.noreply.github.com"
+          git config --global user.name "nrzops"
+          git fetch origin tag "${{ steps.versions.outputs.version }}" || true
+          if git rev-parse "${{ steps.versions.outputs.version }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.versions.outputs.version }} already exists"
+            exit 0
+          fi
+          git tag -a "${{ steps.versions.outputs.version }}" -m "Release ${{ steps.versions.outputs.version }}"
+          git push origin "${{ steps.versions.outputs.version }}"
+
+      - name: Create GitHub Release
+        if: needs.pre-check.outputs.dry-run != 'true'
+        run: |
+          gh release create "${{ steps.versions.outputs.version }}" \
+            --verify-tag \
+            --generate-notes \
+            --notes-start-tag="${{ steps.versions.outputs.previous-version }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  on-pr:
+    name: Notify PR
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.pr.result == 'failure' }}
+    needs: pr
+    steps:
+      - name: Slack Notify
+        uses: rtCamp/action-slack-notify@v2.3.3
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_GITHUB_ALERTS_WEBHOOK_URL }}
+          SLACK_USERNAME: nrzops
+          SLACK_CHANNEL: github-alerts
+          SLACK_ICON: https://github.com/khulnasoft-lab.png
+          SLACK_COLOR: 'failure'
+          SLACK_FOOTER: ''
+          SLACKIFY_MARKDOWN: true
+          SLACK_TITLE: Release ${{ needs.pr.outputs.version }} PR Failed
+          SLACK_MESSAGE: |
+            :x: The release PR failed to be created or updated. This most likely requires manual intervention.
+
+  on-publish:
+    name: Notify Publish
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.publish.result != 'skipped' && needs.pre-check.outputs.dry-run != 'true' }}
+    needs:
+      - pre-check
+      - publish
+    steps:
+      - name: Message
+        id: message
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "value<<${delimiter}"
+            if [[ "${{ needs.publish.result }}" == "success" ]]; then
+              echo ":white_check_mark: ${{ needs.publish.outputs.version }} was published successfully! :tada:"
+              echo "[Release Notes](https://github.com/${{ github.repository }}/releases/tag/${{ needs.publish.outputs.version }})"
+            else
+              echo ":rotating_light: The release workflow for ${{ needs.publish.outputs.version }} failed. :rotating_light:"
+              echo "This requires manual intervention to fix."
+              echo "It is safe to manually rerun the workflow if the errors were transient. Only the packages that failed to publish will be retried."
+              echo "gh workflow run release.yml --ref=main -f action=publish"
+            fi
+            echo "${delimiter}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Slack Notify
+        uses: rtCamp/action-slack-notify@v2.3.3
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_GITHUB_ALERTS_WEBHOOK_URL }}
+          SLACK_USERNAME: nrzops
+          SLACK_CHANNEL: github-alerts
+          SLACK_ICON: https://github.com/khulnasoft-lab.png
+          SLACK_COLOR: ${{ needs.publish.result == 'success' && 'success' || 'failure' }}
+          SLACK_FOOTER: ''
+          SLACKIFY_MARKDOWN: true
+          SLACK_TITLE: Release ${{ needs.publish.outputs.version }} Publish ${{ needs.publish.result == 'success' && 'Succeeded' || 'Failed' }}
+          SLACK_MESSAGE: ${{ steps.message.outputs.value }}

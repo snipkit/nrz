@@ -1,41 +1,29 @@
 import { afterEach, test, vi, expect } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
 import html from 'diffable-html'
-import { useGraphStore as useStore } from '@/state/index.js'
-import Layout from '@/layout.jsx'
+import { useGraphStore as useStore } from '@/state/index.ts'
+import Layout from '@/layout.tsx'
 
-vi.mock('@/components/navigation/header.jsx', () => ({
+vi.mock('react-router', () => ({
+  Outlet: 'gui-router-outlet',
+}))
+
+vi.mock('@/components/navigation/header.tsx', () => ({
   Header: 'gui-nav-header',
 }))
-vi.mock('@/components/navigation/footer.jsx', () => ({
-  Footer: 'gui-nav-footer',
-}))
-vi.mock('@/components/navigation/sidebar/index.jsx', () => ({
+vi.mock('@/components/navigation/sidebar/index.tsx', () => ({
   AppSidebar: 'gui-app-sidebar',
   defaultOpen: true,
 }))
-vi.mock('@/components/ui/sidebar.jsx', () => ({
+vi.mock('@/components/ui/sidebar.tsx', () => ({
   SidebarProvider: 'gui-sidebar-provider',
+  SidebarInset: 'gui-sidebar-inset',
 }))
-
-vi.mock('@/app/explorer.jsx', () => ({
-  Explorer: 'gui-explorer',
-}))
-vi.mock('@/app/error-found.jsx', () => ({
-  ErrorFound: 'gui-error-found',
-}))
-vi.mock('@/app/dashboard.jsx', () => ({
-  Dashboard: 'gui-dashboard',
-}))
-vi.mock('@/app/queries.jsx', () => ({
-  Queries: 'gui-queries',
-}))
-vi.mock('@/app/labels.jsx', () => ({
-  Labels: 'gui-labels',
-}))
-
-vi.mock('@/components/ui/toaster.jsx', () => ({
+vi.mock('@/components/ui/toaster.tsx', () => ({
   Toaster: 'gui-toaster',
+}))
+vi.mock('@/components/hooks/use-preflight.tsx', () => ({
+  usePreflight: vi.fn(),
 }))
 
 expect.addSnapshotSerializer({
@@ -49,57 +37,7 @@ afterEach(() => {
   cleanup()
 })
 
-test('renders Layout for the "/dashboard" view', () => {
-  const Container = () => {
-    const setRoute = useStore(state => state.updateActiveRoute)
-    setRoute('/dashboard')
-    return <Layout />
-  }
-
-  const { container } = render(<Container />)
-  expect(container.innerHTML).toMatchSnapshot()
-})
-
-test('renders Layout for the "/explore" view', () => {
-  const Container = () => {
-    const setRoute = useStore(state => state.updateActiveRoute)
-    setRoute('/explore')
-    return <Layout />
-  }
-
-  const { container } = render(<Container />)
-  expect(container.innerHTML).toMatchSnapshot()
-})
-
-test('renders Layout for the "/queries" view', () => {
-  const Container = () => {
-    const setRoute = useStore(state => state.updateActiveRoute)
-    setRoute('/queries')
-    return <Layout />
-  }
-
-  const { container } = render(<Container />)
-  expect(container.innerHTML).toMatchSnapshot()
-})
-
-test('renders Layout for the "/labels" view', () => {
-  const Container = () => {
-    const setRoute = useStore(state => state.updateActiveRoute)
-    setRoute('/labels')
-    return <Layout />
-  }
-
-  const { container } = render(<Container />)
-  expect(container.innerHTML).toMatchSnapshot()
-})
-
-test('renders Layout for the "/error" view', () => {
-  const Container = () => {
-    const setRoute = useStore(state => state.updateActiveRoute)
-    setRoute('/error')
-    return <Layout />
-  }
-
-  const { container } = render(<Container />)
+test('renders Layout with an outlet', () => {
+  const { container } = render(<Layout />)
   expect(container.innerHTML).toMatchSnapshot()
 })

@@ -1,13 +1,14 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { type RollbackRemove } from '@nrz/rollback-remove'
+import type { RollbackRemove } from '@nrz/rollback-remove'
 import { Spec } from '@nrz/spec'
-import { statSync } from 'fs'
-import { rm } from 'fs/promises'
+import { statSync } from 'node:fs'
+import { rm } from 'node:fs/promises'
 import { PathScurry } from 'path-scurry'
-import t, { type Test } from 'tap'
+import t from 'tap'
+import type { Test } from 'tap'
 import { Edge } from '../../src/edge.ts'
 import { Node } from '../../src/node.ts'
-import { type GraphLike } from '../../src/types.ts'
+import type { GraphLike } from '../../src/types.ts'
 
 const fooManifest = {
   name: 'foo',
@@ -36,7 +37,7 @@ const nrzInstallFixture = (t: Test) =>
             '.bin': {
               bar: t.fixture('symlink', '../bar/bar.js'),
               'bar.cmd': 'cmd shim',
-              'bar.pwsh': 'powershell shim',
+              'bar.ps1': 'powershell shim',
             },
             foo: {
               'package.json': JSON.stringify(fooManifest),
@@ -73,7 +74,7 @@ const nrzInstallFixture = (t: Test) =>
       '.bin': {
         bar: t.fixture('symlink', '../bar/bar.js'),
         'bar.cmd': 'cmd shim',
-        'bar.pwsh': 'powershell shim',
+        'bar.ps1': 'powershell shim',
       },
     },
   })
@@ -93,7 +94,7 @@ t.test('posix', async t => {
   // gutcheck
   statSync(projectRoot + '/node_modules/.bin/bar')
   statSync(projectRoot + '/node_modules/.bin/bar.cmd')
-  statSync(projectRoot + '/node_modules/.bin/bar.pwsh')
+  statSync(projectRoot + '/node_modules/.bin/bar.ps1')
   const fooNM =
     projectRoot +
     '/node_modules/.nrz/' +
@@ -102,7 +103,7 @@ t.test('posix', async t => {
   statSync(fooNM + '/bar')
   statSync(fooNM + '/.bin/bar')
   statSync(fooNM + '/.bin/bar.cmd')
-  statSync(fooNM + '/.bin/bar.pwsh')
+  statSync(fooNM + '/.bin/bar.ps1')
   const edge = new Edge(
     'prod',
     Spec.parse('bar@'),
@@ -123,12 +124,12 @@ t.test('posix', async t => {
 
   statSync(projectRoot + '/node_modules/.bin/bar')
   statSync(projectRoot + '/node_modules/.bin/bar.cmd')
-  statSync(projectRoot + '/node_modules/.bin/bar.pwsh')
+  statSync(projectRoot + '/node_modules/.bin/bar.ps1')
   t.throws(() => statSync(fooNM + '/bar'))
   t.throws(() => statSync(fooNM + '/.bin/bar'))
   // these not touched, because not windows
   statSync(fooNM + '/.bin/bar.cmd')
-  statSync(fooNM + '/.bin/bar.pwsh')
+  statSync(fooNM + '/.bin/bar.ps1')
 })
 
 t.test('win32', async t => {
@@ -142,7 +143,7 @@ t.test('win32', async t => {
   // gutcheck
   statSync(projectRoot + '/node_modules/.bin/bar')
   statSync(projectRoot + '/node_modules/.bin/bar.cmd')
-  statSync(projectRoot + '/node_modules/.bin/bar.pwsh')
+  statSync(projectRoot + '/node_modules/.bin/bar.ps1')
   const fooNM =
     projectRoot +
     '/node_modules/.nrz/' +
@@ -151,7 +152,7 @@ t.test('win32', async t => {
   statSync(fooNM + '/bar')
   statSync(fooNM + '/.bin/bar')
   statSync(fooNM + '/.bin/bar.cmd')
-  statSync(fooNM + '/.bin/bar.pwsh')
+  statSync(fooNM + '/.bin/bar.ps1')
   const opts = {
     projectRoot,
     graph: {} as GraphLike,
@@ -176,10 +177,10 @@ t.test('win32', async t => {
 
   statSync(projectRoot + '/node_modules/.bin/bar')
   statSync(projectRoot + '/node_modules/.bin/bar.cmd')
-  statSync(projectRoot + '/node_modules/.bin/bar.pwsh')
+  statSync(projectRoot + '/node_modules/.bin/bar.ps1')
   t.throws(() => statSync(fooNM + '/bar'))
   t.throws(() => statSync(fooNM + '/.bin/bar'))
   // these not touched, because not windows
   t.throws(() => statSync(fooNM + '/.bin/bar.cmd'))
-  t.throws(() => statSync(fooNM + '/.bin/bar.pwsh'))
+  t.throws(() => statSync(fooNM + '/.bin/bar.ps1'))
 })

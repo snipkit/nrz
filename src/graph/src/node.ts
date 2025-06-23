@@ -1,22 +1,23 @@
-import { type PathScurry } from 'path-scurry'
+import type { PathScurry } from 'path-scurry'
 import {
-  type DepID,
-  type DepIDTuple,
+  isPackageNameConfused,
   getId,
   hydrateTuple,
   splitDepID,
 } from '@nrz/dep-id'
+import type { DepID, DepIDTuple } from '@nrz/dep-id'
 import { typeError } from '@nrz/error-cause'
-import { type Spec, type SpecOptions } from '@nrz/spec'
-import {
-  type Integrity,
-  type Manifest,
-  type DependencyTypeShort,
+import type { Spec, SpecOptions } from '@nrz/spec'
+import type {
+  Integrity,
+  Manifest,
+  DependencyTypeShort,
 } from '@nrz/types'
 import { Edge } from './edge.ts'
-import { type GraphLike, type NodeLike } from './types.ts'
+import type { GraphLike, NodeLike } from './types.ts'
 import { stringifyNode } from './stringify-node.ts'
-import { type PackageInfoClient } from '@nrz/package-info'
+import type { PackageInfoClient } from '@nrz/package-info'
+import type { GraphModifier } from './modifiers.ts'
 
 export type NodeOptions = SpecOptions & {
   projectRoot: string
@@ -30,6 +31,7 @@ export class Node implements NodeLike {
 
   #options: SpecOptions
   #location?: string
+  #rawManifest?: Manifest
 
   #optional = false
   /**
@@ -83,6 +85,11 @@ export class Node implements NodeLike {
   }
 
   /**
+   * True if there's a manifest-confused package name.
+   */
+  confused = false
+
+  /**
    * List of edges coming into this node.
    */
   edgesIn = new Set<Edge>()
@@ -134,6 +141,13 @@ export class Node implements NodeLike {
    * the same registry, if it's not the default.
    */
   registry?: string
+
+  /**
+   * If this node has been modified as part of applying a {@link GraphModifier}
+   * then this field will contain the modifier query that was applied.
+   * Otherwise, it will be `undefined`.
+   */
+  modifier: string | undefined
 
   /**
    * The name of the package represented by this node, this is usually
@@ -229,8 +243,22 @@ export class Node implements NodeLike {
     }
     this.graph = options.graph
     this.manifest = manifest
+
+    if (isPackageNameConfused(spec, this.manifest?.name)) {
+      this.setConfusedManifest(
+        {
+          ...manifest,
+          name: spec?.name,
+        },
+        manifest,
+      )
+    }
+
     this.#name = name || this.manifest?.name
     this.version = version || this.manifest?.version
+    if (this.version?.startsWith('v')) {
+      this.version = this.version.slice(1)
+    }
   }
 
   /**
@@ -313,6 +341,24 @@ export class Node implements NodeLike {
     return edge
   }
 
+  /**
+   * The raw manifest before any modifications.
+   * If not set, falls back to the current manifest.
+   */
+  get rawManifest(): Manifest | undefined {
+    return this.#rawManifest ?? this.manifest
+  }
+
+  /**
+   * Sets this node as having a manifest-confused manifest.
+   */
+  setConfusedManifest(fixed: Manifest, confused?: Manifest) {
+    this.manifest = fixed
+    this.#rawManifest = confused
+    this.confused = true
+    this.#name = this.manifest.name
+  }
+
   toJSON() {
     return {
       id: this.id,
@@ -326,6 +372,11 @@ export class Node implements NodeLike {
       resolved: this.resolved,
       dev: this.dev,
       optional: this.optional,
+      confused: this.confused,
+      modifier: this.modifier,
+      ...(this.confused ?
+        { rawManifest: this.#rawManifest }
+      : undefined),
     }
   }
 

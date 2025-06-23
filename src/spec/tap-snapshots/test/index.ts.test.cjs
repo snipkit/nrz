@@ -8596,9 +8596,9 @@ exports[`test/index.ts > TAP > parse args > x@workspace:y@1.x > inspect default 
 
 exports[`test/index.ts > TAP > reverse-lookup registry: specifiers if named > must match snapshot 1`] = `
 Array [
-  "x@registry:http://khulnasoft.com#x@latest",
-  "x@registry:http://khulnasoft.com#x@latest",
-  "x@registry:http://khulnasoft.com/#x@latest",
-  "x@registry:http://khulnasoft.com/#x@latest",
+  "x@registry:http://nrz.sh#x@latest",
+  "x@registry:http://nrz.sh#x@latest",
+  "x@registry:http://nrz.sh/#x@latest",
+  "x@registry:http://nrz.sh/#x@latest",
 ]
 `

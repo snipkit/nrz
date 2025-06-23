@@ -1,0 +1,886 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VersionsTabButton renders default 1`] = `
+
+<gui-tabs-trigger
+  variant="ghost"
+  value="versions"
+  classname="w-fit px-2"
+>
+  Versions
+  <gui-data-badge
+    variant="count"
+    classnames="[object Object]"
+    content="3"
+  >
+  </gui-data-badge>
+</gui-tabs-trigger>
+
+`;
+
+exports[`VersionsTabContent filters newer versions 1`] = `
+
+<gui-tabs-content value="versions">
+  <section class="flex flex-col px-6 py-4">
+    <div class="mb-3 border-b-[1px] border-muted pb-1">
+      <div class="flex cursor-default justify-between">
+        <div class="flex flex-col gap-0.5">
+          <gui-tooltip-provider>
+            <h3 class="inline-flex items-center gap-1 align-baseline text-base font-medium text-foreground">
+              Package Downloads
+              <gui-tooltip>
+                <gui-tooltip-trigger aschild="true">
+                  <span class="cursor-default text-muted-foreground">
+                    <gui-circle-help-icon
+                      strokewidth="2"
+                      size="16"
+                    >
+                    </gui-circle-help-icon>
+                  </span>
+                </gui-tooltip-trigger>
+                <gui-tooltip-content classname="font-normal">
+                  Downloads across all package versions
+                </gui-tooltip-content>
+              </gui-tooltip>
+            </h3>
+          </gui-tooltip-provider>
+          <p class="font-mono text-xs text-muted-foreground">
+            600
+          </p>
+        </div>
+        <p class="align-baseline text-sm text-muted-foreground">
+          2025-04-15 - 2025-04-15
+        </p>
+      </div>
+      <gui-chart-container
+        config="[object Object]"
+        classname="h-[200px] w-full"
+      >
+        <gui-recharts-bar-chart
+          accessibilitylayer="true"
+          data="[object Object]"
+        >
+          <gui-recharts-cartesian-grid vertical="false">
+          </gui-recharts-cartesian-grid>
+          <gui-chart-tooltip content="[object Object]">
+          </gui-chart-tooltip>
+          <gui-recharts-bar
+            datakey="downloads"
+            fill="var(--color-downloads)"
+            radius="4"
+          >
+          </gui-recharts-bar>
+          <gui-recharts-x-axis
+            datakey="month"
+            tickline="false"
+            axisline="false"
+            tickmargin="8"
+            mintickgap="32"
+          >
+          </gui-recharts-x-axis>
+        </gui-recharts-bar-chart>
+      </gui-chart-container>
+    </div>
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex w-full items-center justify-start">
+        <gui-search-icon
+          classname="absolute ml-3 text-muted-foreground"
+          size="16"
+        >
+        </gui-search-icon>
+        <gui-input
+          placeholder="Filter versions"
+          value
+          classname="h-9 pl-9"
+        >
+        </gui-input>
+      </div>
+      <gui-dropdown-menu>
+        <gui-dropdown-menu-trigger aschild="true">
+          <gui-button
+            variant="outline"
+            classname="h-9 w-fit justify-between gap-2 text-sm [&amp;>[data-chevron]]:aria-expanded:rotate-90"
+          >
+            <gui-list-filter-icon size="16">
+            </gui-list-filter-icon>
+            <span class="text-sm font-normal">
+              Filter
+            </span>
+            <gui-chevron-right-icon
+              data-chevron="true"
+              classname="transition-transform duration-150"
+              size="16"
+            >
+            </gui-chevron-right-icon>
+          </gui-button>
+        </gui-dropdown-menu-trigger>
+        <gui-dropdown-menu-content align="end">
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide pre-releases
+          </gui-dropdown-menu-checkbox-item>
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide older versions
+          </gui-dropdown-menu-checkbox-item>
+        </gui-dropdown-menu-content>
+      </gui-dropdown-menu>
+    </div>
+    <div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="hidden cursor-default grid-cols-12 gap-3 xl:grid">
+          <div class="col-span-2 flex w-full items-center justify-start">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Versions
+              </span>
+              <gui-number-flow
+                start="2"
+                end="2"
+                motionconfig="[object Object]"
+              >
+              </gui-number-flow>
+            </button>
+          </div>
+          <div class="col-span-2 ml-1 flex w-full items-center justify-end text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Size
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Published Date
+              </span>
+            </button>
+          </div>
+          <div class="col-span-2 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Downloads
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 flex w-full items-center justify-center text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Publisher
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-x-6 bottom-0 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card blur-sm">
+          </div>
+          <div class="absolute -inset-x-6 -bottom-2 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card">
+          </div>
+          <gui-virtuoso
+            style="height: 800px;"
+            classname="scrollbar-thumb-rounded-full flex flex-col scrollbar scrollbar-thin scrollbar-track-muted-foreground/20 scrollbar-thumb-neutral-500"
+            data="[object Object],[object Object]"
+          >
+          </gui-virtuoso>
+        </div>
+      </div>
+    </div>
+  </section>
+</gui-tabs-content>
+
+`;
+
+exports[`VersionsTabContent filters pre-releases 1`] = `
+
+<gui-tabs-content value="versions">
+  <section class="flex flex-col px-6 py-4">
+    <div class="mb-3 border-b-[1px] border-muted pb-1">
+      <div class="flex cursor-default justify-between">
+        <div class="flex flex-col gap-0.5">
+          <gui-tooltip-provider>
+            <h3 class="inline-flex items-center gap-1 align-baseline text-base font-medium text-foreground">
+              Package Downloads
+              <gui-tooltip>
+                <gui-tooltip-trigger aschild="true">
+                  <span class="cursor-default text-muted-foreground">
+                    <gui-circle-help-icon
+                      strokewidth="2"
+                      size="16"
+                    >
+                    </gui-circle-help-icon>
+                  </span>
+                </gui-tooltip-trigger>
+                <gui-tooltip-content classname="font-normal">
+                  Downloads across all package versions
+                </gui-tooltip-content>
+              </gui-tooltip>
+            </h3>
+          </gui-tooltip-provider>
+          <p class="font-mono text-xs text-muted-foreground">
+            600
+          </p>
+        </div>
+        <p class="align-baseline text-sm text-muted-foreground">
+          2025-04-15 - 2025-04-15
+        </p>
+      </div>
+      <gui-chart-container
+        config="[object Object]"
+        classname="h-[200px] w-full"
+      >
+        <gui-recharts-bar-chart
+          accessibilitylayer="true"
+          data="[object Object]"
+        >
+          <gui-recharts-cartesian-grid vertical="false">
+          </gui-recharts-cartesian-grid>
+          <gui-chart-tooltip content="[object Object]">
+          </gui-chart-tooltip>
+          <gui-recharts-bar
+            datakey="downloads"
+            fill="var(--color-downloads)"
+            radius="4"
+          >
+          </gui-recharts-bar>
+          <gui-recharts-x-axis
+            datakey="month"
+            tickline="false"
+            axisline="false"
+            tickmargin="8"
+            mintickgap="32"
+          >
+          </gui-recharts-x-axis>
+        </gui-recharts-bar-chart>
+      </gui-chart-container>
+    </div>
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex w-full items-center justify-start">
+        <gui-search-icon
+          classname="absolute ml-3 text-muted-foreground"
+          size="16"
+        >
+        </gui-search-icon>
+        <gui-input
+          placeholder="Filter versions"
+          value
+          classname="h-9 pl-9"
+        >
+        </gui-input>
+      </div>
+      <gui-dropdown-menu>
+        <gui-dropdown-menu-trigger aschild="true">
+          <gui-button
+            variant="outline"
+            classname="h-9 w-fit justify-between gap-2 text-sm [&amp;>[data-chevron]]:aria-expanded:rotate-90"
+          >
+            <gui-list-filter-icon size="16">
+            </gui-list-filter-icon>
+            <span class="text-sm font-normal">
+              Filter
+            </span>
+            <gui-chevron-right-icon
+              data-chevron="true"
+              classname="transition-transform duration-150"
+              size="16"
+            >
+            </gui-chevron-right-icon>
+          </gui-button>
+        </gui-dropdown-menu-trigger>
+        <gui-dropdown-menu-content align="end">
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide pre-releases
+          </gui-dropdown-menu-checkbox-item>
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide older versions
+          </gui-dropdown-menu-checkbox-item>
+        </gui-dropdown-menu-content>
+      </gui-dropdown-menu>
+    </div>
+    <div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="hidden cursor-default grid-cols-12 gap-3 xl:grid">
+          <div class="col-span-2 flex w-full items-center justify-start">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Versions
+              </span>
+              <gui-number-flow
+                start="2"
+                end="2"
+                motionconfig="[object Object]"
+              >
+              </gui-number-flow>
+            </button>
+          </div>
+          <div class="col-span-2 ml-1 flex w-full items-center justify-end text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Size
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Published Date
+              </span>
+            </button>
+          </div>
+          <div class="col-span-2 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Downloads
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 flex w-full items-center justify-center text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Publisher
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-x-6 bottom-0 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card blur-sm">
+          </div>
+          <div class="absolute -inset-x-6 -bottom-2 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card">
+          </div>
+          <gui-virtuoso
+            style="height: 800px;"
+            classname="scrollbar-thumb-rounded-full flex flex-col scrollbar scrollbar-thin scrollbar-track-muted-foreground/20 scrollbar-thumb-neutral-500"
+            data="[object Object],[object Object]"
+          >
+          </gui-virtuoso>
+        </div>
+      </div>
+    </div>
+  </section>
+</gui-tabs-content>
+
+`;
+
+exports[`VersionsTabContent filters versions 1`] = `
+
+<gui-tabs-content value="versions">
+  <section class="flex flex-col px-6 py-4">
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex w-full items-center justify-start">
+        <gui-search-icon
+          classname="absolute ml-3 text-muted-foreground"
+          size="16"
+        >
+        </gui-search-icon>
+        <gui-input
+          placeholder="Filter versions"
+          value
+          classname="h-9 pl-9"
+        >
+        </gui-input>
+      </div>
+      <gui-dropdown-menu>
+        <gui-dropdown-menu-trigger aschild="true">
+          <gui-button
+            variant="outline"
+            classname="h-9 w-fit justify-between gap-2 text-sm [&amp;>[data-chevron]]:aria-expanded:rotate-90"
+          >
+            <gui-list-filter-icon size="16">
+            </gui-list-filter-icon>
+            <span class="text-sm font-normal">
+              Filter
+            </span>
+            <gui-chevron-right-icon
+              data-chevron="true"
+              classname="transition-transform duration-150"
+              size="16"
+            >
+            </gui-chevron-right-icon>
+          </gui-button>
+        </gui-dropdown-menu-trigger>
+        <gui-dropdown-menu-content align="end">
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide pre-releases
+          </gui-dropdown-menu-checkbox-item>
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide older versions
+          </gui-dropdown-menu-checkbox-item>
+        </gui-dropdown-menu-content>
+      </gui-dropdown-menu>
+    </div>
+    <div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="hidden cursor-default grid-cols-12 gap-3 xl:grid">
+          <div class="col-span-2 flex w-full items-center justify-start">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Versions
+              </span>
+              <gui-number-flow
+                start="2"
+                end="2"
+                motionconfig="[object Object]"
+              >
+              </gui-number-flow>
+            </button>
+          </div>
+          <div class="col-span-2 ml-1 flex w-full items-center justify-end text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Size
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Published Date
+              </span>
+            </button>
+          </div>
+          <div class="col-span-2 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Downloads
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 flex w-full items-center justify-center text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Publisher
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-x-6 bottom-0 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card blur-sm">
+          </div>
+          <div class="absolute -inset-x-6 -bottom-2 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card">
+          </div>
+          <gui-virtuoso
+            style="height: 800px;"
+            classname="scrollbar-thumb-rounded-full flex flex-col scrollbar scrollbar-thin scrollbar-track-muted-foreground/20 scrollbar-thumb-neutral-500"
+            data="[object Object],[object Object]"
+          >
+          </gui-virtuoso>
+        </div>
+      </div>
+    </div>
+  </section>
+</gui-tabs-content>
+
+`;
+
+exports[`VersionsTabContent handles missing manifest version 1`] = `
+
+<gui-tabs-content value="versions">
+  <section class="flex flex-col px-6 py-4">
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex w-full items-center justify-start">
+        <gui-search-icon
+          classname="absolute ml-3 text-muted-foreground"
+          size="16"
+        >
+        </gui-search-icon>
+        <gui-input
+          placeholder="Filter versions"
+          value
+          classname="h-9 pl-9"
+        >
+        </gui-input>
+      </div>
+      <gui-dropdown-menu>
+        <gui-dropdown-menu-trigger aschild="true">
+          <gui-button
+            variant="outline"
+            classname="h-9 w-fit justify-between gap-2 text-sm [&amp;>[data-chevron]]:aria-expanded:rotate-90"
+          >
+            <gui-list-filter-icon size="16">
+            </gui-list-filter-icon>
+            <span class="text-sm font-normal">
+              Filter
+            </span>
+            <gui-chevron-right-icon
+              data-chevron="true"
+              classname="transition-transform duration-150"
+              size="16"
+            >
+            </gui-chevron-right-icon>
+          </gui-button>
+        </gui-dropdown-menu-trigger>
+        <gui-dropdown-menu-content align="end">
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide pre-releases
+          </gui-dropdown-menu-checkbox-item>
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide older versions
+          </gui-dropdown-menu-checkbox-item>
+        </gui-dropdown-menu-content>
+      </gui-dropdown-menu>
+    </div>
+    <div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="hidden cursor-default grid-cols-12 gap-3 xl:grid">
+          <div class="col-span-2 flex w-full items-center justify-start">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Versions
+              </span>
+              <gui-number-flow
+                start="2"
+                end="2"
+                motionconfig="[object Object]"
+              >
+              </gui-number-flow>
+            </button>
+          </div>
+          <div class="col-span-2 ml-1 flex w-full items-center justify-end text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Size
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Published Date
+              </span>
+            </button>
+          </div>
+          <div class="col-span-2 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Downloads
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 flex w-full items-center justify-center text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Publisher
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-x-6 bottom-0 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card blur-sm">
+          </div>
+          <div class="absolute -inset-x-6 -bottom-2 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card">
+          </div>
+          <gui-virtuoso
+            style="height: 800px;"
+            classname="scrollbar-thumb-rounded-full flex flex-col scrollbar scrollbar-thin scrollbar-track-muted-foreground/20 scrollbar-thumb-neutral-500"
+            data="[object Object],[object Object]"
+          >
+          </gui-virtuoso>
+        </div>
+      </div>
+    </div>
+  </section>
+</gui-tabs-content>
+
+`;
+
+exports[`VersionsTabContent renders an empty state 1`] = `
+
+<gui-tabs-content value="versions">
+  <div class="flex h-full min-h-64 w-full items-center justify-center overflow-hidden">
+    <div class="flex flex-col items-center justify-center gap-3 text-center">
+      <div class="relative flex size-32 items-center justify-center rounded-full bg-secondary/60">
+        <gui-history-icon
+          classname="absolute z-[4] size-14 text-neutral-500"
+          strokewidth="1.25"
+        >
+        </gui-history-icon>
+      </div>
+      <div class="flex w-2/3 flex-col items-center justify-center gap-1 break-all text-center">
+        <p class="w-full text-pretty text-sm text-muted-foreground">
+          There is no versioning information about this package yet
+        </p>
+      </div>
+    </div>
+  </div>
+</gui-tabs-content>
+
+`;
+
+exports[`VersionsTabContent renders with versions 1`] = `
+
+<gui-tabs-content value="versions">
+  <section class="flex flex-col px-6 py-4">
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex w-full items-center justify-start">
+        <gui-search-icon
+          classname="absolute ml-3 text-muted-foreground"
+          size="16"
+        >
+        </gui-search-icon>
+        <gui-input
+          placeholder="Filter versions"
+          value
+          classname="h-9 pl-9"
+        >
+        </gui-input>
+      </div>
+      <gui-dropdown-menu>
+        <gui-dropdown-menu-trigger aschild="true">
+          <gui-button
+            variant="outline"
+            classname="h-9 w-fit justify-between gap-2 text-sm [&amp;>[data-chevron]]:aria-expanded:rotate-90"
+          >
+            <gui-list-filter-icon size="16">
+            </gui-list-filter-icon>
+            <span class="text-sm font-normal">
+              Filter
+            </span>
+            <gui-chevron-right-icon
+              data-chevron="true"
+              classname="transition-transform duration-150"
+              size="16"
+            >
+            </gui-chevron-right-icon>
+          </gui-button>
+        </gui-dropdown-menu-trigger>
+        <gui-dropdown-menu-content align="end">
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide pre-releases
+          </gui-dropdown-menu-checkbox-item>
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide older versions
+          </gui-dropdown-menu-checkbox-item>
+        </gui-dropdown-menu-content>
+      </gui-dropdown-menu>
+    </div>
+    <div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="hidden cursor-default grid-cols-12 gap-3 xl:grid">
+          <div class="col-span-2 flex w-full items-center justify-start">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Versions
+              </span>
+              <gui-number-flow
+                start="2"
+                end="2"
+                motionconfig="[object Object]"
+              >
+              </gui-number-flow>
+            </button>
+          </div>
+          <div class="col-span-2 ml-1 flex w-full items-center justify-end text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Size
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Published Date
+              </span>
+            </button>
+          </div>
+          <div class="col-span-2 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Downloads
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 flex w-full items-center justify-center text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Publisher
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-x-6 bottom-0 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card blur-sm">
+          </div>
+          <div class="absolute -inset-x-6 -bottom-2 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card">
+          </div>
+          <gui-virtuoso
+            style="height: 800px;"
+            classname="scrollbar-thumb-rounded-full flex flex-col scrollbar scrollbar-thin scrollbar-track-muted-foreground/20 scrollbar-thumb-neutral-500"
+            data="[object Object],[object Object]"
+          >
+          </gui-virtuoso>
+        </div>
+      </div>
+    </div>
+  </section>
+</gui-tabs-content>
+
+`;
+
+exports[`VersionsTabContent toggles pre-releases 1`] = `
+
+<gui-tabs-content value="versions">
+  <section class="flex flex-col px-6 py-4">
+    <div class="mb-3 flex items-center gap-2">
+      <div class="relative flex w-full items-center justify-start">
+        <gui-search-icon
+          classname="absolute ml-3 text-muted-foreground"
+          size="16"
+        >
+        </gui-search-icon>
+        <gui-input
+          placeholder="Filter versions"
+          value
+          classname="h-9 pl-9"
+        >
+        </gui-input>
+      </div>
+      <gui-dropdown-menu>
+        <gui-dropdown-menu-trigger aschild="true">
+          <gui-button
+            variant="outline"
+            classname="h-9 w-fit justify-between gap-2 text-sm [&amp;>[data-chevron]]:aria-expanded:rotate-90"
+          >
+            <gui-list-filter-icon size="16">
+            </gui-list-filter-icon>
+            <span class="text-sm font-normal">
+              Filter
+            </span>
+            <gui-chevron-right-icon
+              data-chevron="true"
+              classname="transition-transform duration-150"
+              size="16"
+            >
+            </gui-chevron-right-icon>
+          </gui-button>
+        </gui-dropdown-menu-trigger>
+        <gui-dropdown-menu-content align="end">
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide pre-releases
+          </gui-dropdown-menu-checkbox-item>
+          <gui-dropdown-menu-checkbox-item checked="false">
+            Hide older versions
+          </gui-dropdown-menu-checkbox-item>
+        </gui-dropdown-menu-content>
+      </gui-dropdown-menu>
+    </div>
+    <div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="hidden cursor-default grid-cols-12 gap-3 xl:grid">
+          <div class="col-span-2 flex w-full items-center justify-start">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Versions
+              </span>
+              <gui-number-flow
+                start="2"
+                end="2"
+                motionconfig="[object Object]"
+              >
+              </gui-number-flow>
+            </button>
+          </div>
+          <div class="col-span-2 ml-1 flex w-full items-center justify-end text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Size
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Published Date
+              </span>
+            </button>
+          </div>
+          <div class="col-span-2 w-full text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Downloads
+              </span>
+            </button>
+          </div>
+          <div class="col-span-3 flex w-full items-center justify-center text-center">
+            <button class="duration-250 inline-flex cursor-default items-center justify-center gap-2 text-nowrap rounded-sm px-2 py-1 text-sm text-muted-foreground transition-all hover:bg-secondary hover:text-foreground [&amp;>svg]:size-4">
+              <gui-arrow-up-down-icon>
+              </gui-arrow-up-down-icon>
+              <span>
+                Publisher
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-x-6 bottom-0 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card blur-sm">
+          </div>
+          <div class="absolute -inset-x-6 -bottom-2 z-[10] h-[20px] w-[calc(100%+3rem)] bg-card">
+          </div>
+          <gui-virtuoso
+            style="height: 800px;"
+            classname="scrollbar-thumb-rounded-full flex flex-col scrollbar scrollbar-thin scrollbar-track-muted-foreground/20 scrollbar-thumb-neutral-500"
+            data="[object Object],[object Object]"
+          >
+          </gui-virtuoso>
+        </div>
+      </div>
+    </div>
+  </section>
+</gui-tabs-content>
+
+`;

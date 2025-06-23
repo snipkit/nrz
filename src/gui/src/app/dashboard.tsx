@@ -1,13 +1,11 @@
+import { useNavigate } from 'react-router'
 import { useEffect } from 'react'
-import { DashboardGrid } from '@/components/dashboard-grid/index.jsx'
-import { useGraphStore } from '@/state/index.js'
-import { startDashboardData } from '@/lib/start-dashboard-data.js'
+import { DashboardGrid } from '@/components/dashboard-grid/index.tsx'
+import { useGraphStore } from '@/state/index.ts'
+import { startDashboardData } from '@/lib/start-data.ts'
 
 export const Dashboard = () => {
-  const dashboard = useGraphStore(state => state.dashboard)
-  const updateActiveRoute = useGraphStore(
-    state => state.updateActiveRoute,
-  )
+  const navigate = useNavigate()
   const updateDashboard = useGraphStore(
     state => state.updateDashboard,
   )
@@ -18,35 +16,15 @@ export const Dashboard = () => {
 
   useEffect(() => {
     startDashboardData({
-      updateActiveRoute,
+      navigate,
       updateErrorCause,
       updateDashboard,
       stamp,
     })
-
-    history.pushState(
-      { query: '', route: '/dashboard' },
-      '',
-      '/dashboard',
-    )
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    window.scrollTo?.(0, 0)
-  }, [stamp])
+  }, [stamp, navigate, updateErrorCause, updateDashboard])
 
   return (
-    <section className="flex min-h-[80svh] w-full grow flex-col bg-white dark:bg-black">
-      <div className="flex w-full items-center justify-between border-b-[1px] border-t-[1px] border-solid px-8 py-4">
-        {dashboard?.cwd ?
-          <p className="font-mono text-xs font-light text-muted-foreground">
-            Directory: {dashboard.cwd}
-          </p>
-        : ''}
-        {dashboard?.buildVersion ?
-          <p className="text-right font-mono text-xs font-light text-muted-foreground">
-            build: v{dashboard.buildVersion}
-          </p>
-        : ''}
-      </div>
+    <section className="flex h-full max-h-[calc(100svh-65px-16px)] w-full grow flex-col rounded-b-lg border-x-[1px] border-b-[1px]">
       <DashboardContent />
     </section>
   )

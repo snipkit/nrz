@@ -1,11 +1,8 @@
 import { splitDepID } from '@nrz/dep-id/browser'
-import {
-  type LockfileData,
-  getBooleanFlagsFromNum,
-  type LockfileNode,
-} from './types.ts'
-import { type DepID } from '@nrz/dep-id'
-import { type GraphLike } from '../types.ts'
+import { getBooleanFlagsFromNum } from './types.ts'
+import type { LockfileData, LockfileNode } from './types.ts'
+import type { DepID } from '@nrz/dep-id'
+import type { GraphLike } from '../types.ts'
 
 export const loadNodes = (
   graph: GraphLike,
@@ -17,8 +14,15 @@ export const loadNodes = (
     // graph and it should not create new nodes if an existing one is there
     if (graph.nodes.has(id)) continue
 
-    const [flags, name, integrity, resolved, location, manifest] =
-      lockfileNode
+    const [
+      flags,
+      name,
+      integrity,
+      resolved,
+      location,
+      manifest,
+      rawManifest,
+    ] = lockfileNode
     const [type, , spec] = splitDepID(id)
 
     // if the lockfile has manifest data then it should just use that
@@ -43,5 +47,8 @@ export const loadNodes = (
     node.resolved = resolved ?? undefined
     if (!node.resolved) node.setResolved()
     if (location) node.location = location
+    if (manifest && rawManifest) {
+      node.setConfusedManifest(manifest, rawManifest)
+    }
   }
 }

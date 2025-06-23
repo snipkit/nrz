@@ -2,13 +2,14 @@
 
 exports[`Footer Component > renders the copyright text 1`] = `
 
-<footer class="border-t-[1px] bg-white dark:bg-black">
+<footer>
   <div class="flex w-full flex-col gap-x-4 gap-y-4 px-6 py-6">
     <div class="flex w-full items-center justify-between">
       <div class="flex gap-4">
         <a
           href="https://www.linkedin.com/company/nrz/"
           aria-label="linkedin"
+          target="_blank"
         >
           <gui-linkedin-icon classname="h-5 fill-black dark:fill-white">
           </gui-linkedin-icon>
@@ -16,13 +17,15 @@ exports[`Footer Component > renders the copyright text 1`] = `
         <a
           href="https://x.com/nrz"
           aria-label="twitter-x"
+          target="_blank"
         >
           <gui-twitter-icon classname="h-5 fill-black dark:fill-white">
           </gui-twitter-icon>
         </a>
         <a
-          href="https://github.com/khulnasoft"
+          href="https://github.com/khulnasoft-lab"
           aria-label="github"
+          target="_blank"
         >
           <gui-github-icon classname="h-5 fill-black dark:fill-white">
           </gui-github-icon>
@@ -30,6 +33,7 @@ exports[`Footer Component > renders the copyright text 1`] = `
         <a
           href="https://discord.gg/nrz"
           aria-label="discord"
+          target="_blank"
         >
           <gui-discord-icon classname="h-5 fill-black dark:fill-white">
           </gui-discord-icon>
@@ -42,20 +46,20 @@ exports[`Footer Component > renders the copyright text 1`] = `
     </div>
     <div class="flex w-full flex-row items-center justify-between">
       <a
-        href="https://www.khulnasoft.com/"
+        href="https://www.nrz.sh/"
         class="text-sm text-muted-foreground no-underline transition-all hover:text-foreground"
       >
         © 2025 nrz technology inc.
       </a>
       <div class="flex flex-row gap-4">
         <a
-          href="https://www.khulnasoft.com/terms"
+          href="https://www.nrz.sh/terms"
           class="text-sm text-muted-foreground no-underline transition-all hover:text-foreground"
         >
           Terms
         </a>
         <a
-          href="https://www.khulnasoft.com/privacy"
+          href="https://www.nrz.sh/privacy"
           class="text-sm text-muted-foreground no-underline transition-all hover:text-foreground"
         >
           Privacy

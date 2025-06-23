@@ -1,0 +1,76 @@
+import { getUser } from '@nrz/git'
+import { PackageJson } from '@nrz/package-json'
+import type { JSONObj } from '@nrz/registry-client'
+import type { Manifest } from '@nrz/types'
+import { basename, resolve } from 'node:path'
+import { getAuthorFromGitUser } from './get-author-from-git-user.ts'
+import { asError } from '@nrz/types'
+export { getAuthorFromGitUser }
+
+// eslint-disable-next-line no-console
+const stderr: (...a: unknown[]) => void = console.error
+
+export type InitOptions = {
+  cwd?: string
+  author?: string
+  logger?: (...a: unknown[]) => void
+}
+
+export type CustomizableInitOptions = {
+  name: string
+  author: string
+}
+
+const template = ({
+  name,
+  author,
+}: CustomizableInitOptions): Manifest => ({
+  name,
+  version: '1.0.0',
+  description: '',
+  main: 'index.js',
+  ...(author ? { author } : undefined),
+})
+
+export type JSONFileInfo<T extends JSONObj = JSONObj> = {
+  path: string
+  data: T
+}
+
+export type InitFileResults = {
+  manifest?: JSONFileInfo<Manifest>
+  // TODO: enable these if/when we do more than just the manifest
+  // Eg:
+  // workspaces?: JSONFileInfo
+  // config?: JSONFileInfo
+}
+
+export const init = async ({
+  cwd = process.cwd(),
+  author,
+  logger = stderr,
+}: InitOptions = {}): Promise<InitFileResults> => {
+  const packageJson = new PackageJson()
+  const path = resolve(cwd, 'package.json')
+  try {
+    packageJson.read(cwd)
+    // will only return here in case the package.json file does not exist
+    logger('package.json already exists')
+    return {}
+  } catch (err) {
+    if (asError(err).message !== 'Could not read package.json file') {
+      throw err
+    }
+
+    const name = basename(cwd)
+    const data = template({
+      name,
+      author:
+        author ??
+        getAuthorFromGitUser(await getUser().catch(() => undefined)),
+    })
+    const indent = 2
+    packageJson.write(cwd, data, indent)
+    return { manifest: { path, data } }
+  }
+}

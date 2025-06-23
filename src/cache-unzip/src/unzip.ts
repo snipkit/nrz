@@ -1,18 +1,28 @@
 import { Cache } from '@nrz/cache'
 import { error } from '@nrz/error-cause'
-import { gunzipSync } from 'zlib'
+import { pathToFileURL } from 'node:url'
+import { gunzipSync } from 'node:zlib'
+import type { Integrity } from '@nrz/types'
+import type EventEmitter from 'node:events'
 
 export const __CODE_SPLIT_SCRIPT_NAME = import.meta.filename
 
-export const main = async (
+const isMain = (path?: string) =>
+  path === __CODE_SPLIT_SCRIPT_NAME ||
+  path === pathToFileURL(__CODE_SPLIT_SCRIPT_NAME).toString()
+
+const main = async (
   path: undefined | string,
-  input = process.stdin,
+  input: EventEmitter = process.stdin,
 ) => {
-  if (!path) process.exit(1)
+  if (!path) {
+    return false
+  }
+
   const keys = await new Promise<string[]>(res => {
     const chunks: Buffer[] = []
     let chunkLen = 0
-    input.on('data', chunk => {
+    input.on('data', (chunk: Buffer) => {
       chunks.push(chunk)
       chunkLen += chunk.length
     })
@@ -26,7 +36,9 @@ export const main = async (
     })
   })
 
-  if (!keys.length) process.exit(1)
+  if (!keys.length) {
+    return false
+  }
 
   const cache = new Cache({ path })
 
@@ -54,13 +66,10 @@ export const main = async (
     return (a << 24) | (b << 16) | (c << 8) | d
   }
 
-  let didSomething = false
-  await Promise.all(
+  const results = await Promise.all(
     keys.map(async key => {
       const buffer = await cache.fetch(key)
-      /* c8 ignore next - should never happen */
-      if (!buffer || buffer.length < 4) return
-      didSomething = true
+      if (!buffer || buffer.length < 4) return null
       const headSizeOriginal = readSize(buffer, 0)
       const body = buffer.subarray(headSizeOriginal)
       if (body[0] === 0x1f && body[1] === 0x8b) {
@@ -71,6 +80,8 @@ export const main = async (
         let sawEncoding = false
         let isEncoding = false
         let isContentLength = false
+        let isIntegrity = false
+        let integrity: undefined | Integrity = undefined
         while (i < headersBuffer.length - 4) {
           const size = readSize(headersBuffer, i)
           const h = headersBuffer.subarray(i + 4, i + size)
@@ -81,8 +92,12 @@ export const main = async (
             isContentLength = false
             i += size
             continue
+          } else if (isIntegrity) {
+            isIntegrity = false
+            integrity = h.toString() as Integrity
+            headers.push(h)
           } else {
-            if (i % 2 === 0) {
+            if (headers.length % 2 === 0) {
               // it's a key
               if (h.toString().toLowerCase() === 'content-length') {
                 isContentLength = true
@@ -95,6 +110,11 @@ export const main = async (
               ) {
                 sawEncoding = true
                 isEncoding = true
+              } else if (
+                !integrity &&
+                h.toString().toLowerCase() === 'integrity'
+              ) {
+                isIntegrity = true
               }
             }
             headers.push(h)
@@ -141,17 +161,36 @@ export const main = async (
         )
         chunks.unshift(hlBuf)
         chunks.push(unz)
-        cache.set(key, Buffer.concat(chunks, headLength + unz.length))
+        cache.set(
+          key,
+          Buffer.concat(chunks, headLength + unz.length),
+          {
+            integrity,
+          },
+        )
       }
+      return true
     }),
   )
   await cache.promise()
-  // TS mistakenly things didSomething is always false
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!didSomething) process.exit(1)
+  return results.some(Boolean)
 }
 
-if (process.argv[1] === import.meta.filename) {
-  process.title = 'nrz-cache-unzip'
-  void main(process.argv[2], process.stdin)
+const g = globalThis as typeof globalThis & {
+  __NRZ_INTERNAL_MAIN?: string
 }
+
+if (isMain(g.__NRZ_INTERNAL_MAIN ?? process.argv[1])) {
+  process.title = 'nrz-cache-unzip'
+  // When compiled there can be other leading args supplied by Deno
+  // so always use the last arg unless there are only two which means
+  // no path was supplied.
+  const path =
+    process.argv.length === 2 ? undefined : process.argv.at(-1)
+  const res = await main(path, process.stdin)
+  if (!res) {
+    process.exit(1)
+  }
+}
+
+export default main

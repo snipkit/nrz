@@ -1,7 +1,7 @@
-import { type PackageJson } from '@nrz/package-json'
-import { type RollbackRemove } from '@nrz/rollback-remove'
-import { type PathScurry } from 'path-scurry'
-import { type Diff } from '../diff.ts'
+import type { PackageJson } from '@nrz/package-json'
+import type { RollbackRemove } from '@nrz/rollback-remove'
+import type { PathScurry } from 'path-scurry'
+import type { Diff } from '../diff.ts'
 import { addEdge } from './add-edge.ts'
 
 export const addEdges = (

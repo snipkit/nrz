@@ -1,7 +1,7 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { type EdgeLike, type NodeLike } from '@nrz/graph'
-import { type Manifest } from '@nrz/types'
-import { type Attribute } from 'postcss-selector-parser'
+import type { EdgeLike, NodeLike } from '@nrz/graph'
+import type { Manifest } from '@nrz/types'
+import type { Attribute } from 'postcss-selector-parser'
 import t from 'tap'
 import {
   attribute,
@@ -17,10 +17,10 @@ import {
   getGraphSelectionState,
   selectorFixture,
 } from './fixtures/selector.ts'
-import { type TestCase } from './fixtures/types.ts'
-import {
-  type GraphSelectionState,
-  type ParserState,
+import type { TestCase } from './fixtures/types.ts'
+import type {
+  GraphSelectionState,
+  ParserState,
 } from '../src/types.ts'
 
 const testAttr = selectorFixture(attribute)
@@ -133,7 +133,7 @@ t.test('attribute', async t => {
 
 t.test('bad selector type', async t => {
   await t.rejects(
-    testAttr('.dev'),
+    testAttr(':dev'),
     /Mismatching query node/,
     'should throw an error',
   )
@@ -234,11 +234,17 @@ t.test('filterAttributes', async t => {
       edges: new Set<EdgeLike>(),
       nodes: new Set<NodeLike>(),
     },
+    comment: '',
     current: { type: 'attribute', value: 'postinstall' } as Attribute,
     initial: copyGraphSelectionState(all),
     partial: all,
     loose: false,
     walk: async (state: ParserState) => state,
+    retries: 0,
+    securityArchive: undefined,
+    specOptions: {},
+    signal: new AbortController().signal,
+    specificity: { idCounter: 0, commonCounter: 0 },
   }
   filterAttributes(
     state,

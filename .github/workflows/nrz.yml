@@ -1,0 +1,137 @@
+name: CI (with nrz)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '^22.14.0'
+          check-latest: true
+
+      - name: Boostrap
+        run: npx nrz install
+
+      - name: Build nrz
+        run: node --run build:bundle
+      
+      - name: Add bundle to PATH
+        run: echo "$GITHUB_WORKSPACE/scripts/bins/bundle" >> $GITHUB_PATH
+      
+      - name: Install Dependencies
+        run: nrz install
+
+      - name: Formatting
+        id: format
+        run: nrr format:check
+
+      - name: Linting
+        id: lint
+        continue-on-error: true
+        run: nrr lint:check
+
+      - name: Dependencies
+        id: deps
+        continue-on-error: true
+        run: nrr deps:check
+
+      - name: Docs
+        id: docs
+        continue-on-error: true
+        run: nrr --workspace ./www/docs typedoc:check
+
+      - name: Consistent Workspaces
+        id: workspaces
+        continue-on-error: true
+        run: |
+          nrr fix:pkg
+          nrr --recursive tshy
+          if [ -n "$(git status --porcelain)" ]; then
+            git diff
+            exit 1
+          fi
+
+      - name: Check Results
+        continue-on-error: true
+        run: |
+          declare -A OUTCOMES=(
+            [format]="${{ steps.format.outcome }}"
+            [lint]="${{ steps.lint.outcome }}"
+            [deps]="${{ steps.deps.outcome }}"
+            [docs]="${{ steps.docs.outcome }}"
+            [workspaces]="${{ steps.workspaces.outcome }}"
+          )
+          STATUS=0
+          for STEP in "${!OUTCOMES[@]}"; do
+            OUTCOME="${OUTCOMES[$STEP]}"
+            echo "$STEP: $OUTCOME"
+            if [ "$OUTCOME" != "success" ]; then
+              STATUS=1
+            fi
+          done
+          exit $STATUS
+
+  test:
+    name: Test - ${{ matrix.platform.name }} - ${{ matrix.node-version }}
+    runs-on: ${{ matrix.platform.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
+    strategy:
+      matrix:
+        node-version: [22.x]
+        platform:
+          - name: Ubuntu
+            os: ubuntu-latest
+            shell: bash
+      fail-fast: false
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Use Nodejs ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+
+      - name: Boostrap
+        run: npx nrz install
+
+      - name: Build nrz
+        run: node --run build:bundle
+      
+      - name: Add built to PATH
+        run: echo "$GITHUB_WORKSPACE/scripts/bins/bundle" >> $GITHUB_PATH
+      
+      - name: Install Dependencies
+        run: nrz install
+
+      - name: Run Typecheck
+        continue-on-error: true
+        run: nrr --recursive typecheck
+          
+      - name: Run Tests
+        continue-on-error: true
+        run: nrr --recursive test

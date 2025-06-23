@@ -1,0 +1,242 @@
+{
+  "executionStatus": {
+    "/workspaces/nrz/nrz/infra/benchmark": {
+      "status": "passed",
+      "duration": 3854.570215
+    },
+    "/workspaces/nrz/nrz/src/dot-prop": {
+      "status": "passed",
+      "duration": 3863.033882
+    },
+    "/workspaces/nrz/nrz/src/error-cause": {
+      "status": "passed",
+      "duration": 3940.136808
+    },
+    "/workspaces/nrz/nrz/src/fast-split": {
+      "status": "passed",
+      "duration": 4071.172733
+    },
+    "/workspaces/nrz/nrz/src/git-scp-url": {
+      "status": "passed",
+      "duration": 4346.179807
+    },
+    "/workspaces/nrz/nrz/src/rollback-remove": {
+      "status": "passed",
+      "duration": 9884.1585
+    },
+    "/workspaces/nrz/nrz/src/which": {
+      "status": "passed",
+      "duration": 4937.012037
+    },
+    "/workspaces/nrz/nrz/src/xdg": {
+      "status": "passed",
+      "duration": 3200.615635
+    },
+    "/workspaces/nrz/nrz/www/docs": {
+      "status": "passed",
+      "duration": 15.781756
+    },
+    "/workspaces/nrz/nrz/src/cmd-shim": {
+      "status": "passed",
+      "duration": 10192.75263
+    },
+    "/workspaces/nrz/nrz/src/dss-parser": {
+      "status": "passed",
+      "duration": 4068.055184
+    },
+    "/workspaces/nrz/nrz/src/keychain": {
+      "status": "passed",
+      "duration": 4379.724406
+    },
+    "/workspaces/nrz/nrz/src/promise-spawn": {
+      "status": "passed",
+      "duration": 3983.579297
+    },
+    "/workspaces/nrz/nrz/src/types": {
+      "status": "passed",
+      "duration": 3960.460378
+    },
+    "/workspaces/nrz/nrz/src/nrz-json": {
+      "status": "passed",
+      "duration": 3270.821094
+    },
+    "/workspaces/nrz/nrz/src/cache": {
+      "status": "passed",
+      "duration": 3704.86034
+    },
+    "/workspaces/nrz/nrz/src/dss-breadcrumb": {
+      "status": "passed",
+      "duration": 4195.430261
+    },
+    "/workspaces/nrz/nrz/src/output": {
+      "status": "passed",
+      "duration": 6643.501179
+    },
+    "/workspaces/nrz/nrz/src/package-json": {
+      "status": "passed",
+      "duration": 4770.538606
+    },
+    "/workspaces/nrz/nrz/src/semver": {
+      "status": "passed",
+      "duration": 17564.021081
+    },
+    "/workspaces/nrz/nrz/src/tar": {
+      "status": "passed",
+      "duration": 18528.3785
+    },
+    "/workspaces/nrz/nrz/src/url-open": {
+      "status": "passed",
+      "duration": 5161.808249
+    },
+    "/workspaces/nrz/nrz/src/cache-unzip": {
+      "status": "passed",
+      "duration": 19097.864415
+    },
+    "/workspaces/nrz/nrz/src/run": {
+      "status": "passed",
+      "duration": 44889.548537
+    },
+    "/workspaces/nrz/nrz/src/spec": {
+      "status": "failure",
+      "duration": 34.868128,
+      "error": {
+        "code": "ELIFECYCLE",
+        "errno": "ENOENT",
+        "syscall": "spawn",
+        "file": "sh",
+        "pkgid": "@nrz/spec@0.0.0-15",
+        "stage": "snap",
+        "script": "tap",
+        "pkgname": "@nrz/spec"
+      },
+      "message": "@nrz/spec@0.0.0-15 snap: `tap`\nspawn ENOENT",
+      "prefix": "/workspaces/nrz/nrz/src/spec"
+    },
+    "/workspaces/nrz/nrz/src/dep-id": {
+      "status": "passed",
+      "duration": 4443.162541
+    },
+    "/workspaces/nrz/nrz/src/pick-manifest": {
+      "status": "passed",
+      "duration": 4536.064665
+    },
+    "/workspaces/nrz/nrz/src/registry-client": {
+      "status": "passed",
+      "duration": 30094.86897
+    },
+    "/workspaces/nrz/nrz/src/git": {
+      "status": "passed",
+      "duration": 23643.367396
+    },
+    "/workspaces/nrz/nrz/src/workspaces": {
+      "status": "passed",
+      "duration": 4119.762832
+    },
+    "/workspaces/nrz/nrz/src/init": {
+      "status": "passed",
+      "duration": 7774.948427
+    },
+    "/workspaces/nrz/nrz/src/package-info": {
+      "status": "passed",
+      "duration": 12824.382209
+    },
+    "/workspaces/nrz/nrz/src/satisfies": {
+      "status": "passed",
+      "duration": 5163.800445
+    },
+    "/workspaces/nrz/nrz/src/graph": {
+      "status": "passed",
+      "duration": 71110.717506
+    },
+    "/workspaces/nrz/nrz/src/security-archive": {
+      "status": "passed",
+      "duration": 9067.09907
+    },
+    "/workspaces/nrz/nrz/src/nrx": {
+      "status": "passed",
+      "duration": 23997.823992
+    },
+    "/workspaces/nrz/nrz/src/query": {
+      "status": "passed",
+      "duration": 89726.062191
+    },
+    "/workspaces/nrz/nrz/src/gui": {
+      "status": "passed",
+      "duration": 239114.87048
+    },
+    "/workspaces/nrz/nrz/src/server": {
+      "status": "passed",
+      "duration": 47171.825647
+    },
+    "/workspaces/nrz/nrz/src/cli-sdk": {
+      "status": "failure",
+      "duration": 4293.184045,
+      "error": {
+        "code": "ELIFECYCLE",
+        "errno": 1,
+        "pkgid": "@nrz/cli-sdk@0.0.0-15",
+        "stage": "snap",
+        "script": "tap",
+        "pkgname": "@nrz/cli-sdk"
+      },
+      "message": "@nrz/cli-sdk@0.0.0-15 snap: `tap`\nExit status 1",
+      "prefix": "/workspaces/nrz/nrz/src/cli-sdk"
+    },
+    "/workspaces/nrz/nrz/infra/build": {
+      "status": "failure",
+      "duration": 8.902014,
+      "error": {
+        "code": "ELIFECYCLE",
+        "errno": "ENOENT",
+        "syscall": "spawn",
+        "file": "sh",
+        "pkgid": "@nrz/infra-build@0.0.0",
+        "stage": "snap",
+        "script": "tap",
+        "pkgname": "@nrz/infra-build"
+      },
+      "message": "@nrz/infra-build@0.0.0 snap: `tap`\nspawn ENOENT",
+      "prefix": "/workspaces/nrz/nrz/infra/build"
+    },
+    "/workspaces/nrz/nrz/infra/cli": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-compiled": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-darwin-arm64": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-darwin-x64": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-js": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-linux-arm64": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-linux-x64": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/cli-win32-x64": {
+      "status": "skipped"
+    },
+    "/workspaces/nrz/nrz/infra/smoke-test": {
+      "status": "failure",
+      "duration": 4.238155,
+      "error": {
+        "code": "ELIFECYCLE",
+        "errno": "ENOENT",
+        "syscall": "spawn",
+        "file": "sh",
+        "pkgid": "@nrz/smoke-test@0.0.0",
+        "stage": "snap",
+        "script": "tap",
+        "pkgname": "@nrz/smoke-test"
+      },
+      "message": "@nrz/smoke-test@0.0.0 snap: `tap`\nspawn ENOENT",
+      "prefix": "/workspaces/nrz/nrz/infra/smoke-test"
+    }
+  }
+}

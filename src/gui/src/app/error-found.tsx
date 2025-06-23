@@ -1,32 +1,26 @@
-import { useEffect, type MouseEvent } from 'react'
-import { useGraphStore } from '@/state/index.js'
-import { Button } from '@/components/ui/button.jsx'
+import { useLocation, NavLink, useNavigate } from 'react-router'
+import type { MouseEvent } from 'react'
+import { useGraphStore } from '@/state/index.ts'
+import { Button } from '@/components/ui/button.tsx'
 import { ArrowRight, TriangleAlert } from 'lucide-react'
+import { cn } from '@/lib/utils.ts'
 
 export const ErrorFound = () => {
-  const updateActiveRoute = useGraphStore(
-    state => state.updateActiveRoute,
-  )
-  const previousRoute = useGraphStore(state => state.previousRoute)
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const errorCause = useGraphStore(state => state.errorCause)
-
-  useEffect(() => {
-    history.pushState({ query: '', route: '/error' }, '', '/error')
-    window.scrollTo(0, 0)
-  })
-
-  const onDashboardButtonClick = (e: MouseEvent) => {
-    e.preventDefault()
-    updateActiveRoute('/dashboard')
-  }
 
   const onBackButtonClick = (e: MouseEvent) => {
     e.preventDefault()
-    updateActiveRoute(previousRoute)
+    void navigate(-1)
   }
 
   return (
-    <section className="flex min-h-[80svh] grow flex-col items-center justify-center bg-white dark:bg-black">
+    <section
+      className={cn(
+        'flex flex-col items-center justify-center rounded-lg border-[1px] bg-white dark:bg-black',
+        pathname === '/error' ? 'h-full' : 'h-screen',
+      )}>
       <div className="relative -mt-32 flex flex-col items-center justify-center">
         <div className="relative flex flex-col gap-8">
           <div className="absolute inset-0 z-[2] bg-gradient-radial from-white/0 via-transparent to-white dark:from-black/0 dark:to-black" />
@@ -58,9 +52,11 @@ export const ErrorFound = () => {
             <Button variant="outline" onClick={onBackButtonClick}>
               Back
             </Button>
-            <Button onClick={onDashboardButtonClick}>
-              <span>Dashboard</span>
-              <ArrowRight />
+            <Button asChild>
+              <NavLink to="/">
+                <span>Dashboard</span>
+                <ArrowRight />
+              </NavLink>
             </Button>
           </div>
         </div>

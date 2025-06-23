@@ -1,13 +1,13 @@
 import { gitScpURL } from '@nrz/git-scp-url'
-import {
-  type SpawnResultStderrString,
-  type SpawnResultStdoutString,
+import type {
+  SpawnResultStderrString,
+  SpawnResultStdoutString,
 } from '@nrz/promise-spawn'
 import { LRUCache } from 'lru-cache'
-import { fileURLToPath } from 'url'
-import { type GitOptions } from './index.ts'
+import { fileURLToPath } from 'node:url'
+import type { GitOptions } from './index.ts'
 import { linesToRevs } from './lines-to-revs.ts'
-import { type RevDoc } from '@nrz/types'
+import type { RevDoc } from '@nrz/types'
 import { spawn } from './spawn.ts'
 
 const fetchMethod = async (

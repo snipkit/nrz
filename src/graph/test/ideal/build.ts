@@ -1,4 +1,5 @@
-import { type DepIDTuple, joinDepIDTuple } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import type { DepIDTuple } from '@nrz/dep-id'
 import { PackageInfoClient } from '@nrz/package-info'
 import { PackageJson } from '@nrz/package-json'
 import { Monorepo } from '@nrz/workspaces'
@@ -6,10 +7,10 @@ import { PathScurry } from 'path-scurry'
 import t from 'tap'
 import { build } from '../../src/ideal/build.ts'
 import { objectLikeOutput } from '../../src/visualization/object-like-output.ts'
-import { type LockfileEdgeKey } from '../../src/index.ts'
-import {
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
+import type { LockfileEdgeKey } from '../../src/index.ts'
+import type {
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
 } from '../../src/dependencies.ts'
 
 const edgeKey = (from: DepIDTuple, to: string): LockfileEdgeKey =>

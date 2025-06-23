@@ -1,0 +1,71 @@
+{
+  "name": "@nrz/nrz-json",
+  "description": "utility for finding, reading, and updating the nrz.json file",
+  "version": "0.0.0-15",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
+    "directory": "src/nrz-json"
+  },
+  "tshy": {
+    "selfLink": false,
+    "liveDev": true,
+    "dialects": [
+      "esm"
+    ],
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@nrz/error-cause": "workspace:*",
+    "@nrz/xdg": "workspace:*",
+    "polite-json": "catalog:",
+    "walk-up-path": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tshy": "catalog:",
+    "typedoc": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "license": "BSD-2-Clause-Patent",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "prepack": "tshy",
+    "snap": "tap",
+    "test": "tap",
+    "posttest": "tsc --noEmit",
+    "tshy": "tshy",
+    "typecheck": "tsc --noEmit"
+  },
+  "tap": {
+    "extends": "../../tap-config.yaml"
+  },
+  "prettier": "../../.prettierrc.js",
+  "module": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "default": "./src/index.ts"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

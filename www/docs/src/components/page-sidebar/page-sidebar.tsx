@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { AlignLeft } from 'lucide-react'
-import { type Props } from '@astrojs/starlight/props'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import type { Props } from '@astrojs/starlight/props'
+import { ScrollArea } from '@/components/ui/scroll-area.tsx'
 
-const PageSidebar = ({ toc }: Props) => {
+export const PageSidebar = ({ toc }: Props) => {
   const [activeAnchor, setActiveAnchor] = useState<string | null>(
     null,
   )
@@ -28,14 +28,11 @@ const PageSidebar = ({ toc }: Props) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        let lastVisible: string | null = null
-
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            lastVisible = entry.target.id
-          }
+        const visible = entries.filter(entry => {
+          return entry.isIntersecting
         })
-        setActiveAnchor(lastVisible)
+        const firstVisible = visible[0]?.target?.id || null
+        setActiveAnchor(firstVisible)
       },
       {
         threshold: [0.25, 0.5, 0.75],
@@ -58,7 +55,9 @@ const PageSidebar = ({ toc }: Props) => {
 
   const renderItems = (items: typeof anchors) =>
     items.map((item, idx) => (
-      <div key={idx} className="flex flex-col gap-1">
+      <div
+        key={idx}
+        className="flex flex-col gap-1 pb-1 pr-8 8xl:pr-0">
         <Link href={item.slug} isActive={activeAnchor === item.slug}>
           {item.text}
         </Link>
@@ -67,15 +66,13 @@ const PageSidebar = ({ toc }: Props) => {
     ))
 
   return (
-    <div className="sticky top-0 hidden h-fit flex-col items-start pb-8 pt-8 md:flex md:w-[300px]">
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-bold">
+    <div className="hidden h-fit flex-col items-start py-8 md:flex md:w-[200px]">
+      <h3 className="mb-3 inline-flex items-center gap-2 text-sm text-foreground/80">
         <AlignLeft size={16} />
         On this page
       </h3>
-      <ScrollArea className="max-h-[90svh] overflow-y-auto">
-        <div className="-ml-2 flex flex-col gap-2 pr-4">
-          {renderItems(anchors)}
-        </div>
+      <ScrollArea className="max-h-[80svh] w-full overflow-y-auto">
+        {renderItems(anchors)}
       </ScrollArea>
     </div>
   )
@@ -93,14 +90,10 @@ const Link = ({
   return (
     <a
       href={`#${href}`}
-      className={`cursor-pointer pl-2 text-sm no-underline transition-all ${
-        isActive ?
-          'border-l-[2px] border-foreground text-foreground'
-        : 'text-muted-foreground'
-      } hover:text-foreground`}>
+      className={`relative cursor-pointer text-sm no-underline transition-all hover:text-foreground ${
+        isActive ? 'text-foreground' : 'text-muted-foreground'
+      }`}>
       {children}
     </a>
   )
 }
-
-export default PageSidebar

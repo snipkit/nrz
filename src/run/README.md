@@ -2,7 +2,9 @@
 
 # @nrz/run
 
-Run a script defined in a `package.json` file (eg, `nrz run` and lifecycle scripts), or an arbitrary command as if it was (eg, `nrz exec`).
+Run a script defined in a `package.json` file (eg, `nrz run` and
+lifecycle scripts), or an arbitrary command as if it was (eg,
+`nrz exec`).
 
 ## Usage
 

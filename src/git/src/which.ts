@@ -1,6 +1,6 @@
 import { error } from '@nrz/error-cause'
 import { whichSync } from '@nrz/which'
-import { type GitOptions } from './index.ts'
+import type { GitOptions } from './index.ts'
 
 let gitPath: string | undefined = undefined
 

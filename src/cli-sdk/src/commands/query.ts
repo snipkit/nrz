@@ -1,0 +1,171 @@
+import type {
+  EdgeLike,
+  HumanReadableOutputGraph,
+  JSONOutputGraph,
+  MermaidOutputGraph,
+  Node,
+} from '@nrz/graph'
+import {
+  actual,
+  humanReadableOutput,
+  jsonOutput,
+  mermaidOutput,
+} from '@nrz/graph'
+import { error } from '@nrz/error-cause'
+import { Query } from '@nrz/query'
+import { SecurityArchive } from '@nrz/security-archive'
+import type { DepID } from '@nrz/dep-id'
+import { commandUsage } from '../config/usage.ts'
+import type { CommandFn, CommandUsage } from '../index.ts'
+import { startGUI } from '../start-gui.ts'
+import type { Views } from '../view.ts'
+import type { LoadedConfig } from '../config/index.js'
+
+export const usage: CommandUsage = () =>
+  commandUsage({
+    command: 'query',
+    usage: [
+      '',
+      '<query> --view=<human | json | mermaid | gui>',
+      '<query> --expect-results=<comparison string>',
+    ],
+    description: `List installed dependencies matching the provided query.
+
+       The nrz Dependency Selector Syntax is a CSS-like query language that
+       allows you to filter installed dependencies using a variety of metadata
+       in the form of CSS-like attributes, pseudo selectors & combinators.`,
+    examples: {
+      [`'#foo'`]: {
+        description: 'Query dependencies declared as "foo"',
+      },
+      [`'*:workspace > *:peer'`]: {
+        description: 'Query all peer dependencies of workspaces',
+      },
+      [`':project > *:attr(scripts, [build])'`]: {
+        description:
+          'Query all direct project dependencies with a "build" script',
+      },
+      [`'[name^="@nrz"]'`]: {
+        description: 'Query packages with names starting with "@nrz"',
+      },
+      [`'*:license(copyleft) --expect-results=0'`]: {
+        description: 'Errors if a copyleft licensed package is found',
+      },
+    },
+    options: {
+      'expect-results': {
+        value: '[number | string]',
+        description:
+          'Sets an expected number of resulting items. Errors if the number of resulting items does not match the set value. Accepts a specific numeric value or a string value starting with either ">", "<", ">=" or "<=" followed by a numeric value to be compared.',
+      },
+      view: {
+        value: '[human | json | mermaid | gui]',
+        description:
+          'Output format. Defaults to human-readable or json if no tty.',
+      },
+    },
+  })
+
+type QueryResult = JSONOutputGraph &
+  MermaidOutputGraph &
+  HumanReadableOutputGraph & { queryString: string }
+
+const validateExpectedResult = (
+  conf: LoadedConfig,
+  edges: EdgeLike[],
+): boolean => {
+  const expectResults = conf.values['expect-results']
+  if (expectResults?.startsWith('>=')) {
+    return edges.length >= parseInt(expectResults.slice(2).trim(), 10)
+  } else if (expectResults?.startsWith('<=')) {
+    return edges.length <= parseInt(expectResults.slice(2).trim(), 10)
+  } else if (expectResults?.startsWith('>')) {
+    return edges.length > parseInt(expectResults.slice(1).trim(), 10)
+  } else if (expectResults?.startsWith('<')) {
+    return edges.length < parseInt(expectResults.slice(1).trim(), 10)
+  } else if (expectResults) {
+    return edges.length === parseInt(expectResults.trim(), 10)
+  }
+  return true
+}
+
+export const views = {
+  json: jsonOutput,
+  mermaid: mermaidOutput,
+  human: humanReadableOutput,
+  gui: async ({ queryString }, _, conf) => {
+    await startGUI(
+      conf,
+      '/explore?query=' + encodeURIComponent(queryString),
+    )
+  },
+} as const satisfies Views<QueryResult>
+
+export const command: CommandFn<QueryResult> = async conf => {
+  const monorepo = conf.options.monorepo
+  const mainManifest = conf.options.packageJson.read(
+    conf.options.projectRoot,
+  )
+  const graph = actual.load({
+    ...conf.options,
+    mainManifest,
+    monorepo,
+    loadManifests: true,
+  })
+
+  const defaultQueryString = '*'
+  const queryString = conf.positionals[0]
+  const securityArchive =
+    queryString && Query.hasSecuritySelectors(queryString) ?
+      await SecurityArchive.start({
+        graph,
+        specOptions: conf.options,
+      })
+    : undefined
+  const query = new Query({
+    graph,
+    specOptions: conf.options,
+    securityArchive,
+  })
+
+  const importers = new Set<Node>()
+  const scopeIDs: DepID[] = []
+
+  if (monorepo) {
+    for (const workspace of monorepo.filter(conf.values)) {
+      const w: Node | undefined = graph.nodes.get(workspace.id)
+      if (w) {
+        importers.add(w)
+        scopeIDs.push(workspace.id)
+      }
+    }
+  }
+  if (importers.size === 0) {
+    for (const importer of graph.importers) {
+      importers.add(importer)
+    }
+  }
+
+  const { edges, nodes } = await query.search(
+    queryString || defaultQueryString,
+    {
+      signal: new AbortController().signal,
+      scopeIDs: scopeIDs.length > 0 ? scopeIDs : undefined,
+    },
+  )
+
+  if (!validateExpectedResult(conf, edges)) {
+    throw error('Unexpected number of items', {
+      found: edges.length,
+      wanted: conf.values['expect-results'],
+    })
+  }
+
+  return {
+    importers,
+    edges,
+    nodes,
+    highlightSelection: !!queryString,
+    queryString: queryString || defaultQueryString,
+  }
+}

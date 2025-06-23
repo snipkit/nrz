@@ -1,6 +1,6 @@
-import { type RevDoc } from '@nrz/types'
+import type { RevDoc } from '@nrz/types'
 import { pickManifest } from '@nrz/pick-manifest'
-import { type GitOptions } from './index.ts'
+import type { GitOptions } from './index.ts'
 import { revs } from './revs.ts'
 
 /**

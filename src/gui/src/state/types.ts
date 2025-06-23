@@ -1,16 +1,14 @@
-import {
-  type LockfileData,
-  type GraphLike,
-  type NodeLike,
-  type EdgeLike,
-} from '@nrz/graph'
-import { type Query } from '@nrz/query'
-import { type SpecOptionsFilled } from '@nrz/spec/browser'
-import { type Integrity, type Manifest } from '@nrz/types'
+import type { LockfileData, GraphLike } from '@nrz/graph'
+import type {
+  Query,
+  QueryResponseEdge,
+  QueryResponseNode,
+} from '@nrz/query'
+import type { SpecOptionsFilled } from '@nrz/spec/browser'
+import type { Integrity, Manifest } from '@nrz/types'
 
 export type Action = {
-  updateActiveRoute: (route: State['activeRoute']) => void
-  updatePreviousRoute: (route: State['activeRoute']) => void
+  updateAppData: (appData: State['appData']) => void
   updateDashboard: (dashboard: State['dashboard']) => void
   updateGraph: (graph: State['graph']) => void
   updateQ: (q: State['q']) => void
@@ -18,10 +16,8 @@ export type Action = {
   updateEdges: (edges: State['edges']) => void
   updateErrorCause: (errorCause: State['errorCause']) => void
   updateHasDashboard: (hasDashboard: State['hasDashboard']) => void
-  updateLinePositionReference: (position: number) => void
   updateNodes: (nodes: State['nodes']) => void
   updateProjectInfo: (projectInfo: State['projectInfo']) => void
-  updateSelectedNode: (node: State['selectedNode']) => void
   updateSpecOptions: (specOptions: State['specOptions']) => void
   updateStamp: () => void
   updateTheme: (theme: State['theme']) => void
@@ -50,12 +46,18 @@ export type ProjectInfo = {
 }
 
 /**
+ * Transfer data JSON object used to send security data from the backend.
+ */
+export type SecurityArchiveTransfer = Record<string, any> | undefined
+
+/**
  * Transfer data object used to send data from the cli.
  */
 export type TransferData = {
   importers: RawNode[]
   lockfile: LockfileData
   projectInfo: ProjectInfo
+  securityArchive: SecurityArchiveTransfer
 }
 
 export type RawNode = {
@@ -77,13 +79,9 @@ export type RawNode = {
  */
 export type State = {
   /**
-   * The current location.pathname (e.g. route) in the app.
+   * Data for the app.
    */
-  activeRoute: string
-  /**
-   * The last route in the app.
-   */
-  previousRoute: string
+  appData?: AppData
   /**
    * List of projects to be displayed in the dashboard.
    */
@@ -95,7 +93,7 @@ export type State = {
   /**
    * List of selected edges returned after querying the graph.
    */
-  edges: EdgeLike[]
+  edges: QueryResponseEdge[]
   /**
    * An informative message to be displayed when an error occurs.
    */
@@ -105,13 +103,9 @@ export type State = {
    */
   hasDashboard: boolean
   /**
-   * A reference value to properly draw connections between nodes in the graph.
-   */
-  linePositionReference: number
-  /**
    * List of selected nodes returned after querying the graph.
    */
-  nodes: NodeLike[]
+  nodes: QueryResponseNode[]
   /**
    * Information about the current project being explored.
    */
@@ -124,11 +118,6 @@ export type State = {
    * The query string typed by the user in the interface.
    */
   query: string
-  // TODO: remove selectedNode as it's unused
-  /**
-   * Reference to a currently selected node.
-   */
-  selectedNode?: NodeLike
   /**
    * Spec options used for the current graph.
    */
@@ -172,15 +161,18 @@ export type DashboardLocation = {
   readablePath: string
 }
 
+export type AppData = {
+  /**
+   * The build version of the app.
+   */
+  buildVersion: string
+}
+
 export type DashboardData = {
   /**
    * The reference current working directory.
    */
   cwd: string
-  /**
-   * The app version.
-   */
-  buildVersion: string
   /**
    * The default author name to be used when creating new projects.
    */

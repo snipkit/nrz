@@ -1,0 +1,23 @@
+{
+  "name": "nrz",
+  "description": "The nrz CLI",
+  "version": "0.0.0-15",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
+    "directory": "infra/cli"
+  },
+  "devDependencies": {
+    "@nrz/infra-build": "workspace:*"
+  },
+  "license": "BSD-2-Clause-Patent",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepack": "nrz-build-prepack"
+  },
+  "publishConfig": {
+    "directory": "./.build-publish"
+  }
+}

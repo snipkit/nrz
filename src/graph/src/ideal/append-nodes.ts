@@ -1,20 +1,21 @@
-import { joinDepIDTuple, type DepID } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
-import { type PackageInfoClient } from '@nrz/package-info'
-import { Spec, type SpecOptions } from '@nrz/spec'
-import {
-  longDependencyTypes,
-  type DependencyTypeLong,
-} from '@nrz/types'
-import { type PathScurry } from 'path-scurry'
-import {
-  asDependency,
-  shorten,
-  type Dependency,
-} from '../dependencies.ts'
-import { type Graph } from '../graph.ts'
-import { type Node } from '../node.ts'
+import type { PackageInfoClient } from '@nrz/package-info'
+import { Spec } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import { longDependencyTypes } from '@nrz/types'
+import type { DependencyTypeLong } from '@nrz/types'
+import type { PathScurry } from 'path-scurry'
+import { asDependency, shorten } from '../dependencies.ts'
+import type { Dependency } from '../dependencies.ts'
+import type { Graph } from '../graph.ts'
+import type { Node } from '../node.ts'
 import { removeOptionalSubgraph } from '../remove-optional-subgraph.ts'
+import type {
+  GraphModifier,
+  ModifierActiveEntry,
+} from '../modifiers.ts'
 
 type FileTypeInfo = {
   id: DepID
@@ -77,6 +78,8 @@ export const appendNodes = async (
   scurry: PathScurry,
   options: SpecOptions,
   seen: Set<DepID>,
+  modifiers?: GraphModifier,
+  modifierRefs?: Map<string, ModifierActiveEntry>,
 ) => {
   /* c8 ignore next */
   if (seen.has(fromNode.id)) return
@@ -86,8 +89,24 @@ export const appendNodes = async (
     deps.map(async ({ spec, type }) => {
       // see if there's a satisfying node in the graph currently
       const fileTypeInfo = getFileTypeInfo(spec, fromNode, scurry)
+      const activeModifier = modifierRefs?.get(spec.name)
+
+      // here is the place we swap specs if a edge modifier was defined
+      const queryModifier = activeModifier?.modifier.query
+      const completeModifier =
+        activeModifier &&
+        activeModifier.interactiveBreadcrumb.current ===
+          activeModifier.modifier.breadcrumb.last
+      if (
+        queryModifier &&
+        completeModifier &&
+        'spec' in activeModifier.modifier
+      ) {
+        spec = activeModifier.modifier.spec
+      }
+
       const existingNode = graph.findResolution(spec, fromNode)
-      if (existingNode) {
+      if (existingNode && !queryModifier) {
         graph.addEdge(type, spec, fromNode, existingNode)
         return
       }
@@ -147,6 +166,7 @@ export const appendNodes = async (
         spec,
         mani,
         fileTypeInfo?.id,
+        queryModifier,
       )
 
       /* c8 ignore start - not possible, already ensured manifest */
@@ -157,6 +177,10 @@ export const appendNodes = async (
         })
       }
       /* c8 ignore stop */
+
+      if (activeModifier) {
+        modifiers?.updateActiveEntry(node, activeModifier)
+      }
 
       if (fileTypeInfo?.path && fileTypeInfo.isDirectory) {
         node.location = fileTypeInfo.path
@@ -206,6 +230,8 @@ export const appendNodes = async (
             scurry,
             options,
             seen,
+            modifiers,
+            modifiers?.tryDependencies(node, nextDeps),
           ),
         )
       }

@@ -1,12 +1,9 @@
 import { error } from '@nrz/error-cause'
-import os from 'os'
+import { asError } from '@nrz/types'
+import os from 'node:os'
 import { UnpackRequest } from './unpack-request.ts'
-import {
-  isResponseOK,
-  type ResponseError,
-  type ResponseOK,
-  Worker,
-} from './worker.ts'
+import { isResponseOK, Worker } from './worker.ts'
+import type { ResponseError, ResponseOK } from './worker.ts'
 
 export * from './worker.ts'
 
@@ -51,13 +48,14 @@ export class Pool {
       ur.resolve()
       /* c8 ignore start - nearly impossible in normal circumstances */
     } else {
-      const message =
-        m.error instanceof Error ? m.error.message : String(m.error)
       ur.reject(
-        error(message || 'failed without error message', {
-          found: m,
-          cause: m.error,
-        }),
+        error(
+          asError(m.error, 'failed without error message').message,
+          {
+            found: m,
+            cause: m.error,
+          },
+        ),
       )
     }
     /* c8 ignore stop */

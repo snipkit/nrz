@@ -1,21 +1,19 @@
-import {
-  type DepID,
-  type DepIDTuple,
-  joinDepIDTuple,
-} from '@nrz/dep-id'
-import { type SpecOptions } from '@nrz/spec'
+import type { DepID, DepIDTuple } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import type { SpecOptions } from '@nrz/spec'
+import { unload } from '@nrz/nrz-json'
 import t from 'tap'
-import { type LockfileNode } from '../../src/index.ts'
+import type { LockfileNode } from '../../src/index.ts'
 import {
   load,
   loadHidden,
   loadObject,
 } from '../../src/lockfile/load.ts'
-import {
-  type LockfileData,
-  type LockfileEdgeKey,
-  type LockfileEdges,
-  type LockfileEdgeValue,
+import type {
+  LockfileData,
+  LockfileEdgeKey,
+  LockfileEdges,
+  LockfileEdgeValue,
 } from '../../src/lockfile/types.ts'
 import { objectLikeOutput } from '../../src/visualization/object-like-output.ts'
 
@@ -96,7 +94,10 @@ t.test('load', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const graph = load({
     ...configData,
@@ -160,10 +161,13 @@ t.test('loadHidden', async t => {
     edges,
   }
   const projectRoot = t.testdir({
+    'nrz.json': '{}',
     node_modules: {
       '.nrz-lock.json': JSON.stringify(lockfileData),
     },
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const graph = loadHidden({
     ...configData,
@@ -197,8 +201,10 @@ t.test('workspaces', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
     packages: {
       a: {
@@ -218,6 +224,8 @@ t.test('workspaces', async t => {
       },
     },
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const graph = load({
     ...configData,
@@ -246,7 +254,10 @@ t.test('unknown dep type', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   t.throws(
     () =>
@@ -280,7 +291,10 @@ t.test('invalid dep id in edge', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   t.throws(
     () =>
@@ -313,7 +327,10 @@ t.test('missing edge `from`', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   t.throws(
     () =>
@@ -348,7 +365,10 @@ t.test('load with custom git hosts', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const graph = load({
     ...configData,
@@ -387,7 +407,10 @@ t.test('load with custom scope registry', async t => {
   }
   const projectRoot = t.testdir({
     'nrz-lock.json': JSON.stringify(lockfileData),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const graph = load({
     ...configData,
@@ -408,7 +431,9 @@ t.test('load with custom scope registry', async t => {
 t.test(
   'option-defined values should overwrite lockfile values',
   async t => {
-    const projectRoot = t.testdir()
+    const projectRoot = t.testdir({ 'nrz.json': '{}' })
+    t.chdir(projectRoot)
+    unload('project')
     const mainManifest = { name: 'my-project', version: '1.0.0' }
     const loadOptions = {
       registries: {
@@ -436,7 +461,9 @@ t.test(
 )
 
 t.test('missing options object', async t => {
-  const projectRoot = t.testdir()
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const mainManifest = { name: 'my-project', version: '1.0.0' }
   const loadOptions = {
     registries: {

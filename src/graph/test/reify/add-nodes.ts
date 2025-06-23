@@ -1,11 +1,11 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { type PackageInfoClient } from '@nrz/package-info'
-import { type RollbackRemove } from '@nrz/rollback-remove'
+import type { PackageInfoClient } from '@nrz/package-info'
+import type { RollbackRemove } from '@nrz/rollback-remove'
 import { Spec } from '@nrz/spec'
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
-import { type Diff } from '../../src/diff.ts'
+import type { Diff } from '../../src/diff.ts'
 
 import { addNodes } from '../../src/reify/add-nodes.ts'
 

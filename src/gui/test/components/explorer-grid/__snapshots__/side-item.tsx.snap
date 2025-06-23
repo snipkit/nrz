@@ -1,43 +1,90 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`SideItem render as aliased dependency 1`] = `
+
+<div>
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none"
+    >
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="npm:item@^1.0.0"
+            >
+            </gui-data-badge>
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            aliased-item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
+              prod
+            </gui-badge>
+          </div>
+        </gui-card-header>
+      </gui-card>
+    </span>
+  </div>
+</div>
+
+`;
+
 exports[`SideItem render as dependency 1`] = `
 
 <div>
-  <div class="group relative z-10">
-    <gui-card
-      role="article"
-      classname="relative my-4 transition-all  cursor-pointer group-hover:border-neutral-400 dark:group-hover:border-neutral-600"
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none"
     >
-      <gui-card-header classname="relative flex w-full flex-col rounded-t-lg p-0">
-        <div class="flex items-center px-3 py-2">
-          <gui-card-title classname="flex flex-1 items-center gap-2 text-sm">
-            <span class="font-medium">
-              item
-            </span>
-            <span class="font-normal text-muted-foreground">
-              v1.0.0
-            </span>
-          </gui-card-title>
-        </div>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 border-t-[1px] border-muted-foreground/20 px-3 py-2">
-          <p class="flex items-center gap-2 text-sm text-muted-foreground">
-            Spec:
-            <span class="flex items-center justify-center rounded-sm bg-neutral-700/5 px-2 py-1 font-[courier] text-xs dark:bg-neutral-700/50">
-            </span>
-          </p>
-          <div>
-            <gui-badge classname="grow-0 border-transparent bg-lime-100 text-neutral-900 hover:bg-lime-100/80">
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="^1.0.0"
+            >
+            </gui-data-badge>
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-lime-500/25 border-[1px] border-lime-600 dark:border-lime-400 hover:bg-lime-400/40 dark:bg-lime-500/30 dark:text-lime-400 dark:hover:bg-lime-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
               peer
             </gui-badge>
           </div>
-        </div>
-      </gui-card-header>
-    </gui-card>
-    <div
-      class="absolute -left-[9px] bottom-[62px] z-0 h-[13.35rem] h-[5px] w-[9px] rounded-bl-sm border-b border-l border-solid border-neutral-300 group-[&amp;:nth-child(2)]:hidden group-[&amp;:nth-child(3)]:h-24 dark:border-neutral-600"
-      style="height: -258px;"
-    >
-    </div>
+        </gui-card-header>
+      </gui-card>
+    </span>
   </div>
 </div>
 
@@ -46,41 +93,43 @@ exports[`SideItem render as dependency 1`] = `
 exports[`SideItem render as dependency with long name 1`] = `
 
 <div>
-  <div class="group relative z-10">
-    <gui-card
-      role="article"
-      classname="relative my-4 transition-all  cursor-pointer group-hover:border-neutral-400 dark:group-hover:border-neutral-600"
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none"
     >
-      <gui-card-header classname="relative flex w-full flex-col rounded-t-lg p-0">
-        <div class="flex items-center px-3 py-2">
-          <gui-card-title classname="flex flex-1 items-center gap-2 text-sm">
-            <span class="font-medium">
-              lorem-ipsum-dolor-sit-amet-consectetur-adipiscing-elit-sed-do-eiusmod-tempor-incididunt-ut-labore-et-dolore-magna-aliqua-ut-enim-ad-minim-veniam-quis-nostrud-exercitation
-            </span>
-            <span class="font-normal text-muted-foreground">
-              v1.0.0
-            </span>
-          </gui-card-title>
-        </div>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 border-t-[1px] border-muted-foreground/20 px-3 py-2">
-          <p class="flex items-center gap-2 text-sm text-muted-foreground">
-            Spec:
-            <span class="flex items-center justify-center rounded-sm bg-neutral-700/5 px-2 py-1 font-[courier] text-xs dark:bg-neutral-700/50">
-            </span>
-          </p>
-          <div>
-            <gui-badge classname="grow-0 border-transparent bg-lime-100 text-neutral-900 hover:bg-lime-100/80">
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="^1.0.0"
+            >
+            </gui-data-badge>
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            lorem-ipsum-dolor-sit-amet-consectetur-adipiscing-elit-sed-do-eiusmod-tempor-incididunt-ut-labore-et-dolore-magna-aliqua-ut-enim-ad-minim-veniam-quis-nostrud-exercitation
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-lime-500/25 border-[1px] border-lime-600 dark:border-lime-400 hover:bg-lime-400/40 dark:bg-lime-500/30 dark:text-lime-400 dark:hover:bg-lime-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
               peer
             </gui-badge>
           </div>
-        </div>
-      </gui-card-header>
-    </gui-card>
-    <div
-      class="absolute -left-[9px] bottom-[62px] z-0 h-[13.35rem] h-[5px] w-[9px] rounded-bl-sm border-b border-l border-solid border-neutral-300 group-[&amp;:nth-child(2)]:hidden group-[&amp;:nth-child(3)]:h-24 dark:border-neutral-600"
-      style="height: -258px;"
-    >
-    </div>
+        </gui-card-header>
+      </gui-card>
+    </span>
   </div>
 </div>
 
@@ -89,36 +138,88 @@ exports[`SideItem render as dependency with long name 1`] = `
 exports[`SideItem render as dependent 1`] = `
 
 <div>
-  <div class="group relative z-10">
-    <gui-card
-      role="article"
-      classname="relative my-4 transition-all  cursor-pointer group-hover:border-neutral-400 dark:group-hover:border-neutral-600"
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none hidden"
     >
-      <gui-card-header classname="relative flex w-full flex-col rounded-t-lg p-0">
-        <div class="flex items-center px-3 py-2">
-          <gui-card-title classname="flex flex-1 items-center gap-2 text-sm">
-            <span class="font-medium">
-              item
-            </span>
-            <span class="font-normal text-muted-foreground">
-              v1.0.0
-            </span>
-          </gui-card-title>
-        </div>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 border-t-[1px] border-muted-foreground/20 px-3 py-2">
-          <p class="flex items-center gap-2 text-sm text-muted-foreground">
-            Spec:
-            <span class="flex items-center justify-center rounded-sm bg-neutral-700/5 px-2 py-1 font-[courier] text-xs dark:bg-neutral-700/50">
-            </span>
-          </p>
-          <div>
-            <gui-badge classname="grow-0 border-transparent bg-cyan-100 text-neutral-900 hover:bg-cyan-100/80">
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="^1.0.0"
+            >
+            </gui-data-badge>
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
               prod
             </gui-badge>
           </div>
-        </div>
-      </gui-card-header>
-    </gui-card>
+        </gui-card-header>
+      </gui-card>
+    </span>
+  </div>
+</div>
+
+`;
+
+exports[`SideItem render as git dependency 1`] = `
+
+<div>
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none"
+    >
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="github:nrz/item"
+            >
+            </gui-data-badge>
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
+              prod
+            </gui-badge>
+          </div>
+        </gui-card-header>
+      </gui-card>
+    </span>
   </div>
 </div>
 
@@ -127,40 +228,46 @@ exports[`SideItem render as dependent 1`] = `
 exports[`SideItem render as multi-stacked dependent 1`] = `
 
 <div>
-  <div class="group relative z-10">
-    <div class="absolute left-2 top-2 h-full w-[96%] rounded-lg border bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-600">
-    </div>
-    <div class="absolute left-1 top-1 h-full w-[98%] rounded-lg border bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-600">
-    </div>
-    <gui-card
-      role="article"
-      classname="relative my-4 transition-all  cursor-pointer group-hover:border-neutral-400 dark:group-hover:border-neutral-600"
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none hidden"
     >
-      <gui-card-header classname="relative flex w-full flex-col rounded-t-lg p-0">
-        <div class="flex items-center px-3 py-2">
-          <gui-card-title classname="flex flex-1 items-center gap-2 text-sm">
-            <span class="font-medium">
-              item
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="^1.0.0"
+            >
+            </gui-data-badge>
+            <span class="text-xs font-medium text-muted-foreground">
+              and 4 more.
             </span>
-            <span class="font-normal text-muted-foreground">
-              v1.0.0
-            </span>
-          </gui-card-title>
-        </div>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 border-t-[1px] border-muted-foreground/20 px-3 py-2">
-          <p class="flex items-center gap-2 text-sm text-muted-foreground">
-            Spec:
-            <span class="flex items-center justify-center rounded-sm bg-neutral-700/5 px-2 py-1 font-[courier] text-xs dark:bg-neutral-700/50">
-            </span>
-          </p>
-          <div>
-            <gui-badge classname="grow-0 border-transparent bg-cyan-100 text-neutral-900 hover:bg-cyan-100/80">
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
               prod
             </gui-badge>
           </div>
-        </div>
-      </gui-card-header>
-    </gui-card>
+        </gui-card-header>
+      </gui-card>
+    </span>
   </div>
 </div>
 
@@ -169,38 +276,43 @@ exports[`SideItem render as multi-stacked dependent 1`] = `
 exports[`SideItem render as parent 1`] = `
 
 <div>
-  <div class="group relative z-10">
-    <gui-card
-      role="article"
-      classname="relative my-4 transition-all border-foreground cursor-pointer group-hover:border-neutral-400 dark:group-hover:border-neutral-600"
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none hidden"
     >
-      <gui-card-header classname="relative flex w-full flex-col rounded-t-lg p-0">
-        <div class="flex items-center px-3 py-2">
-          <gui-card-title classname="flex flex-1 items-center gap-2 text-sm">
-            <span class="font-medium">
-              item
-            </span>
-            <span class="font-normal text-muted-foreground">
-              v1.0.0
-            </span>
-          </gui-card-title>
-        </div>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 border-t-[1px] border-muted-foreground/20 px-3 py-2">
-          <p class="flex items-center gap-2 text-sm text-muted-foreground">
-            Spec:
-            <span class="flex items-center justify-center rounded-sm bg-neutral-700/5 px-2 py-1 font-[courier] text-xs dark:bg-neutral-700/50">
-            </span>
-          </p>
-          <div>
-            <gui-badge classname="grow-0 border-transparent bg-cyan-100 text-neutral-900 hover:bg-cyan-100/80">
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all border-muted hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="^1.0.0"
+            >
+            </gui-data-badge>
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
               prod
             </gui-badge>
           </div>
-        </div>
-      </gui-card-header>
-    </gui-card>
-    <div class="absolute -right-4 top-7 w-4 border-t border-solid border-muted-foreground">
-    </div>
+        </gui-card-header>
+      </gui-card>
+    </span>
   </div>
 </div>
 
@@ -209,38 +321,83 @@ exports[`SideItem render as parent 1`] = `
 exports[`SideItem render as two-stacked dependent 1`] = `
 
 <div>
-  <div class="group relative z-10">
-    <div class="absolute left-1 top-1 h-full w-[98%] rounded-lg border bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-600">
-    </div>
-    <gui-card
-      role="article"
-      classname="relative my-4 transition-all  cursor-pointer group-hover:border-neutral-400 dark:group-hover:border-neutral-600"
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none hidden"
     >
-      <gui-card-header classname="relative flex w-full flex-col rounded-t-lg p-0">
-        <div class="flex items-center px-3 py-2">
-          <gui-card-title classname="flex flex-1 items-center gap-2 text-sm">
-            <span class="font-medium">
-              item
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <div class="flex items-center gap-2">
+            <gui-data-badge
+              variant="mono"
+              classnames="[object Object]"
+              content="^1.0.0"
+            >
+            </gui-data-badge>
+            <span class="text-xs font-medium text-muted-foreground">
+              and 1 more.
             </span>
-            <span class="font-normal text-muted-foreground">
-              v1.0.0
-            </span>
-          </gui-card-title>
-        </div>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 border-t-[1px] border-muted-foreground/20 px-3 py-2">
-          <p class="flex items-center gap-2 text-sm text-muted-foreground">
-            Spec:
-            <span class="flex items-center justify-center rounded-sm bg-neutral-700/5 px-2 py-1 font-[courier] text-xs dark:bg-neutral-700/50">
-            </span>
-          </p>
-          <div>
-            <gui-badge classname="grow-0 border-transparent bg-cyan-100 text-neutral-900 hover:bg-cyan-100/80">
+          </div>
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
               prod
             </gui-badge>
           </div>
-        </div>
-      </gui-card-header>
-    </gui-card>
+        </gui-card-header>
+      </gui-card>
+    </span>
+  </div>
+</div>
+
+`;
+
+exports[`SideItem render as workspace item 1`] = `
+
+<div>
+  <div class="group relative">
+    <div
+      style="--column-gap-y: 1rem; --column-gap-x: 1rem;"
+      class="pointer-events-none absolute w-[var(--column-gap-x)] h-[calc(100%+var(--column-gap-y))] -top-[calc(100%-1.25px-var(--column-gap-y)/5)] -left-[calc(var(--column-gap-x)/2)] border-l-[1px] border-b-[1px] rounded-bl-md border-muted group-[&amp;:first-of-type]:rounded-none group-[&amp;:first-of-type]:h-[1px] group-[&amp;:first-of-type]:w-[var(--column-gap-x)] group-[&amp;:first-of-type]:-left-4 group-[&amp;:first-of-type]:border-l-[0px] group-[&amp;:first-of-type]:inset-y-0 group-[&amp;:first-of-type]:my-auto group-[&amp;:nth-child(n+3)]:h-[calc(100%+(var(--column-gap-y)*2))] group-[&amp;:nth-child(n+3)]:-top-[calc(100%+var(--column-gap-y)/1.5)] group-has-[.parent]:left-[calc(100%)] group-has-[.parent]:border-l-[0px] group-has-[.parent]:w-[var(--column-gap-x)] group-has-[.parent]:h-[1px] group-has-[.parent]:top-[50%] group-has-[.parent]:rounded-none hidden"
+    >
+    </div>
+    <span data-state="closed">
+      <gui-card
+        role="article"
+        classname="group relative z-[10] cursor-default transition-all hover:border-muted hover:bg-card-accent"
+      >
+        <gui-card-header classname="relative flex w-full max-w-full flex-row items-baseline gap-3 px-3 py-2">
+          <button
+            data-state="closed"
+            class="w-full max-w-full cursor-default items-baseline justify-between overflow-hidden truncate text-left text-sm font-medium"
+          >
+            workspace-item
+          </button>
+          <span class="ml-auto font-courier text-sm font-normal text-muted-foreground">
+            v1.0.0
+          </span>
+          <div class="absolute -bottom-3 right-2.5">
+            <gui-badge classname="bg-cyan-500/25 border-[1px] border-cyan-600 dark:border-cyan-500 hover:bg-cyan-500/40 dark:bg-cyan-500/30 dark:text-cyan-500 dark:hover:bg-cyan-500/40 h-[18px] rounded-full text-xxs font-normal backdrop-blur-md">
+              prod
+            </gui-badge>
+          </div>
+        </gui-card-header>
+      </gui-card>
+    </span>
   </div>
 </div>
 

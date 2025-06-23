@@ -1,9 +1,11 @@
-import { type DepID, type DepIDTuple, splitDepID } from '@nrz/dep-id'
+import { splitDepID } from '@nrz/dep-id'
+import type { DepID, DepIDTuple } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
 import { parse, Version } from '@nrz/semver'
-import { type GitSelectorParsed, Spec } from '@nrz/spec'
+import { Spec } from '@nrz/spec'
+import type { GitSelectorParsed } from '@nrz/spec'
 import { Monorepo } from '@nrz/workspaces'
-import { relative, resolve } from 'path'
+import { relative, resolve } from 'node:path'
 
 /**
  * Return true if the node referenced by this DepID would satisfy the
@@ -45,7 +47,10 @@ export const satisfiesTuple = (
           return false
         }
       } else {
-        const namedRegistry = options.registries[first]
+        let namedRegistry = options.registries[first]
+        if (!namedRegistry && first === 'npm') {
+          namedRegistry = options.registry
+        }
         if (namedRegistry && namedRegistry !== spec.registry) {
           // we know the name, and it's not the registry being used
           return false

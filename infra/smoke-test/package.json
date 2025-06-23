@@ -1,0 +1,54 @@
+{
+  "name": "@nrz/smoke-test",
+  "description": "Smoke tests for the CLI",
+  "version": "0.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
+    "directory": "infra/smoke-test"
+  },
+  "dependencies": {
+    "@nrz/cli-sdk": "workspace:*",
+    "@nrz/infra-build": "workspace:*",
+    "@nrz/registry-client": "workspace:*",
+    "@nrz/which": "workspace:*",
+    "ansi-to-pre": "^1.0.6"
+  },
+  "optionalDependencies": {
+    "node-pty": "^1.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "license": "BSD-2-Clause-Patent",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "snap": "tap",
+    "test": "tap",
+    "posttest": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "tap": {
+    "extends": "../../tap-config.yaml",
+    "after": "./test/fixtures/after.ts",
+    "before": "./test/fixtures/before.ts",
+    "disable-coverage": true,
+    "save-fixture": true
+  },
+  "prettier": "../../.prettierrc.js",
+  "module": "./src/index.ts",
+  "type": "module"
+}

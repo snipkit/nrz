@@ -7,12 +7,14 @@
 'use strict'
 exports[`test/lockfile/load-nodes.ts > TAP > load nodes > should load node missing name and version 1`] = `
 Object {
+  "confused": false,
   "dev": false,
   "id": "··lorem",
   "importer": false,
   "integrity": "sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==",
   "location": "./node_modules/.nrz/··lorem/node_modules/··lorem",
   "manifest": undefined,
+  "modifier": undefined,
   "name": "··lorem",
   "optional": false,
   "projectRoot": "{ROOT}",
@@ -24,6 +26,7 @@ Object {
 exports[`test/lockfile/load-nodes.ts > TAP > load nodes > should load nodes into graph 1`] = `
 Array [
   Object {
+    "confused": false,
     "dev": false,
     "id": "file·.",
     "importer": true,
@@ -33,6 +36,7 @@ Array [
       "name": "my-project",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "name": "my-project",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -40,12 +44,14 @@ Array [
     "version": "1.0.0",
   },
   Object {
+    "confused": false,
     "dev": false,
     "id": "file·linked",
     "importer": false,
     "integrity": undefined,
     "location": "./node_modules/.nrz/file·linked/node_modules/linked",
     "manifest": undefined,
+    "modifier": undefined,
     "name": "linked",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -53,12 +59,14 @@ Array [
     "version": undefined,
   },
   Object {
+    "confused": false,
     "dev": false,
     "id": "··foo@1.0.0",
     "importer": false,
     "integrity": "sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==",
     "location": "./node_modules/.nrz/··foo@1.0.0/node_modules/foo",
     "manifest": undefined,
+    "modifier": undefined,
     "name": "foo",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -66,12 +74,14 @@ Array [
     "version": "1.0.0",
   },
   Object {
+    "confused": false,
     "dev": false,
     "id": "··bar@1.0.0",
     "importer": false,
     "integrity": "sha512-6/deadbeef==",
     "location": "./node_modules/.nrz/··bar@1.0.0/node_modules/bar",
     "manifest": undefined,
+    "modifier": undefined,
     "name": "bar",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -79,12 +89,14 @@ Array [
     "version": "1.0.0",
   },
   Object {
+    "confused": false,
     "dev": false,
     "id": "··baz@1.0.0",
     "importer": false,
     "integrity": undefined,
     "location": "./node_modules/.pnpm/baz@1.0.0/node_modules/baz",
     "manifest": undefined,
+    "modifier": undefined,
     "name": "baz",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -94,9 +106,35 @@ Array [
 ]
 `
 
+exports[`test/lockfile/load-nodes.ts > TAP > load nodes with confused manifest > should load node with confused manifest 1`] = `
+Object {
+  "confused": true,
+  "dev": false,
+  "id": "··foo@1.0.0",
+  "importer": false,
+  "integrity": "sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==",
+  "location": "node_modules/.pnpm/foo@1.0.0/node_modules/foo",
+  "manifest": Object {
+    "name": "foo",
+    "version": "1.0.0",
+  },
+  "modifier": undefined,
+  "name": "foo",
+  "optional": false,
+  "projectRoot": "{ROOT}",
+  "rawManifest": Object {
+    "name": "test",
+    "version": "1.0.0",
+  },
+  "resolved": "https://registry.npmjs.org/foo/-/foo-1.0.0.tgz",
+  "version": "1.0.0",
+}
+`
+
 exports[`test/lockfile/load-nodes.ts > TAP > load nodes with manifest > should load nodes into graph with manifest data 1`] = `
 Array [
   Object {
+    "confused": false,
     "dev": false,
     "id": "file·.",
     "importer": true,
@@ -106,6 +144,7 @@ Array [
       "name": "my-project",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "name": "my-project",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -113,6 +152,7 @@ Array [
     "version": "1.0.0",
   },
   Object {
+    "confused": false,
     "dev": true,
     "id": "··bar@1.0.0",
     "importer": false,
@@ -122,6 +162,7 @@ Array [
       "name": "bar",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "name": "bar",
     "optional": true,
     "projectRoot": "{ROOT}",
@@ -129,6 +170,7 @@ Array [
     "version": "1.0.0",
   },
   Object {
+    "confused": false,
     "dev": true,
     "id": "··foo@1.0.0",
     "importer": false,
@@ -141,6 +183,7 @@ Array [
       "name": "foo",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "name": "foo",
     "optional": false,
     "projectRoot": "{ROOT}",
@@ -148,6 +191,7 @@ Array [
     "version": "1.0.0",
   },
   Object {
+    "confused": false,
     "dev": false,
     "id": "·custom·baz@1.0.0",
     "importer": false,
@@ -160,6 +204,7 @@ Array [
       "name": "baz",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "name": "baz",
     "optional": true,
     "projectRoot": "{ROOT}",

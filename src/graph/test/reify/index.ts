@@ -1,8 +1,9 @@
-import { type DepID, joinDepIDTuple } from '@nrz/dep-id'
-import {
-  type PackageInfoClient,
-  type PackageInfoClientRequestOptions,
-  type Resolution,
+import type { DepID } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import type {
+  PackageInfoClient,
+  PackageInfoClientRequestOptions,
+  Resolution,
 } from '@nrz/package-info'
 import { PackageJson } from '@nrz/package-json'
 import { Spec } from '@nrz/spec'
@@ -11,31 +12,39 @@ import {
   lstatSync,
   readdirSync,
   readFileSync,
+  statSync,
   unlinkSync,
   writeFileSync,
-} from 'fs'
-import { statSync } from 'node:fs'
+} from 'node:fs'
+import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { resolve } from 'path'
+import { inspect } from 'node:util'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
-import { inspect } from 'util'
-import {
-  actual,
-  ideal,
-  type LockfileData,
-  type LockfileEdges,
-  type LockfileNode,
-  reify,
+import type {
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
+} from '../../src/dependencies.ts'
+import type {
+  LockfileData,
+  LockfileEdges,
+  LockfileNode,
 } from '../../src/index.ts'
+import { actual, ideal, reify } from '../../src/index.ts'
 import {
   fixtureManifest,
-  mockPackageInfo,
+  mockPackageInfo as mockPackageInfoBase,
 } from '../fixtures/reify.ts'
-import {
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
-} from '../../src/dependencies.ts'
+
+const createMockPackageInfo = (
+  overrides: Partial<typeof mockPackageInfoBase> = {},
+) =>
+  ({
+    ...mockPackageInfoBase,
+    ...overrides,
+  }) as unknown as PackageInfoClient
+
+const mockPackageInfo = createMockPackageInfo()
 
 t.test('super basic reification', async t => {
   const dir = t.testdir({
@@ -303,8 +312,10 @@ t.test('failure rolls back', async t => {
     scurry: new PathScurry(projectRoot),
     packageJson: new PackageJson(),
   })
-  const { reify } = await t.mockImport('../../src/reify/index.ts', {
-    '../../src/reify/build.js': {
+  const { reify } = await t.mockImport<
+    typeof import('../../src/reify/index.ts')
+  >('../../src/reify/index.ts', {
+    '../../src/reify/build.ts': {
       build: () =>
         Promise.reject(new Error('expected failure, roll back')),
     },
@@ -315,6 +326,8 @@ t.test('failure rolls back', async t => {
       projectRoot,
       packageInfo: mockPackageInfo,
       graph,
+      packageJson: new PackageJson(),
+      scurry: new PathScurry(projectRoot),
     }),
   )
 
@@ -325,7 +338,11 @@ t.test('failure rolls back', async t => {
     packageJson: new PackageJson(),
   })
 
-  t.strictSame(before, after, 'no changes to actual graph')
+  t.strictSame(
+    before.toJSON(),
+    after.toJSON(),
+    'no changes to actual graph',
+  )
 
   t.throws(
     // note: not lstat, since this is going to be a shim on windows,
@@ -379,9 +396,7 @@ t.test('failure of optional node just deletes it', async t => {
     monorepo: Monorepo.maybeLoad(projectRoot),
     scurry: new PathScurry(projectRoot),
     packageJson: new PackageJson(),
-    packageInfo: {
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
-      ...mockPackageInfo,
+    packageInfo: createMockPackageInfo({
       async extract(
         spec: Spec | string,
         target: string,
@@ -393,7 +408,7 @@ t.test('failure of optional node just deletes it', async t => {
         }
         return mockPackageInfo.extract(spec, target, options)
       },
-    } as unknown as PackageInfoClient,
+    }),
     graph,
   })
 
@@ -410,9 +425,13 @@ t.test('failure of optional node just deletes it', async t => {
     'ultimately no changes to actual graph',
   )
 
-  t.throws(
-    // note: not lstat, since this is going to be a shim on windows,
-    // but a symlink on posix
-    () => statSync(resolve(projectRoot, 'node_modules/.bin/glob')),
-  )
+  const expectGone = [
+    'node_modules/.bin/glob',
+    'node_modules/.bin/glob.cmd',
+    'node_modules/.bin/glob.ps1',
+    'node_modules/glob',
+  ]
+  for (const path of expectGone) {
+    t.throws(() => lstatSync(resolve(projectRoot, path)))
+  }
 })

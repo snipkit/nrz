@@ -1,0 +1,59 @@
+---
+title: nrz query
+sidebar:
+  label: query
+---
+
+import { Code } from '@astrojs/starlight/components'
+
+Usage:
+
+<Code
+  code="$ nrz query
+$ nrz query <query> --view=[human | json | mermaid | gui]
+"
+  title="Terminal"
+  lang="bash"
+/>
+
+List installed dependencies matching the provided query.
+
+## Examples
+
+Query packages with the name "foo"
+
+<Code code="$ nrz query '#foo'" title="Terminal" lang="bash" />
+
+Query all peer dependencies of workspaces
+
+<Code
+  code="$ nrz query '*.workspace > *.peer'"
+  title="Terminal"
+  lang="bash"
+/>
+
+Query all direct project dependencies with a "build" script
+
+<Code
+  code="$ nrz query ':project > *:attr(scripts, [build])'"
+  title="Terminal"
+  lang="bash"
+/>
+
+Query packages with names starting with "@nrz"
+
+<Code
+  code={`$ nrz query '[name^="@nrz"]'`}
+  title="Terminal"
+  lang="bash"
+/>
+
+## Options
+
+### view
+
+Output format. Defaults to human-readable or json if no tty.
+
+```
+--view=[human | json | mermaid | gui]
+```

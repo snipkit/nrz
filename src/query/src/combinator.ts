@@ -1,9 +1,7 @@
-import { type EdgeLike, type NodeLike } from '@nrz/graph'
-import {
-  type ParserState,
-  type ParserFn,
-  asCombinatorNode,
-} from './types.ts'
+import { asCombinatorNode } from '@nrz/dss-parser'
+import { error } from '@nrz/error-cause'
+import type { EdgeLike, NodeLike } from '@nrz/graph'
+import type { ParserState, ParserFn } from './types.ts'
 
 /**
  * Returns a new set of nodes, containing all direct dependencies
@@ -126,7 +124,9 @@ export const combinator = async (state: ParserState) => {
       return state
     }
 
-    throw new Error(`Unsupported combinator: ${state.current.value}`)
+    throw error(`Unsupported combinator: ${state.current.value}`, {
+      found: state.current,
+    })
   }
   return parserFn(state)
 }

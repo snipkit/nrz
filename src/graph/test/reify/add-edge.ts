@@ -1,14 +1,14 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { type RollbackRemove } from '@nrz/rollback-remove'
+import type { RollbackRemove } from '@nrz/rollback-remove'
 import { Spec } from '@nrz/spec'
-import { statSync } from 'fs'
-import { rm } from 'fs/promises'
+import { statSync } from 'node:fs'
+import { rm } from 'node:fs/promises'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
 import { Edge } from '../../src/edge.ts'
 import { Node } from '../../src/node.ts'
 import { addEdge } from '../../src/reify/add-edge.ts'
-import { type GraphLike } from '../../src/types.ts'
+import type { GraphLike } from '../../src/types.ts'
 
 const mockRemover = {
   rm: (path: string) => rm(path, { recursive: true, force: true }),
@@ -60,25 +60,30 @@ t.test('reify an edge', async t => {
   t.throws(() => statSync(projectRoot + '/node_modules/.bin/bar'))
   t.throws(() => statSync(fooNM + '/bar'))
   t.throws(() => statSync(fooNM + '/.bin/bar'))
+
   const opts = {
     projectRoot,
     graph: {} as GraphLike,
   }
+
   const fooNode = new Node(
     opts,
     joinDepIDTuple(['registry', '', 'foo@1.2.3']),
     fooManifest,
   )
+
   fooNode.location =
     projectRoot +
     '/node_modules/.nrz/' +
     joinDepIDTuple(['registry', '', 'foo@1.2.3']) +
     '/node_modules/foo'
+
   const barNode = new Node(
     opts,
     joinDepIDTuple(['registry', '', 'bar@1.2.3']),
     barManifest,
   )
+
   barNode.location =
     projectRoot +
     '/node_modules/.nrz/' +
@@ -90,11 +95,14 @@ t.test('reify an edge', async t => {
   const edge = new Edge('prod', Spec.parse('bar@'), fooNode, barNode)
   const scurry = new PathScurry(projectRoot)
 
+  t.intercept(process, 'platform', { value: 'win32' })
   await addEdge(edge, barManifest, scurry, mockRemover)
 
   t.throws(() => statSync(projectRoot + '/node_modules/.bin/bar'))
   statSync(fooNM + '/bar')
   statSync(fooNM + '/.bin/bar')
+  statSync(fooNM + '/.bin/bar.cmd')
+  statSync(fooNM + '/.bin/bar.ps1')
 
   const rootEdge = new Edge(
     'prod',
@@ -102,9 +110,13 @@ t.test('reify an edge', async t => {
     rootNode,
     barNode,
   )
+
+  t.intercept(process, 'platform', { value: 'darwin' })
   await addEdge(rootEdge, barManifest, scurry, mockRemover)
   statSync(projectRoot + '/node_modules/bar')
   statSync(projectRoot + '/node_modules/.bin/bar')
+  t.throws(() => statSync(projectRoot + '/node_modules/.bin/bar.cmd'))
+  t.throws(() => statSync(projectRoot + '/node_modules/.bin/bar.ps1'))
 
   const dangle = new Edge(
     'optional',

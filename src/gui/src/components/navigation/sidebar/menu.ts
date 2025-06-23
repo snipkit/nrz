@@ -1,24 +1,62 @@
-import { LayoutDashboard, type LucideIcon } from 'lucide-react'
-
-export interface Item {
-  title: string
-  url: string
-}
+import { Query } from '@/components/icons/query.tsx'
+import { CircleHelp, LayoutDashboard, Library } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 export interface MenuItem {
   title: string
-  url: string
-  icon?: LucideIcon
+  url?: string
+  icon?:
+    | LucideIcon
+    | React.ComponentType<React.SVGProps<SVGSVGElement>>
+  nrzIcon?: boolean
   isActive?: boolean
-  items?: Item[]
+  items?: MenuItem[]
+  external?: boolean
+  externalIcon?: boolean
+  badge?: string
+  onClick?: () => void
 }
 
-const menuItems: MenuItem[] = [
+export const mainMenuItems: MenuItem[] = [
   {
     title: 'Dashboard',
-    url: '/dashboard',
+    url: '/',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Queries',
+    url: '/queries',
+    icon: Query,
+    nrzIcon: true,
   },
 ]
 
-export default menuItems
+export const helpMenuItems: MenuItem[] = [
+  {
+    title: 'Selectors',
+    url: '/help/selectors',
+    nrzIcon: true,
+    icon: Query,
+  },
+]
+
+export const footerMenuItems: MenuItem[] = [
+  {
+    title: 'Help',
+    icon: CircleHelp,
+    items: [
+      {
+        title: 'Selectors',
+        url: '/help/selectors',
+        nrzIcon: true,
+        icon: Query,
+      },
+      {
+        title: 'Documentation',
+        url: 'https://docs.nrz.sh',
+        icon: Library,
+        external: true,
+      },
+    ],
+  },
+]

@@ -1,9 +1,10 @@
 // write tap tests for removing a node from the graph
 import t from 'tap'
-import { Spec, type SpecOptions } from '@nrz/spec'
+import { Spec } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
 import { removeNodes } from '../../src/ideal/remove-nodes.ts'
 import { Graph } from '../../src/graph.ts'
-import { type RemoveImportersDependenciesMap } from '../../src/dependencies.ts'
+import type { RemoveImportersDependenciesMap } from '../../src/dependencies.ts'
 import { joinDepIDTuple } from '@nrz/dep-id'
 
 const configData = {

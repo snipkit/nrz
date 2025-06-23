@@ -1,10 +1,10 @@
 import { hydrate } from '@nrz/dep-id'
-import { type PackageInfoClient } from '@nrz/package-info'
+import type { PackageInfoClient } from '@nrz/package-info'
 import { platformCheck } from '@nrz/pick-manifest'
-import { type RollbackRemove } from '@nrz/rollback-remove'
-import { type SpecOptions } from '@nrz/spec'
-import { type PathScurry } from 'path-scurry'
-import { type Diff } from '../diff.ts'
+import type { RollbackRemove } from '@nrz/rollback-remove'
+import type { SpecOptions } from '@nrz/spec'
+import type { PathScurry } from 'path-scurry'
+import type { Diff } from '../diff.ts'
 import { optionalFail } from './optional-fail.ts'
 
 export const addNodes = (

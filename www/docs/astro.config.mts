@@ -3,9 +3,9 @@ import starlight from '@astrojs/starlight'
 import react from '@astrojs/react'
 import tailwind from '@astrojs/tailwind'
 import vercel from '@astrojs/vercel'
-import * as TypedocPlugin from './src/plugins/typedoc'
-import * as CliPlugin from './src/plugins/cli'
-import { cpSync } from 'fs'
+import { ExpressiveCodeTheme } from '@astrojs/starlight/expressive-code'
+import * as TypedocPlugin from './src/plugins/typedoc.ts'
+import { readFileSync } from 'node:fs'
 import starlightLinksValidator from 'starlight-links-validator'
 
 if (process.env.CI && process.env.RUNNER_OS === 'Windows') {
@@ -18,7 +18,7 @@ if (process.env.CI && process.env.RUNNER_OS === 'Windows') {
 const MIXPANEL_TOKEN = '7853b372fb0f20e238be6d11e53f60fe'
 
 export default defineConfig({
-  site: 'https://docs.khulnasoft.com',
+  site: 'https://docs.nrz.sh',
   trailingSlash: 'never',
   integrations: [
     starlight({
@@ -35,90 +35,67 @@ export default defineConfig({
         },
       ],
       expressiveCode: {
-        themes: ['aurora-x', 'catppuccin-latte'],
+        themes: [
+          ExpressiveCodeTheme.fromJSONString(
+            readFileSync(
+              `./src/styles/custom-syntax-theme.json`,
+              'utf-8',
+            ),
+          ),
+        ],
+        styleOverrides: {
+          frames: {
+            terminalTitlebarDotsForeground: '#FFFFFF',
+            terminalTitlebarDotsOpacity: '0.3',
+          },
+        },
         defaultProps: {
           wrap: true,
           preserveIndent: true,
         },
       },
-      title: 'NRZ',
+      title: 'nrz /vōlt/',
       social: {
         linkedin: 'https://www.linkedin.com/company/nrz',
         twitter: 'https://twitter.com/nrz',
-        github: 'https://github.com/khulnasoft/nrz',
+        github: 'https://github.com/khulnasoft-lab/nrz',
         discord: 'https://discord.gg/nrz',
       },
       components: {
-        Header: './src/components/header/astro-header.astro',
-        Sidebar: './src/components/sidebar/astro-app-sidebar.astro',
-        PageFrame:
-          './src/components/page-frame/astro-page-frame.astro',
+        PageFrame: './src/components/page-frame/page-frame.astro',
         ContentPanel:
-          './src/components/content-panel/astro-content-panel.astro',
-        PageTitle:
-          './src/components/page-title/astro-page-title.astro',
-        Pagination:
-          './src/components/pagination/astro-pagination.astro',
+          './src/components/content-panel/content-panel.astro',
+        PageTitle: './src/components/page-title/page-title.astro',
+        Pagination: './src/components/pagination/pagination.astro',
         PageSidebar:
-          './src/components/page-sidebar/astro-page-sidebar.astro',
+          './src/components/page-sidebar/page-sidebar.astro',
         TwoColumnContent:
-          './src/components/two-column-layout/astro-two-column-layout.astro',
-        Hero: './src/components/hero/astro-hero.astro',
-        Footer: './src/components/footer/astro-footer.astro',
-        ThemeSelect:
-          './src/components/theme-select/astro-theme-select.astro',
+          './src/components/two-column-layout/two-column-layout.astro',
+        Footer: './src/components/footer/footer.astro',
+        ThemeProvider:
+          './src/components/theme-provider/theme-provider.astro',
       },
       customCss: ['./src/styles/globals.css'],
       tableOfContents: {
         minHeadingLevel: 2,
         maxHeadingLevel: 5,
       },
-      plugins: [
-        TypedocPlugin.plugin,
-        CliPlugin.plugin,
-        starlightLinksValidator({
-          // work around bug in the link validator that strips
-          // the index off of the last segment. Remove when this PR lands:
-          // https://github.com/HiDeoo/starlight-links-validator/pull/80
-          exclude: ['/packages/*/module_index?(#*)'],
-        }),
-      ],
+      plugins: [TypedocPlugin.plugin, starlightLinksValidator()],
       sidebar: [
         {
           label: 'CLI',
-          autogenerate: { directory: CliPlugin.directory },
+          collapsed: false,
+          autogenerate: { directory: 'cli' },
         },
         {
           label: 'Packages',
           collapsed: true,
           autogenerate: { directory: TypedocPlugin.directory },
         },
-        {
-          label: 'Serverless Registry',
-          link: 'https://www.khulnasoft.com/serverless-registry',
-        },
       ],
     }),
     react(),
     tailwind({ applyBaseStyles: false }),
-    // astro v5 and the vercel adapter don't play well with
-    // content that is generated after the build such as the
-    // pagefind JS. So we copy it manually.
-    // https://github.com/withastro/adapters/issues/445
-    {
-      name: 'copy-pagefind',
-      hooks: {
-        'astro:build:done': async () => {
-          cpSync(
-            'dist/pagefind',
-            './.vercel/output/static/pagefind',
-            {
-              recursive: true,
-            },
-          )
-        },
-      },
-    },
   ],
   output: 'static',
   adapter: vercel(),

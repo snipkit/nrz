@@ -1,11 +1,12 @@
-import { type DepID, joinDepIDTuple } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { Spec } from '@nrz/spec'
 import { Monorepo } from '@nrz/workspaces'
 import t from 'tap'
 import { satisfies } from '../src/index.ts'
 
 const projectRoot = t.testdir({
-  'nrz-workspaces.json': JSON.stringify('src/*'),
+  'nrz.json': JSON.stringify({ workspaces: 'src/*' }),
   src: {
     a: {
       'package.json': JSON.stringify({

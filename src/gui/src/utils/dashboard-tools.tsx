@@ -1,4 +1,5 @@
-import { type DashboardTools } from '@/state/types.js'
+import type { DashboardTools } from '@/state/types.ts'
+import type { LucideProps } from 'lucide-react'
 import {
   Bun,
   Deno,
@@ -8,10 +9,10 @@ import {
   Pnpm,
   Yarn,
   Nrz,
-} from '@/components/icons/index.js'
+} from '@/components/icons/index.ts'
 
 const runtimes: Partial<
-  Record<DashboardTools, React.FC<React.SVGProps<SVGSVGElement>>>
+  Record<DashboardTools, React.FC<LucideProps>>
 > = {
   node: Node,
   deno: Deno,
@@ -20,7 +21,7 @@ const runtimes: Partial<
 }
 
 const packageManagers: Partial<
-  Record<DashboardTools, React.FC<React.SVGProps<SVGSVGElement>>>
+  Record<DashboardTools, React.FC<LucideProps>>
 > = {
   npm: Npm,
   pnpm: Pnpm,

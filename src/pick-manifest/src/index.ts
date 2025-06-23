@@ -1,11 +1,18 @@
 import { error } from '@nrz/error-cause'
-import { parse, Range, satisfies, Version } from '@nrz/semver'
-import { Spec } from '@nrz/spec'
 import {
-  type Manifest,
-  type Packument,
-  type RevDoc,
-  type RevDocEntry,
+  parse,
+  Range,
+  satisfies,
+  Version,
+  isRange,
+} from '@nrz/semver'
+import { Spec } from '@nrz/spec'
+import { isSpec } from '@nrz/spec/browser'
+import type {
+  Manifest,
+  Packument,
+  RevDoc,
+  RevDocEntry,
 } from '@nrz/types'
 
 const parsedNodeVersion = Version.parse(process.version)
@@ -14,8 +21,8 @@ export type PickManifestOptions = {
   tag?: string
   before?: Date | number | string
   'node-version'?: string
-  os?: NodeJS.Platform
-  arch?: NodeJS.Architecture
+  os?: string
+  arch?: string
 }
 
 export type Manifestish = Manifest | RevDocEntry
@@ -75,8 +82,8 @@ const checkList = (value: string, list?: string[] | string) => {
 export const platformCheck = (
   mani: Manifestish,
   nodeVersion: Version | string,
-  wantOs?: NodeJS.Process['platform'],
-  wantArch?: NodeJS.Process['arch'],
+  wantOs?: string,
+  wantArch?: string,
 ): boolean => {
   const { engines, os, cpu } = mani
   if (engines) {
@@ -94,8 +101,8 @@ const versionOk = (
   packument: Packumentish,
   version: string,
   nodeVersion: Version,
-  os: NodeJS.Process['platform'],
-  arch: NodeJS.Process['arch'],
+  os: string,
+  arch: string,
   before?: number,
 ) => {
   const mani = packument.versions[version]
@@ -142,11 +149,11 @@ export function pickManifest<T extends Packumentish>(
   let range: Range | undefined = undefined
   let spec: Spec | undefined = undefined
   if (typeof wanted === 'object') {
-    if (wanted instanceof Spec) {
+    if (isSpec(wanted)) {
       const f = wanted.final
       range = f.range
       spec = f
-    } else {
+    } else if (isRange(wanted)) {
       range = wanted
     }
   } else {

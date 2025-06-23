@@ -1,8 +1,8 @@
 import { error } from '@nrz/error-cause'
 import { satisfies } from '@nrz/satisfies'
-import {
-  type BuildIdealAddOptions,
-  type BuildIdealFromGraphOptions,
+import type {
+  BuildIdealAddOptions,
+  BuildIdealFromGraphOptions,
 } from './types.ts'
 
 export type RemoveSatisfiedSpecsOptions = BuildIdealAddOptions &

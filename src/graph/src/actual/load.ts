@@ -1,18 +1,22 @@
 import {
   asDepID,
-  type DepID,
   hydrate,
   joinDepIDTuple,
+  splitDepID,
 } from '@nrz/dep-id'
-import { type PackageJson } from '@nrz/package-json'
-import { Spec, type SpecOptions } from '@nrz/spec'
-import { type Manifest, longDependencyTypes } from '@nrz/types'
-import { type Monorepo } from '@nrz/workspaces'
-import { type Path, type PathScurry } from 'path-scurry'
-import { type RawDependency, shorten } from '../dependencies.ts'
+import type { DepID } from '@nrz/dep-id'
+import type { PackageJson } from '@nrz/package-json'
+import { Spec } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import { longDependencyTypes } from '@nrz/types'
+import type { Manifest } from '@nrz/types'
+import type { Monorepo } from '@nrz/workspaces'
+import type { Path, PathScurry } from 'path-scurry'
+import { shorten } from '../dependencies.ts'
+import type { RawDependency } from '../dependencies.ts'
 import { Graph } from '../graph.ts'
 import { loadHidden } from '../lockfile/load.ts'
-import { type Node } from '../node.ts'
+import type { Node } from '../node.ts'
 import { graphStep } from '@nrz/output'
 
 export type LoadOptions = SpecOptions & {
@@ -58,17 +62,25 @@ export type ReadEntry = {
   realpath: Path
 }
 
+// path-based refer to the types of dependencies that are directly linked to
+// their real location in the file system and thus will not have an entry
+// in the `node_modules/.nrz` store
 const pathBasedType = new Set(['file', 'workspace'])
 const isPathBasedType = (
   type: string,
 ): type is 'file' | 'workspace' => pathBasedType.has(type)
-const getPathBasedId = (
+
+/**
+ * Returns a {@link DepID} for a given spec and path, if the spec is
+ * path-based or a registry spec, otherwise returns `undefined`.
+ */
+export const getPathBasedId = (
   spec: Spec,
-  path: string,
+  path: Path,
 ): DepID | undefined =>
   isPathBasedType(spec.type) ?
-    joinDepIDTuple([spec.type, path])
-  : undefined
+    joinDepIDTuple([spec.type, path.relativePosix()])
+  : findDepID(path)
 
 /**
  * Retrieve the {@link DepID} for a given package from its location.
@@ -274,13 +286,23 @@ const parseDir = (
         ...options,
         registry: fromNode.registry,
       })
-      const maybeId = getPathBasedId(spec, realpath.relativePosix())
+      const maybeId = getPathBasedId(spec, realpath)
+      // retrieves the extra information from the depID if one is available
+      let extra
+      if (maybeId) {
+        const [type, , maybeExtra, lastExtra] = splitDepID(maybeId)
+        extra =
+          type === 'registry' || type === 'git' ?
+            lastExtra
+          : maybeExtra
+      }
       node = graph.placePackage(
         fromNode,
         depType,
         spec,
         mani,
         maybeId,
+        extra,
       )
     }
 

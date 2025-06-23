@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { startDashboardData } from '@/lib/start-dashboard-data.js'
+import { startDashboardData } from '@/lib/start-dashboard-data.ts'
 
 const stderr = console.error
 
@@ -48,7 +48,7 @@ test('standard dashboard response', async () => {
   await new Promise<void>((res, rej) => {
     try {
       startDashboardData({
-        updateActiveRoute: vi.fn(),
+        navigate: vi.fn(),
         updateDashboard: dashboardData => {
           expect(dashboardData).toMatchSnapshot(
             'should return standard dashboard data',
@@ -69,7 +69,7 @@ test('missing dashboard response', async () => {
   await new Promise<void>((res, rej) => {
     try {
       startDashboardData({
-        updateActiveRoute: route => {
+        navigate: route => {
           expect(route).toBe('/error')
           res()
         },

@@ -1,4 +1,4 @@
-import { type PaginationState } from '@tanstack/react-table'
+import type { PaginationState } from '@tanstack/react-table'
 
 import {
   Select,
@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select.jsx'
+} from '@/components/ui/select.tsx'
 
 interface TablePageSelectProps {
   pagination: PaginationState

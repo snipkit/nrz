@@ -1,18 +1,20 @@
 import { useEffect, useRef } from 'react'
 import { Search, Command } from 'lucide-react'
-import { Kbd } from '@/components/ui/kbd.jsx'
-import { Input } from '@/components/ui/input.jsx'
+import { Kbd } from '@/components/ui/kbd.tsx'
+import { Input } from '@/components/ui/input.tsx'
 
 interface TableFilterSearchProps {
   filterValue: string
   onFilterChange: (value: string) => void
   placeholder?: string
+  className?: string
 }
 
 export const TableFilterSearch = ({
   placeholder = 'Filter Projects',
   filterValue,
   onFilterChange,
+  className = '',
 }: TableFilterSearchProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -45,7 +47,7 @@ export const TableFilterSearch = ({
   }, [])
 
   return (
-    <div className="relative flex w-[384px] items-center">
+    <div className={`relative flex w-96 items-center ${className}`}>
       <Search
         size={18}
         className="absolute left-0 ml-3 text-neutral-500"
@@ -53,7 +55,7 @@ export const TableFilterSearch = ({
       <Input
         type="text"
         ref={inputRef}
-        className="pl-9 pr-20"
+        className="bg-white pl-9 pr-20 dark:bg-muted-foreground/5"
         role="search"
         placeholder={placeholder}
         value={filterValue}

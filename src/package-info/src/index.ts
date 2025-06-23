@@ -1,32 +1,29 @@
-import { error, type ErrorCauseObject } from '@nrz/error-cause'
+import type { ErrorCauseOptions } from '@nrz/error-cause'
+import { error } from '@nrz/error-cause'
 import { clone, resolve as gitResolve, revs } from '@nrz/git'
 import { PackageJson } from '@nrz/package-json'
-import {
-  pickManifest,
-  type PickManifestOptions,
-} from '@nrz/pick-manifest'
-import {
-  RegistryClient,
-  type RegistryClientOptions,
+import type { PickManifestOptions } from '@nrz/pick-manifest'
+import { pickManifest } from '@nrz/pick-manifest'
+import type {
+  RegistryClientOptions,
+  RegistryClientRequestOptions,
 } from '@nrz/registry-client'
-import { Spec, type SpecOptions } from '@nrz/spec'
+import { RegistryClient } from '@nrz/registry-client'
+import type { SpecOptions } from '@nrz/spec'
+import { Spec } from '@nrz/spec'
 import { Pool } from '@nrz/tar'
-import {
-  asPackument,
-  type Integrity,
-  type Manifest,
-  type Packument,
-} from '@nrz/types'
+import type { Integrity, Manifest, Packument } from '@nrz/types'
+import { asPackument, isIntegrity } from '@nrz/types'
 import { Monorepo } from '@nrz/workspaces'
 import { XDG } from '@nrz/xdg'
-import { randomBytes } from 'crypto'
-import { readFile, rm, stat, symlink } from 'fs/promises'
+import { randomBytes } from 'node:crypto'
+import { readFile, rm, stat, symlink } from 'node:fs/promises'
 import {
   basename,
   dirname,
-  relative,
   resolve as pathResolve,
-} from 'path'
+  relative,
+} from 'node:path'
 import { create as tarC } from 'tar'
 import { rename } from './rename.ts'
 
@@ -55,66 +52,17 @@ export type PackageInfoClientOptions = RegistryClientOptions &
     workspace?: string[]
   }
 
-export type PackageInfoClientRequestOptions = PickManifestOptions & {
-  /** dir to resolve `file://` specifiers against. Defaults to projectRoot. */
-  from?: string
-}
+export type PackageInfoClientRequestOptions = PickManifestOptions &
+  RegistryClientRequestOptions & {
+    /** dir to resolve `file://` specifiers against. Defaults to projectRoot. */
+    from?: string
+  }
 
 export type PackageInfoClientExtractOptions =
   PackageInfoClientRequestOptions & {
     integrity?: Integrity
     resolved?: string
   }
-
-export type PackageInfoClientAllOptions = PackageInfoClientOptions &
-  PackageInfoClientRequestOptions &
-  PackageInfoClientExtractOptions
-
-// provide some helper methods at the top level. Re-use the client if
-// the same options are provided.
-const clients = new Map<string, PackageInfoClient>()
-const client = (o: PackageInfoClientAllOptions = {}) => {
-  const {
-    from: _from,
-    packageJson: _packageJson,
-    workspace: _workspace,
-    'workspace-group': _workspaceGroup,
-    ...opts
-  } = o
-  const key = JSON.stringify(
-    Object.entries(opts).sort(([a], [b]) => a.localeCompare(b, 'en')),
-  )
-  const c = clients.get(key) ?? new PackageInfoClient(opts)
-  clients.set(key, c)
-  return c
-}
-
-export const packument = async (
-  spec: Spec | string,
-  options: PackageInfoClientAllOptions = {},
-): Promise<Packument> => client(options).packument(spec, options)
-
-export const manifest = async (
-  spec: Spec | string,
-  options: PackageInfoClientAllOptions = {},
-): Promise<Manifest> => client(options).manifest(spec, options)
-
-export const resolve = async (
-  spec: Spec | string,
-  options: PackageInfoClientAllOptions = {},
-): Promise<Resolution> => client(options).resolve(spec, options)
-
-export const tarball = async (
-  spec: Spec | string,
-  options: PackageInfoClientAllOptions = {},
-): Promise<Buffer> => client(options).tarball(spec, options)
-
-export const extract = async (
-  spec: Spec | string,
-  target: string,
-  options: PackageInfoClientAllOptions = {},
-): Promise<Resolution> =>
-  client(options).extract(spec, target, options)
 
 export class PackageInfoClient {
   #registryClient?: RegistryClient
@@ -124,6 +72,7 @@ export class PackageInfoClient {
   #resolutions = new Map<string, Resolution>()
   packageJson: PackageJson
   monorepo?: Monorepo
+  #trustedIntegrities = new Map<string, Integrity>()
 
   get registryClient() {
     if (!this.#registryClient) {
@@ -168,6 +117,7 @@ export class PackageInfoClient {
       integrity && resolved ?
         { resolved, integrity, spec }
       : await this.resolve(spec, options)
+
     switch (f.type) {
       case 'git': {
         const {
@@ -206,14 +156,20 @@ export class PackageInfoClient {
         }
         // fallthrough if a remote tarball url present
       }
+
       case 'registry':
       case 'remote': {
+        const trustIntegrity =
+          this.#trustedIntegrities.get(r.resolved) === r.integrity
+
         const response = await this.registryClient.request(
           r.resolved,
           {
             integrity: r.integrity,
+            trustIntegrity,
           },
         )
+
         if (response.statusCode !== 200) {
           throw this.#resolveError(
             spec,
@@ -225,6 +181,15 @@ export class PackageInfoClient {
             },
           )
         }
+
+        // if it's not trusted already, but valid, start trusting
+        if (
+          !trustIntegrity &&
+          response.checkIntegrity({ spec, url: resolved })
+        ) {
+          this.#trustedIntegrities.set(r.resolved, response.integrity)
+        }
+
         try {
           await this.tarPool.unpack(response.buffer(), target)
         } catch (er) {
@@ -307,11 +272,12 @@ export class PackageInfoClient {
 
   async tarball(
     spec: Spec | string,
-    options: PackageInfoClientRequestOptions = {},
+    options: PackageInfoClientExtractOptions = {},
   ): Promise<Buffer> {
     if (typeof spec === 'string')
       spec = Spec.parse(spec, this.options)
     const f = spec.final
+
     switch (f.type) {
       case 'registry': {
         const { dist } = await this.manifest(spec, options)
@@ -321,16 +287,23 @@ export class PackageInfoClient {
             options,
             'no dist object found in manifest',
           )
-        //TODO: handle signatures as well as integrity
+
         const { tarball, integrity } = dist
-        if (!tarball)
+        if (!tarball) {
           throw this.#resolveError(
             spec,
             options,
             'no tarball found in manifest.dist',
           )
+        }
+
+        const trustIntegrity =
+          this.#trustedIntegrities.get(tarball) === integrity
+
         const response = await this.registryClient.request(tarball, {
+          ...options,
           integrity,
+          trustIntegrity,
         })
         if (response.statusCode !== 200) {
           throw this.#resolveError(
@@ -340,8 +313,18 @@ export class PackageInfoClient {
             { response, url: tarball },
           )
         }
+
+        // if we don't already trust it, but it's valid, start trusting it
+        if (
+          !trustIntegrity &&
+          response.checkIntegrity({ spec, url: tarball })
+        ) {
+          this.#trustedIntegrities.set(tarball, response.integrity)
+        }
+
         return response.buffer()
       }
+
       case 'git': {
         const {
           remoteURL,
@@ -380,6 +363,7 @@ export class PackageInfoClient {
         }
         // fallthrough if remoteURL set
       }
+
       case 'remote': {
         const { remoteURL } = f
         if (!remoteURL) {
@@ -396,6 +380,7 @@ export class PackageInfoClient {
         }
         return response.buffer()
       }
+
       case 'file': {
         const { file } = f
         if (file === undefined)
@@ -411,6 +396,7 @@ export class PackageInfoClient {
         }
         return readFile(path)
       }
+
       case 'workspace': {
         // TODO: Pack properly, ignore stuff, bundleDeps, etc
         const ws = this.#getWS(spec, options)
@@ -438,8 +424,18 @@ export class PackageInfoClient {
           options,
         )
         if (!mani) throw this.#resolveError(spec, options)
+        const { integrity, tarball } = mani.dist ?? {}
+        if (isIntegrity(integrity) && tarball) {
+          const registryOrigin = new URL(String(f.registry)).origin
+          const tgzOrigin = new URL(tarball).origin
+          // if it comes from the same origin, trust the integrity
+          if (tgzOrigin === registryOrigin) {
+            this.#trustedIntegrities.set(tarball, integrity)
+          }
+        }
         return mani
       }
+
       case 'git': {
         const {
           gitRemote,
@@ -461,6 +457,7 @@ export class PackageInfoClient {
         }
         // fallthrough to remote
       }
+
       case 'remote': {
         const { remoteURL } = f
         if (!remoteURL) {
@@ -496,6 +493,7 @@ export class PackageInfoClient {
           return this.packageJson.read(dir)
         })
       }
+
       case 'file': {
         const { file } = f
         if (file === undefined)
@@ -520,6 +518,7 @@ export class PackageInfoClient {
           return this.packageJson.read(dir)
         })
       }
+
       case 'workspace': {
         return this.#getWS(spec, options).manifest
       }
@@ -550,6 +549,7 @@ export class PackageInfoClient {
         if (!revDoc) throw this.#resolveError(spec, options)
         return asPackument(revDoc)
       }
+
       // these are all faked packuments
       case 'file':
       case 'workspace':
@@ -565,6 +565,7 @@ export class PackageInfoClient {
           },
         }
       }
+
       case 'registry': {
         const { registry, name } = f
         const pakuURL = new URL(name, registry)
@@ -596,13 +597,15 @@ export class PackageInfoClient {
     const memoKey = String(spec)
     if (typeof spec === 'string')
       spec = Spec.parse(spec, this.options)
+
     const memo = this.#resolutions.get(memoKey)
     if (memo) return memo
     const f = spec.final
+
     switch (f.type) {
       case 'file': {
         const { file } = f
-        if (!file || !spec.file) {
+        if (!file || !f.file) {
           throw this.#resolveError(
             spec,
             options,
@@ -610,7 +613,7 @@ export class PackageInfoClient {
           )
         }
         const { from = this.#projectRoot } = options
-        const resolved = pathResolve(from, spec.file)
+        const resolved = pathResolve(from, f.file)
         const r = { resolved, spec }
         this.#resolutions.set(memoKey, r)
         return r
@@ -670,7 +673,7 @@ export class PackageInfoClient {
             'no remote on git specifier',
           )
         }
-        const rev = await gitResolve(gitRemote, spec.gitCommittish, {
+        const rev = await gitResolve(gitRemote, f.gitCommittish, {
           spec,
         })
         if (rev) {
@@ -725,7 +728,7 @@ export class PackageInfoClient {
     spec?: Spec,
     options: PackageInfoClientRequestOptions = {},
     message = 'Could not resolve',
-    extra: ErrorCauseObject = {},
+    extra: ErrorCauseOptions = {},
   ) {
     const { from = this.#projectRoot } = options
     const er = error(

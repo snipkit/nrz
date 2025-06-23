@@ -2,6 +2,7 @@
 .env
 .env.production
 .build-*/
+tsconfig.tsbuildinfo
 
 /.turbo
 /docs
@@ -16,6 +17,7 @@
 /src/*/docs
 /src/*/node_modules
 /src/*/scripts/fixtures/
+/src/*/nrz-*.tgz
 
 /infra/*/.tap
 /infra/*/.tshy-build
@@ -24,6 +26,8 @@
 /infra/*/docs
 /infra/*/node_modules
 /infra/*/scripts/fixtures/
+
+/infra/benchmark/.artifacts
 
 /www/*/.tap
 /www/*/.astro

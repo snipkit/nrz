@@ -1,25 +1,27 @@
-import {
-  error,
-  type ErrorCauseObject,
-  typeError,
-} from '@nrz/error-cause'
-import { parseRange, type Range } from '@nrz/semver'
-export * from './types.ts'
-import {
-  type GitSelectorParsed,
-  type Scope,
-  type SpecLike,
-  type SpecOptions,
-  type SpecOptionsFilled,
+import type { ErrorCauseOptions } from '@nrz/error-cause'
+import { error, typeError } from '@nrz/error-cause'
+import type { Range } from '@nrz/semver'
+import { parseRange } from '@nrz/semver'
+import type {
+  GitSelectorParsed,
+  Scope,
+  SpecLike,
+  SpecOptions,
+  SpecOptionsFilled,
+  SpecType,
 } from './types.ts'
+export * from './types.ts'
 
 export const kCustomInspect = Symbol.for('nodejs.util.inspect.custom')
 
 export const defaultRegistry = 'https://registry.npmjs.org/'
 
 export const defaultRegistries = {
-  npm: 'https://registry.npmjs.org/',
+  npm: defaultRegistry,
+  gh: 'https://npm.pkg.github.com/',
 }
+
+export const defaultJsrRegistries = { jsr: 'https://npm.jsr.io/' }
 
 export const defaultGitHosts = {
   github: 'git+ssh://git@github.com:$1/$2.git',
@@ -51,12 +53,20 @@ export const gitHostWebsites = {
   gitlab: 'https://gitlab.com/',
 }
 
-export const defaultScopeRegistries = {}
+export const defaultScopeRegistries = {
+  '@jsr': 'https://npm.jsr.io/',
+}
 
 export const getOptions = (
   options?: SpecOptions,
 ): SpecOptionsFilled => ({
+  catalog: {},
+  catalogs: {},
   ...options,
+  'jsr-registries': {
+    ...(options?.['jsr-registries'] ?? {}),
+    ...defaultJsrRegistries,
+  },
   registry: options?.registry ?? defaultRegistry,
   'scope-registries': options?.['scope-registries'] ?? {},
   'git-hosts':
@@ -66,13 +76,7 @@ export const getOptions = (
         ...options['git-hosts'],
       }
     : defaultGitHosts,
-  registries:
-    options?.registries ?
-      {
-        ...defaultRegistries,
-        ...options.registries,
-      }
-    : defaultRegistries,
+  registries: options?.registries ?? {},
   'git-host-archives':
     options?.['git-host-archives'] ?
       {
@@ -99,6 +103,7 @@ const startsWithSpecIdentifier = (
   spec.startsWith('http:') ||
   spec.startsWith('https:') ||
   spec.startsWith('workspace:') ||
+  spec.startsWith('catalog:') ||
   spec.startsWith('git@') ||
   spec.startsWith('git://') ||
   spec.startsWith('git+ssh://') ||
@@ -107,11 +112,14 @@ const startsWithSpecIdentifier = (
   spec.startsWith('git+file://') ||
   spec.startsWith('git@github.com') ||
   spec.startsWith('registry:') ||
+  spec.startsWith('npm:') ||
+  spec.startsWith('gh:') ||
   // anything that starts with a known git host key, or a
   // custom registered registry protocol e.g: `github:`, `custom:`
   [
     ...Object.keys(options['git-hosts']),
     ...Object.keys(options.registries),
+    ...Object.keys(options['jsr-registries']),
   ].some(key => spec.startsWith(`${key}:`))
 
 /**
@@ -144,6 +152,18 @@ export type NodeJSDependenciesOptions = {
   resolve: typeof import('node:path').resolve
   winPath: typeof import('node:path').win32
 }
+
+export const isSpec = (spec: unknown): spec is Spec =>
+  typeof spec === 'object' &&
+  spec !== null &&
+  'spec' in spec &&
+  'bareSpec' in spec &&
+  'name' in spec &&
+  'type' in spec &&
+  'options' in spec &&
+  typeof (spec as Spec).spec === 'string' &&
+  typeof (spec as Spec).bareSpec === 'string' &&
+  typeof (spec as Spec).name === 'string'
 
 /**
  * The base, isomorphic Spec implementation.
@@ -179,7 +199,10 @@ export class Spec implements SpecLike<Spec> {
       const parsed = this.parse('(unknown)', specOrBareSpec, options)
       // try to look into a potential parsed subspec for a name
       if (parsed.subspec) {
-        parsed.name = parsed.subspec.name
+        const { namedJsrRegistry: jsrHost } = parsed
+        if (!jsrHost) {
+          parsed.name = parsed.subspec.name
+        }
         parsed.spec = `${parsed.name}@${parsed.bareSpec}`
       }
       return parsed
@@ -206,7 +229,7 @@ export class Spec implements SpecLike<Spec> {
 
   static nodejsDependencies?: NodeJSDependenciesOptions
 
-  type: 'file' | 'git' | 'registry' | 'remote' | 'workspace'
+  type: SpecType
   spec: string
   options: SpecOptionsFilled
   name: string
@@ -222,6 +245,7 @@ export class Spec implements SpecLike<Spec> {
   workspaceSpec?: string
   workspace?: string
   namedRegistry?: string
+  namedJsrRegistry?: string
   registry?: string
   registrySpec?: string
   conventionalRegistryTarball?: string
@@ -230,8 +254,9 @@ export class Spec implements SpecLike<Spec> {
   distTag?: string
   remoteURL?: string
   file?: string
+  catalog?: string
   subspec?: Spec
-  #final?: Spec
+  #final?: Spec & { type: Exclude<SpecType, 'catalog'> }
   #toString?: string
 
   /**
@@ -239,9 +264,17 @@ export class Spec implements SpecLike<Spec> {
    * When deciding which thing to actually fetch, spec.final is the thing
    * to look at.
    */
-  get final(): Spec {
+  get final(): Spec & { type: Exclude<SpecType, 'catalog'> } {
     if (this.#final) return this.#final
-    return (this.#final = this.subspec ? this.subspec.final : this)
+    const final = this.subspec ? this.subspec.final : this
+    /* c8 ignore start - impossible */
+    if (final.type === 'catalog') {
+      throw error('invalid Spec.final value, type is "catalog"')
+    }
+    /* c8 ignore stop */
+    return (this.#final = final as this & {
+      type: Exclude<SpecType, 'catalog'>
+    })
   }
 
   /**
@@ -287,17 +320,58 @@ export class Spec implements SpecLike<Spec> {
       this.spec = `${this.name}@${bareOrOptions}`
     } else {
       this.spec = spec
-      const hasScope = spec.startsWith('@')
-      let at = findFirstAt(spec, hasScope)
-      if (at === -1) {
-        // assume that an unadorned spec is just a name at the default
-        // registry
-        at = spec.length
-        spec += '@'
+      // Check if this spec starts with a known registry identifier
+      // but exclude git specs like 'git@github:a/b'
+      if (
+        !spec.startsWith('git@') &&
+        startsWithSpecIdentifier(spec, this.options) &&
+        spec.includes(':') &&
+        [
+          ...Object.keys(this.options.registries),
+          ...Object.keys(defaultRegistries),
+        ].some(key => spec.startsWith(`${key}:`))
+      ) {
+        // For specs like 'gh:@octocat/hello-world@1.0.0', don't split at the @
+        // Instead, set a temporary name and let the registry logic handle it
+        this.name = spec
+        this.bareSpec = spec
+      } else {
+        const hasScope = spec.startsWith('@')
+        let at = findFirstAt(spec, hasScope)
+        if (at === -1) {
+          // assume that an unadorned spec is just a name at the default
+          // registry
+          at = spec.length
+          spec += '@'
+        }
+        this.name = spec.substring(0, at)
+        if (hasScope) this.#parseScope(this.name)
+        this.bareSpec = spec.substring(at + 1)
       }
-      this.name = spec.substring(0, at)
-      if (hasScope) this.#parseScope(this.name)
-      this.bareSpec = spec.substring(at + 1)
+    }
+
+    if (this.bareSpec.startsWith('catalog:')) {
+      this.catalog = this.bareSpec.substring('catalog:'.length)
+      const catalog =
+        this.catalog ?
+          this.options.catalogs[this.catalog]
+        : this.options.catalog
+      if (!catalog) {
+        throw this.#error('Named catalog not found', {
+          name: this.catalog,
+          validOptions: Object.keys(this.options.catalogs),
+        })
+      }
+      const sub = catalog[this.name]
+      if (!sub) {
+        throw this.#error('Name not found in catalog', {
+          name: this.name,
+          validOptions: Object.keys(catalog),
+        })
+      }
+      this.subspec = Spec.parse(this.name, sub)
+      this.type = 'catalog'
+      return
     }
 
     // legacy affordance: allow project urls like
@@ -401,15 +475,14 @@ export class Spec implements SpecLike<Spec> {
       return
     }
 
-    // spooky
-    const ghosts = Object.entries(this.options['git-hosts'])
-    for (const [name, template] of ghosts) {
-      if (this.#parseHostedGit(name, template)) {
-        this.type = 'git'
-        return
-      }
+    // Check registries before git hosts to avoid conflicts
+    const regs = Object.entries(this.options.registries)
+    if (!this.options.registries.npm) {
+      regs.push(['npm', this.options.registry])
     }
-
+    if (!this.options.registries.gh) {
+      regs.push(['gh', defaultRegistries.gh])
+    }
     if (this.bareSpec.startsWith('registry:')) {
       const reg = this.bareSpec.substring('registry:'.length)
       const h = reg.indexOf('#')
@@ -420,7 +493,7 @@ export class Spec implements SpecLike<Spec> {
       let url = reg.substring(0, h)
       if (!url.endsWith('/')) url += '/'
       const regSpec = reg.substring(h + 1)
-      for (let [name, u] of Object.entries(this.options.registries)) {
+      for (let [name, u] of regs) {
         if (!u.endsWith('/')) {
           u += '/'
           this.options.registries[name] = u
@@ -432,7 +505,6 @@ export class Spec implements SpecLike<Spec> {
       return
     }
 
-    const regs = Object.entries(this.options.registries)
     for (const [host, url] of regs) {
       const h = `${host}:`
       if (this.bareSpec.startsWith(h)) {
@@ -442,7 +514,37 @@ export class Spec implements SpecLike<Spec> {
           this.bareSpec.substring(h.length),
           url,
         ).namedRegistry ??= host
+
+        // If we parsed a spec identifier, update the name and spec format
+        if (this.subspec && this.name === this.bareSpec) {
+          this.name = this.subspec.name
+          this.spec = `${this.name}@${this.bareSpec}`
+        }
+
         this.#guessRegistryTarball()
+        return
+      }
+    }
+
+    // spooky
+    const ghosts = Object.entries(this.options['git-hosts'])
+    for (const [name, template] of ghosts) {
+      if (this.#parseHostedGit(name, template)) {
+        this.type = 'git'
+        return
+      }
+    }
+
+    const jsrs = Object.entries(this.options['jsr-registries'])
+    for (const [host, url] of jsrs) {
+      const h = `${host}:`
+      if (this.bareSpec.startsWith(h)) {
+        this.type = 'registry'
+        this.namedJsrRegistry = host
+        this.#parseJsrRegistrySpec(
+          this.bareSpec.substring(h.length),
+          url,
+        ).namedJsrRegistry ??= host
         return
       }
     }
@@ -521,6 +623,10 @@ export class Spec implements SpecLike<Spec> {
     const { 'scope-registries': scopeRegs, registry } = this.options
     const scopeReg = this.scope && scopeRegs[this.scope]
     this.registry = scopeReg ?? registry
+    // no guessing the tarball for JSR registries
+    for (const r of Object.values(this.options['jsr-registries'])) {
+      if (this.registry === r) return
+    }
     this.#guessRegistryTarball()
   }
 
@@ -543,9 +649,7 @@ export class Spec implements SpecLike<Spec> {
       const hash = h === -1 ? '' : this.bareSpec.substring(h)
       const hostPath = bare.substring(name.length + 1)
       if (!hostPath) {
-        throw error('invalid named git host specifier', {
-          spec: this,
-        })
+        throw this.#error('invalid named git host specifier')
       }
       const split = hostPath.split('/')
       let t = template
@@ -602,7 +706,38 @@ export class Spec implements SpecLike<Spec> {
     return this.subspec
   }
 
-  #error(message: string, extra: ErrorCauseObject = {}) {
+  #parseJsrRegistrySpec(s: string, url: string) {
+    this.registry = url
+    // @luca/cases@jsr:1.x
+    if (!s.startsWith('@')) s = `${this.name}@${s}`
+    const name = `@jsr/${s.replace(/^@/, '').replace(/\//, '__')}`
+    this.subspec = this.constructor.parse(name, {
+      ...this.options,
+      'scope-registries': {
+        ...this.options['scope-registries'],
+        '@jsr': url,
+      },
+    })
+    if (this.name === '(unknown)') {
+      const nextAt = s.indexOf('@', 1)
+      if (nextAt === -1) {
+        this.name = s
+      } else {
+        this.name = s.substring(0, s.indexOf('@', 1))
+      }
+    }
+    const reg = `${this.namedJsrRegistry}:`
+    const n = `${reg}${this.name}`
+    if (this.bareSpec.startsWith(n + '@')) {
+      this.bareSpec = reg + this.bareSpec.substring(n.length + 1)
+    } else if (this.bareSpec === n) {
+      this.bareSpec = reg
+    }
+    this.spec = this.name + '@' + this.bareSpec
+    return this.subspec
+  }
+
+  #error(message: string, extra: ErrorCauseOptions = {}) {
     return error(message, { spec: this.spec, ...extra }, this.#error)
   }
 

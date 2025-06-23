@@ -1,7 +1,8 @@
 import { spawn as spawnGit } from '@nrz/git'
 import { Spec } from '@nrz/spec'
 import { Pool } from '@nrz/tar'
-import { type Manifest } from '@nrz/types'
+import type { Manifest } from '@nrz/types'
+import { unload } from '@nrz/nrz-json'
 import { Workspace } from '@nrz/workspaces'
 import { lstatSync, readFileSync, readlinkSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
@@ -10,16 +11,48 @@ import { resolve as pathResolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import t from 'tap'
 import { x as tarX } from 'tar'
-import {
-  extract,
-  manifest,
-  PackageInfoClient,
-  packument,
-  resolve,
-  tarball,
+import type {
+  PackageInfoClientExtractOptions,
+  PackageInfoClientOptions,
+  PackageInfoClientRequestOptions,
 } from '../src/index.ts'
+import { PackageInfoClient } from '../src/index.ts'
 
 t.saveFixture = true
+
+// helper methods only for test
+const extract = (
+  spec: string | Spec,
+  dir: string,
+  options?: PackageInfoClientOptions &
+    PackageInfoClientExtractOptions,
+) => {
+  return new PackageInfoClient(options).extract(spec, dir, options)
+}
+
+const resolve = (
+  spec: string | Spec,
+  options?: PackageInfoClientOptions &
+    PackageInfoClientRequestOptions,
+) => {
+  return new PackageInfoClient(options).resolve(spec, options)
+}
+
+const packument = (
+  spec: string | Spec,
+  options?: PackageInfoClientOptions &
+    PackageInfoClientRequestOptions,
+) => {
+  return new PackageInfoClient(options).packument(spec, options)
+}
+
+const manifest = (
+  spec: string | Spec,
+  options?: PackageInfoClientOptions &
+    PackageInfoClientRequestOptions,
+) => {
+  return new PackageInfoClient(options).manifest(spec, options)
+}
 
 const fixtures = pathResolve(import.meta.dirname, 'fixtures')
 const pakuAbbrev = JSON.parse(
@@ -54,6 +87,10 @@ const server = createServer((req, res) => {
     case '/abbrev/-/abbrev-2.0.0.tgz': {
       res.setHeader('content-type', 'application/octet-stream')
       res.setHeader('content-length', tgzAbbrev.byteLength)
+      res.setHeader(
+        'integrity',
+        pakuAbbrev.versions['2.0.0'].dist.integrity,
+      )
       return res.end(tgzAbbrev)
     }
     case '/deleted': {
@@ -129,7 +166,6 @@ const notFoundURLs: string[] = []
 
 const defaultRegistry = `http://localhost:${PORT}/`
 const options = {
-  defaultRegistry,
   registry: defaultRegistry,
   cache,
 }
@@ -159,7 +195,7 @@ t.test('create git repo', { bail: true }, async () => {
   const write = (f: string, c: string) => writeFile(`${repo}/${f}`, c)
   await git('init', '-b', 'main')
   await git('config', 'user.name', 'nrzdev')
-  await git('config', 'user.email', 'nrzdev@khulnasoft.com')
+  await git('config', 'user.email', 'nrzdev@nrz.sh')
   await git('config', 'tag.gpgSign', 'false')
   await git('config', 'commit.gpgSign', 'false')
   await git('config', 'tag.forceSignAnnotated', 'false')
@@ -408,12 +444,36 @@ t.test('manifest', async t => {
 })
 
 t.test('resolve', async t => {
+  // do this with a consistent client so that we cover the memoizing paths
+  const pi = new PackageInfoClient({
+    ...options,
+    'git-hosts': { fakey: `git+${pathToFileURL(repo)}#committish` },
+    'git-host-archives': {
+      fakey: `${defaultRegistry}abbrev/-/abbrev-2.0.0.tgz`,
+    },
+  })
+  const resolve = (
+    spec: string | Spec,
+    options: PackageInfoClientOptions &
+      PackageInfoClientRequestOptions = {},
+  ) => pi.resolve(spec, options)
+
   t.matchOnly(await resolve('abbrev@2', options), {
     resolved: pakuAbbrev.versions['2.0.0'].dist.tarball,
     integrity: pakuAbbrev.versions['2.0.0'].dist.integrity,
     signatures: pakuAbbrev.versions['2.0.0'].dist.signatures,
     spec: Spec,
   })
+  t.matchOnly(
+    await resolve('abbrev@2', options),
+    {
+      resolved: pakuAbbrev.versions['2.0.0'].dist.tarball,
+      integrity: pakuAbbrev.versions['2.0.0'].dist.integrity,
+      signatures: pakuAbbrev.versions['2.0.0'].dist.signatures,
+      spec: Spec,
+    },
+    'again, for memoizing',
+  )
 
   t.matchOnly(
     await resolve(
@@ -452,22 +512,51 @@ t.test('resolve', async t => {
       spec: Spec,
     },
   )
-  t.matchOnly(
-    await resolve('x@fakey:abbrev-2.0.0.tgz', {
-      'git-hosts': { fakey: `git+${pathToFileURL(repo)}#committish` },
-      'git-host-archives': {
-        fakey: `${defaultRegistry}abbrev/-/abbrev-2.0.0.tgz`,
-      },
-    }),
-    {
-      resolved: `${defaultRegistry}abbrev/-/abbrev-2.0.0.tgz`,
-      spec: Spec,
-    },
-  )
+  t.matchOnly(await resolve('x@fakey:abbrev-2.0.0.tgz'), {
+    resolved: `${defaultRegistry}abbrev/-/abbrev-2.0.0.tgz`,
+    spec: Spec,
+  })
 })
+
+const tarball = (
+  spec: string | Spec,
+  options?: PackageInfoClientOptions &
+    PackageInfoClientExtractOptions,
+) => {
+  return new PackageInfoClient(options).tarball(spec, options)
+}
 
 t.test('tarball', async t => {
   t.strictSame(await tarball('abbrev@2', options), tgzAbbrev)
+
+  t.strictSame(
+    await tarball('abbrev@2', {
+      ...options,
+      // different registry host so it's not trusted
+      registry: defaultRegistry.replace(/localhost/, '127.0.0.1'),
+      integrity: pakuAbbrev.versions['2.0.0'].dist.integrity,
+    }),
+    tgzAbbrev,
+  )
+
+  t.strictSame(
+    await tarball('abbrev@2', {
+      ...options,
+      registry: defaultRegistry.replace(/localhost/, '127.0.0.1'),
+    }),
+    tgzAbbrev,
+  )
+
+  t.strictSame(
+    await tarball(
+      'abbrev@' + String(pakuAbbrev.versions['2.0.0'].dist.tarball),
+      {
+        ...options,
+        integrity: pakuAbbrev.versions['2.0.0'].dist.integrity,
+      },
+    ),
+    tgzAbbrev,
+  )
 
   t.strictSame(
     await tarball(
@@ -497,7 +586,9 @@ t.test('tarball', async t => {
 
 const opts = { saveFixture: process.platform === 'win32' }
 t.test('extract', opts, async t => {
-  const dir = t.testdir()
+  const dir = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(dir)
+  unload()
   t.match(await extract('abbrev@2', dir + '/registry', options), {
     resolved: `${defaultRegistry}abbrev/-/abbrev-2.0.0.tgz`,
   })
@@ -512,6 +603,16 @@ t.test('extract', opts, async t => {
       resolved: `${defaultRegistry}abbrev/-/abbrev-2.0.0.tgz`,
     },
     'should use resolved & integrity value when provided',
+  )
+
+  await t.rejects(
+    extract('abbrev@2', dir + '/registry-bad-int', {
+      ...options,
+      resolved: `${defaultRegistry.replace(/localhost/, '127.0.0.1')}abbrev/-/abbrev-2.0.0.tgz`,
+      integrity:
+        'sha512-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000==',
+    }),
+    { cause: { code: 'EINTEGRITY' } },
   )
 
   t.match(await extract(`abbrev@${pkgDir}`, dir + '/dir', options), {
@@ -562,18 +663,33 @@ t.test('extract', opts, async t => {
 
 t.test('extraction failures', async t => {
   const dir = t.testdir()
-  const { extract, manifest } = await t.mockImport(
-    '../src/index.ts',
-    {
-      '@nrz/tar': {
-        Pool: class Pool {
-          async unpack() {
-            throw new Error('no tar for you')
-          }
-        },
+  const { PackageInfoClient } = await t.mockImport<
+    typeof import('../src/index.ts')
+  >('../src/index.ts', {
+    '@nrz/tar': {
+      Pool: class Pool {
+        async unpack() {
+          throw new Error('no tar for you')
+        }
       },
     },
-  )
+  })
+  const extract = (
+    spec: string,
+    dir: string,
+    options: PackageInfoClientOptions &
+      PackageInfoClientExtractOptions,
+  ) => {
+    return new PackageInfoClient(options).extract(spec, dir, options)
+  }
+  const manifest = (
+    spec: string,
+    options?: PackageInfoClientOptions &
+      PackageInfoClientRequestOptions,
+  ) => {
+    return new PackageInfoClient(options).manifest(spec, options)
+  }
+
   await t.rejects(extract('abbrev@2', dir + '/registry', options))
 
   await t.rejects(
@@ -745,13 +861,15 @@ t.test('fails on non-200 response', async t => {
 
 t.test('workspace specs', async t => {
   const dir = t.testdir({
-    'nrz-workspaces.json': JSON.stringify('p/*'),
+    'nrz.json': JSON.stringify({ workspaces: 'p/*' }),
     p: {
       a: { 'package.json': '{"name":"a"}' },
       b: { 'package.json': '{"name":"b"}' },
     },
     tarx: {},
   })
+  t.chdir(dir)
+  unload()
   const opts = {
     ...options,
     projectRoot: dir,
@@ -788,12 +906,14 @@ t.test('workspace specs', async t => {
 
 t.test('workspace group option', async t => {
   const dir = t.testdir({
-    'nrz-workspaces.json': JSON.stringify({
-      a: 'p/a*',
-      b: ['p/b', 'p/bb'],
-      ab: 'p/?',
-      aabb: ['p/??'],
-      all: 'p/*',
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        a: 'p/a*',
+        b: ['p/b', 'p/bb'],
+        ab: 'p/?',
+        aabb: ['p/??'],
+        all: 'p/*',
+      },
     }),
     p: {
       a: { 'package.json': '{"name":"a"}' },
@@ -802,6 +922,8 @@ t.test('workspace group option', async t => {
       bb: { 'package.json': '{"name":"bb"}' },
     },
   })
+  t.chdir(dir)
+  unload()
   const opts = {
     ...options,
     projectRoot: dir,
@@ -863,7 +985,7 @@ t.test('path git selector', async t => {
       writeFile(`${repo}/${f}`, c)
     await git('init', '-b', 'main')
     await git('config', 'user.name', 'nrzdev')
-    await git('config', 'user.email', 'nrzdev@khulnasoft.com')
+    await git('config', 'user.email', 'nrzdev@nrz.sh')
     await git('config', 'tag.gpgSign', 'false')
     await git('config', 'commit.gpgSign', 'false')
     await git('config', 'tag.forceSignAnnotated', 'false')

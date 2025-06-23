@@ -45,6 +45,7 @@ exports[`test/lockfile/load.ts > TAP > load > must match snapshot 1`] = `
 exports[`test/lockfile/load.ts > TAP > load with custom git hosts > should build specs with custom git hosts 1`] = `
 Spec {
   "bareSpec": "example:foo/bar",
+  "catalog": undefined,
   "conventionalRegistryTarball": undefined,
   "distTag": undefined,
   "file": undefined,
@@ -55,8 +56,11 @@ Spec {
   "name": "foo",
   "namedGitHost": "example",
   "namedGitHostPath": "foo/bar",
+  "namedJsrRegistry": undefined,
   "namedRegistry": undefined,
   "options": Object {
+    "catalog": Object {},
+    "catalogs": Object {},
     "git-host-archives": Object {
       "bitbucket": "https://bitbucket.org/$1/$2/get/$committish.tar.gz",
       "example": "git+ssh://example.com/$1/$2/archive/$3.tar.gz",
@@ -70,6 +74,9 @@ Spec {
       "gist": "git+ssh://git@gist.github.com/$1.git",
       "github": "git+ssh://git@github.com:$1/$2.git",
       "gitlab": "git+ssh://git@gitlab.com:$1/$2.git",
+    },
+    "jsr-registries": Object {
+      "jsr": "https://npm.jsr.io/",
     },
     "mainManifest": Object {
       "name": "my-project",
@@ -118,6 +125,7 @@ exports[`test/lockfile/load.ts > TAP > load with custom git hosts > should load 
 exports[`test/lockfile/load.ts > TAP > load with custom scope registry > should build specs with custom scope registry 1`] = `
 Spec {
   "bareSpec": "^1.0.0",
+  "catalog": undefined,
   "conventionalRegistryTarball": undefined,
   "distTag": undefined,
   "file": undefined,
@@ -128,8 +136,11 @@ Spec {
   "name": "@myscope/foo",
   "namedGitHost": undefined,
   "namedGitHostPath": undefined,
+  "namedJsrRegistry": undefined,
   "namedRegistry": undefined,
   "options": Object {
+    "catalog": Object {},
+    "catalogs": Object {},
     "git-host-archives": Object {
       "bitbucket": "https://bitbucket.org/$1/$2/get/$committish.tar.gz",
       "gist": "https://codeload.github.com/gist/$1/tar.gz/$committish",
@@ -141,6 +152,9 @@ Spec {
       "gist": "git+ssh://git@gist.github.com/$1.git",
       "github": "git+ssh://git@github.com:$1/$2.git",
       "gitlab": "git+ssh://git@gitlab.com:$1/$2.git",
+    },
+    "jsr-registries": Object {
+      "jsr": "https://npm.jsr.io/",
     },
     "mainManifest": Object {
       "name": "my-project",

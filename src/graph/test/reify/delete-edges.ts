@@ -1,13 +1,13 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
 import { RollbackRemove } from '@nrz/rollback-remove'
 import { Spec } from '@nrz/spec'
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
-import { type Diff } from '../../src/diff.ts'
+import type { Diff } from '../../src/diff.ts'
 import { Edge } from '../../src/edge.ts'
 import { Node } from '../../src/node.ts'
-import { type GraphLike } from '../../src/types.ts'
+import type { GraphLike } from '../../src/types.ts'
 
 // verify that we delete the deleted edges, but skip the ones
 // that are coming from something in the store being deleted,
@@ -18,7 +18,7 @@ const deleted: Edge[] = []
 const { deleteEdges } = await t.mockImport<
   typeof import('../../src/reify/delete-edges.ts')
 >('../../src/reify/delete-edges.ts', {
-  '../../src/reify/delete-edge.js': {
+  '../../src/reify/delete-edge.ts': {
     deleteEdge: async (
       edge: Edge,
       _scurry: PathScurry,

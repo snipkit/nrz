@@ -1,10 +1,10 @@
-import { type PackageJson } from '@nrz/package-json'
-import { type RollbackRemove } from '@nrz/rollback-remove'
-import { type Manifest } from '@nrz/types'
+import type { PackageJson } from '@nrz/package-json'
+import type { RollbackRemove } from '@nrz/rollback-remove'
+import type { Manifest } from '@nrz/types'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
-import { type Diff } from '../../src/diff.ts'
-import { type Edge } from '../../src/edge.ts'
+import type { Diff } from '../../src/diff.ts'
+import type { Edge } from '../../src/edge.ts'
 
 t.test('add some edges', async t => {
   const projectRoot = t.testdirName
@@ -12,7 +12,7 @@ t.test('add some edges', async t => {
   const { addEdges } = await t.mockImport<
     typeof import('../../src/reify/add-edges.ts')
   >('../../src/reify/add-edges.ts', {
-    '../../src/reify/add-edge.js': {
+    '../../src/reify/add-edge.ts': {
       addEdge: async (
         edge: Edge,
         _mani: Manifest,

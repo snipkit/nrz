@@ -1,0 +1,26 @@
+---
+title: nrz run
+sidebar:
+  label: run
+---
+
+import { Code } from '@astrojs/starlight/components'
+
+Usage:
+
+<Code
+  code="$ nrz run <script> [args ...]"
+  title="Terminal"
+  lang="bash"
+/>
+
+Run a script defined in 'package.json', passing along any extra
+arguments. Note that nrz config values must be specified _before_ the
+script name, because everything after that is handed off to the script
+process.
+
+## Aliases
+
+```
+r, run-script
+```

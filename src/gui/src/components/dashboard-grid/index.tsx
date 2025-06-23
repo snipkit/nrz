@@ -1,33 +1,30 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState, type MouseEvent } from 'react'
-import { type DashboardDataProject } from '@/state/types.js'
-import { CardTitle } from '@/components/ui/card.jsx'
-import { useGraphStore } from '@/state/index.js'
+import { useNavigate, NavLink } from 'react-router'
+import { useEffect, useState } from 'react'
+import type { MouseEvent } from 'react'
+import type { DashboardDataProject } from '@/state/types.ts'
+import { CardTitle } from '@/components/ui/card.tsx'
+import { useGraphStore } from '@/state/index.ts'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip.jsx'
-import { FilterSearch } from '@/components/ui/filter-search.jsx'
-import { TableFilterSearch } from '@/components/data-table/table-filter-search.jsx'
-import { TableViewDropdown } from '@/components/data-table/table-view-dropdown.jsx'
-import { DashboardTable } from '@/components/dashboard-grid/dashboard-table.jsx'
-import { SortToggle } from '@/components/sort-toggle.jsx'
-import {
-  type View,
-  DashboardViewToggle,
-} from '@/components/dashboard-grid/dashboard-view-toggle.jsx'
-import {
-  type VisibilityState,
-  type Table,
-} from '@tanstack/react-table'
-import { getIconSet } from '@/utils/dashboard-tools.jsx'
+} from '@/components/ui/tooltip.tsx'
+import { FilterSearch } from '@/components/ui/filter-search.tsx'
+import { TableFilterSearch } from '@/components/data-table/table-filter-search.tsx'
+import { TableViewDropdown } from '@/components/data-table/table-view-dropdown.tsx'
+import { DashboardTable } from '@/components/dashboard-grid/dashboard-table.tsx'
+import { DashboardViewToggle } from '@/components/dashboard-grid/dashboard-view-toggle.tsx'
+import type { View } from '@/components/dashboard-grid/dashboard-view-toggle.tsx'
+import type { VisibilityState, Table } from '@tanstack/react-table'
+import { getIconSet } from '@/utils/dashboard-tools.tsx'
 import { format } from 'date-fns'
-import { requestRouteTransition } from '@/lib/request-route-transition.js'
-import { Button } from '@/components/ui/button.jsx'
+import { requestRouteTransition } from '@/lib/request-route-transition.ts'
+import { Button } from '@/components/ui/button.tsx'
 import { Plus } from 'lucide-react'
-import { LoadingSpinner } from '@/components/ui/loading-spinner.jsx'
+import { LoadingSpinner } from '@/components/ui/loading-spinner.tsx'
+import { SortDropdown } from '@/components/sort-dropdown.tsx'
 
 export type DashboardItemOptions = {
   item: DashboardDataProject
@@ -47,24 +44,21 @@ export const DashboardItem = ({
   }
 
   return (
-    <a
-      href="#"
-      className="group relative w-full md:w-96"
+    <div
+      role="link"
+      className="group relative w-full cursor-default"
       onClick={onDashboardItemClick}>
       {/* top */}
-      <div className="relative flex h-20 items-center overflow-hidden rounded-t-lg border-x-[1px] border-t-[1px] bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-700">
+      <div className="relative flex h-24 items-center overflow-hidden rounded-t-lg border-x-[1px] border-t-[1px] border-muted bg-card transition-all group-hover:bg-card-accent">
         <div className="flex px-3 py-2">
-          <CardTitle className="text-md font-medium">
+          <CardTitle className="text-md z-[1] font-medium">
             {item.name}
           </CardTitle>
         </div>
         <div className="absolute right-0 top-0 z-[1] flex flex-row rounded-sm px-3 py-2 backdrop-blur-[1px]">
           {item.mtime && (
-            <p className="text-[0.7rem] text-muted-foreground">
-              {format(
-                new Date(item.mtime).toJSON(),
-                'LLLL do, yyyy | hh:mm aa',
-              )}
+            <p className="z-[1] text-[0.7rem] text-muted-foreground">
+              {format(new Date(item.mtime).toJSON(), 'LLLL do, yyyy')}
             </p>
           )}
         </div>
@@ -72,16 +66,22 @@ export const DashboardItem = ({
         {/* icons */}
         <div className="absolute -inset-4 -right-2 flex flex-row items-center justify-end gap-2 bg-clip-content">
           {PackageManger && (
-            <PackageManger className="size-24 fill-neutral-200/40 dark:fill-neutral-900/80" />
+            <PackageManger
+              size={120}
+              className="stroke-0 text-neutral-200/80 dark:text-neutral-800/40"
+            />
           )}
           {RunTime && (
-            <RunTime className="size-24 fill-neutral-200/40 dark:fill-neutral-900/80" />
+            <RunTime
+              size={120}
+              className="stroke-0 text-neutral-200/80 dark:text-neutral-800/40"
+            />
           )}
         </div>
       </div>
 
       {/* footer */}
-      <div className="flex w-full items-center rounded-b-lg border-[1px] bg-card px-3 py-3 transition-all group-hover:border-x-neutral-400 group-hover:border-b-neutral-400 dark:group-hover:border-x-neutral-700 dark:group-hover:border-b-neutral-700">
+      <div className="flex w-full items-center rounded-b-lg border-[1px] border-muted bg-card px-3 py-3 transition-all group-hover:bg-card-accent">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger className="truncate text-left text-xs text-muted-foreground">
@@ -91,15 +91,13 @@ export const DashboardItem = ({
           </Tooltip>
         </TooltipProvider>
       </div>
-    </a>
+    </div>
   )
 }
 
 export const DashboardGrid = () => {
+  const navigate = useNavigate()
   const dashboard = useGraphStore(state => state.dashboard)
-  const updateActiveRoute = useGraphStore(
-    state => state.updateActiveRoute,
-  )
   const updateErrorCause = useGraphStore(
     state => state.updateErrorCause,
   )
@@ -111,8 +109,9 @@ export const DashboardGrid = () => {
   const [filteredProjects, setFilteredProjects] = useState<
     DashboardDataProject[]
   >([])
-  const [table, setTable] =
-    useState<Table<DashboardDataProject> | null>(null)
+  const [table, setTable] = useState<
+    Table<DashboardDataProject> | undefined
+  >(undefined)
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>({
       type: false,
@@ -125,7 +124,7 @@ export const DashboardGrid = () => {
     setInProgress(true)
 
     void requestRouteTransition<{ path: string }>({
-      updateActiveRoute,
+      navigate,
       updateErrorCause,
       updateQuery,
       updateStamp,
@@ -148,10 +147,6 @@ export const DashboardGrid = () => {
     }
   }, [dashboard])
 
-  const onCreateNewProjectClick = () => {
-    updateActiveRoute('/new-project')
-  }
-
   if (inProgress) {
     return (
       <div className="flex h-96 w-full items-center justify-center">
@@ -161,24 +156,26 @@ export const DashboardGrid = () => {
   }
 
   return (
-    <div className="flex grow flex-col bg-secondary px-8 py-8 dark:bg-black">
-      <div className="flex gap-2 pb-8">
+    <div className="flex h-full flex-col overflow-y-scroll px-8 pb-8 pt-1">
+      <div className="grid w-full max-w-8xl grid-cols-3 gap-2 pb-8 md:flex">
         {currentView === 'table' ?
           <TableFilterSearch
             filterValue={tableFilterValue}
             onFilterChange={setTableFilterValue}
+            className="col-span-3 w-full"
           />
         : <FilterSearch
             placeholder="Filter Projects"
             items={dashboard?.projects ?? []}
             setFilteredItems={setFilteredProjects}
+            className="col-span-3 w-full"
           />
         }
-        <DashboardViewToggle
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-        />
-        <AnimatePresence mode="wait">
+        <div className="col-span-3 flex gap-2">
+          <DashboardViewToggle
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+          />
           {currentView === 'table' ?
             <motion.div
               key={currentView}
@@ -189,6 +186,7 @@ export const DashboardGrid = () => {
                 columnVisibility={columnVisibility}
                 setColumnVisibility={setColumnVisibility}
                 table={table}
+                className="w-[120px]"
               />
             </motion.div>
           : <motion.div
@@ -196,18 +194,18 @@ export const DashboardGrid = () => {
               exit={{ opacity: 0 }}
               initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}>
-              <SortToggle
-                filteredItems={filteredProjects}
+              <SortDropdown
+                items={filteredProjects}
                 setFilteredItems={setFilteredProjects}
                 sortKey="name"
               />
             </motion.div>
           }
-        </AnimatePresence>
-        <div className="flex grow flex-row-reverse">
-          <Button onClick={onCreateNewProjectClick} className="ml-2">
-            <Plus size={24} />
-            Create New Project
+          <Button asChild className="ml-auto">
+            <NavLink to="/create-new-project">
+              <Plus size={24} />
+              Create New Project
+            </NavLink>
           </Button>
         </div>
       </div>
@@ -218,7 +216,8 @@ export const DashboardGrid = () => {
             key={currentView}
             exit={{ opacity: 0, y: 5 }}
             initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}>
+            animate={{ opacity: 1, y: 0 }}
+            className="flex w-full max-w-8xl flex-col">
             <DashboardTable
               data={dashboard?.projects ?? []}
               setTable={setTable}
@@ -233,9 +232,9 @@ export const DashboardGrid = () => {
             exit={{ opacity: 0, y: -5 }}
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col">
+            className="flex w-full max-w-8xl flex-col">
             <p className="mb-4 text-sm font-semibold">Projects</p>
-            <div className="flex flex-row flex-wrap gap-8">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {dashboard?.projects ?
                 filteredProjects.map((item, index) => (
                   <DashboardItem

@@ -3,38 +3,44 @@
 exports[`dashboard-grid render default 1`] = `
 
 <div>
-  <div class="flex grow flex-col bg-secondary px-8 py-8 dark:bg-black">
-    <div class="flex gap-2 pb-8">
+  <div class="flex h-full flex-col overflow-y-scroll px-8 pb-8 pt-1">
+    <div class="grid w-full max-w-8xl grid-cols-3 gap-2 pb-8 md:flex">
       <gui-filter-search
         placeholder="Filter Projects"
         items
+        classname="col-span-3 w-full"
       >
       </gui-filter-search>
-      <gui-dashboard-view-toggle currentview="grid">
-      </gui-dashboard-view-toggle>
-      <div style="opacity: 1;">
-        <gui-sort-toggle
-          filtereditems
-          sortkey="name"
+      <div class="col-span-3 flex gap-2">
+        <gui-dashboard-view-toggle currentview="grid">
+        </gui-dashboard-view-toggle>
+        <div style="opacity: 1;">
+          <gui-sort-dropdown
+            items
+            sortkey="name"
+          >
+          </gui-sort-dropdown>
+        </div>
+        <gui-button
+          aschild="true"
+          classname="ml-auto"
         >
-        </gui-sort-toggle>
-      </div>
-      <div class="flex grow flex-row-reverse">
-        <gui-button classname="ml-2">
-          <gui-plus-icon size="24">
-          </gui-plus-icon>
-          Create New Project
+          <gui-nav-link to="/create-new-project">
+            <gui-plus-icon size="24">
+            </gui-plus-icon>
+            Create New Project
+          </gui-nav-link>
         </gui-button>
       </div>
     </div>
     <div
-      class="flex flex-col"
+      class="flex w-full max-w-8xl flex-col"
       style="opacity: 0; transform: translateY(-5px);"
     >
       <p class="mb-4 text-sm font-semibold">
         Projects
       </p>
-      <div class="flex flex-row flex-wrap gap-8">
+      <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <p>
           No projects found
         </p>
@@ -48,59 +54,68 @@ exports[`dashboard-grid render default 1`] = `
 exports[`dashboard-grid with results 1`] = `
 
 <div>
-  <div class="flex grow flex-col bg-secondary px-8 py-8 dark:bg-black">
-    <div class="flex gap-2 pb-8">
+  <div class="flex h-full flex-col overflow-y-scroll px-8 pb-8 pt-1">
+    <div class="grid w-full max-w-8xl grid-cols-3 gap-2 pb-8 md:flex">
       <gui-filter-search
         placeholder="Filter Projects"
         items="[object Object],[object Object]"
+        classname="col-span-3 w-full"
       >
       </gui-filter-search>
-      <gui-dashboard-view-toggle currentview="grid">
-      </gui-dashboard-view-toggle>
-      <div style="opacity: 1;">
-        <gui-sort-toggle
-          filtereditems="[object Object],[object Object]"
-          sortkey="name"
+      <div class="col-span-3 flex gap-2">
+        <gui-dashboard-view-toggle currentview="grid">
+        </gui-dashboard-view-toggle>
+        <div style="opacity: 1;">
+          <gui-sort-dropdown
+            items="[object Object],[object Object]"
+            sortkey="name"
+          >
+          </gui-sort-dropdown>
+        </div>
+        <gui-button
+          aschild="true"
+          classname="ml-auto"
         >
-        </gui-sort-toggle>
-      </div>
-      <div class="flex grow flex-row-reverse">
-        <gui-button classname="ml-2">
-          <gui-plus-icon size="24">
-          </gui-plus-icon>
-          Create New Project
+          <gui-nav-link to="/create-new-project">
+            <gui-plus-icon size="24">
+            </gui-plus-icon>
+            Create New Project
+          </gui-nav-link>
         </gui-button>
       </div>
     </div>
     <div
-      class="flex flex-col"
+      class="flex w-full max-w-8xl flex-col"
       style="opacity: 0; transform: translateY(-5px);"
     >
       <p class="mb-4 text-sm font-semibold">
         Projects
       </p>
-      <div class="flex flex-row flex-wrap gap-8">
-        <a
-          href="#"
-          class="group relative w-full md:w-96"
+      <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div
+          role="link"
+          class="group relative w-full cursor-default"
         >
-          <div class="relative flex h-20 items-center overflow-hidden rounded-t-lg border-x-[1px] border-t-[1px] bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-700">
+          <div class="relative flex h-24 items-center overflow-hidden rounded-t-lg border-x-[1px] border-t-[1px] border-muted bg-card transition-all group-hover:bg-card-accent">
             <div class="flex px-3 py-2">
-              <gui-card-title classname="text-md font-medium">
+              <gui-card-title classname="text-md z-[1] font-medium">
                 project-bar
               </gui-card-title>
             </div>
             <div class="absolute right-0 top-0 z-[1] flex flex-row rounded-sm px-3 py-2 backdrop-blur-[1px]">
-              <p class="text-[0.7rem] text-muted-foreground">
+              <p class="z-[1] text-[0.7rem] text-muted-foreground">
                 November 1st, 2024 | 06:01 PM
               </p>
             </div>
             <div class="absolute -inset-4 -right-2 flex flex-row items-center justify-end gap-2 bg-clip-content">
-              <gui-package-manager-pnpm-icon classname="size-24 fill-neutral-200/40 dark:fill-neutral-900/80">
+              <gui-package-manager-pnpm-icon
+                size="120"
+                classname="stroke-0 text-neutral-200/80 dark:text-neutral-800/40"
+              >
               </gui-package-manager-pnpm-icon>
             </div>
           </div>
-          <div class="flex w-full items-center rounded-b-lg border-[1px] bg-card px-3 py-3 transition-all group-hover:border-x-neutral-400 group-hover:border-b-neutral-400 dark:group-hover:border-x-neutral-700 dark:group-hover:border-b-neutral-700">
+          <div class="flex w-full items-center rounded-b-lg border-[1px] border-muted bg-card px-3 py-3 transition-all group-hover:bg-card-accent">
             <gui-tooltip-provider>
               <gui-tooltip>
                 <gui-tooltip-trigger classname="truncate text-left text-xs text-muted-foreground">
@@ -112,30 +127,36 @@ exports[`dashboard-grid with results 1`] = `
               </gui-tooltip>
             </gui-tooltip-provider>
           </div>
-        </a>
-        <a
-          href="#"
-          class="group relative w-full md:w-96"
+        </div>
+        <div
+          role="link"
+          class="group relative w-full cursor-default"
         >
-          <div class="relative flex h-20 items-center overflow-hidden rounded-t-lg border-x-[1px] border-t-[1px] bg-card transition-all group-hover:border-neutral-400 dark:group-hover:border-neutral-700">
+          <div class="relative flex h-24 items-center overflow-hidden rounded-t-lg border-x-[1px] border-t-[1px] border-muted bg-card transition-all group-hover:bg-card-accent">
             <div class="flex px-3 py-2">
-              <gui-card-title classname="text-md font-medium">
+              <gui-card-title classname="text-md z-[1] font-medium">
                 project-foo
               </gui-card-title>
             </div>
             <div class="absolute right-0 top-0 z-[1] flex flex-row rounded-sm px-3 py-2 backdrop-blur-[1px]">
-              <p class="text-[0.7rem] text-muted-foreground">
+              <p class="z-[1] text-[0.7rem] text-muted-foreground">
                 November 1st, 2024 | 06:01 PM
               </p>
             </div>
             <div class="absolute -inset-4 -right-2 flex flex-row items-center justify-end gap-2 bg-clip-content">
-              <gui-package-manager-nrz-icon classname="size-24 fill-neutral-200/40 dark:fill-neutral-900/80">
+              <gui-package-manager-nrz-icon
+                size="120"
+                classname="stroke-0 text-neutral-200/80 dark:text-neutral-800/40"
+              >
               </gui-package-manager-nrz-icon>
-              <gui-runtime-node-icon classname="size-24 fill-neutral-200/40 dark:fill-neutral-900/80">
+              <gui-runtime-node-icon
+                size="120"
+                classname="stroke-0 text-neutral-200/80 dark:text-neutral-800/40"
+              >
               </gui-runtime-node-icon>
             </div>
           </div>
-          <div class="flex w-full items-center rounded-b-lg border-[1px] bg-card px-3 py-3 transition-all group-hover:border-x-neutral-400 group-hover:border-b-neutral-400 dark:group-hover:border-x-neutral-700 dark:group-hover:border-b-neutral-700">
+          <div class="flex w-full items-center rounded-b-lg border-[1px] border-muted bg-card px-3 py-3 transition-all group-hover:bg-card-accent">
             <gui-tooltip-provider>
               <gui-tooltip>
                 <gui-tooltip-trigger classname="truncate text-left text-xs text-muted-foreground">
@@ -147,7 +168,7 @@ exports[`dashboard-grid with results 1`] = `
               </gui-tooltip>
             </gui-tooltip-provider>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   </div>

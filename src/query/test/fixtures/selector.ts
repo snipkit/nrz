@@ -1,13 +1,14 @@
-import postcssSelectorParser from 'postcss-selector-parser'
-import { EdgeLike, GraphLike, NodeLike } from '@nrz/graph'
-import {
+import { joinDepIDTuple } from '@nrz/dep-id'
+import { parse } from '@nrz/dss-parser'
+import { walk } from '../../src/index.ts'
+import type { EdgeLike, GraphLike, NodeLike } from '@nrz/graph'
+import type { DepID } from '@nrz/dep-id'
+import type { PostcssNode } from '@nrz/dss-parser'
+import type {
   GraphSelectionState,
   ParserState,
-  PostcssNode,
+  ParserFn,
 } from '../../src/types.ts'
-import { walk } from '../../src/index.ts'
-import { ParserFn } from '../../src/types.ts'
-import { joinDepIDTuple } from '@nrz/dep-id'
 
 export type FixtureResult = {
   edges: EdgeLike[]
@@ -51,43 +52,47 @@ export const selectorFixture =
     initial?: GraphSelectionState,
     partial?: GraphSelectionState,
     loose?: boolean,
+    scopeIDs?: DepID[],
   ): Promise<FixtureResult> => {
-    if (!initial) {
-      initial = {
-        edges: new Set(),
-        nodes: new Set(),
-      }
+    initial ??= {
+      edges: new Set(),
+      nodes: new Set(),
     }
-    if (!partial) {
-      partial = {
-        edges: new Set(),
-        nodes: new Set(),
-      }
+    partial ??= {
+      edges: new Set(),
+      nodes: new Set(),
     }
+    scopeIDs ??= [joinDepIDTuple(['file', '.'])]
     let current: PostcssNode
     if (typeof query === 'string') {
-      const ast = postcssSelectorParser().astSync(query)
+      const ast = parse(query)
       // if the testing function handles a fully parsed
       // css ast then just use that instead
       current =
         testFn === walk ? ast : (
-          (ast.nodes?.[0]?.nodes[0] as PostcssNode)
+          (ast.nodes[0]?.nodes[0] as PostcssNode)
         )
     } else {
       current = query as PostcssNode
     }
-    if (!current) throw new Error('missing selector?')
     const state: ParserState = {
       cancellable: async () => {},
       collect: {
         edges: new Set(),
         nodes: new Set(),
       },
+      comment: '',
       current,
       loose,
       initial,
       partial,
       walk,
+      retries: 0,
+      scopeIDs,
+      securityArchive: undefined,
+      signal: new AbortController().signal,
+      specOptions: {},
+      specificity: { idCounter: 0, commonCounter: 0 },
     }
     const res = await testFn(state)
     return {

@@ -82,6 +82,7 @@ exports[`test/graph.ts > TAP > using placePackage > the graph 1`] = `
 exports[`test/graph.ts > TAP > workspaces > should have root and workspaces as importers 1`] = `
 Set {
   Node {
+    "confused": false,
     "edgesIn": Set {},
     "edgesOut": Map {},
     "graph": "Graph {}",
@@ -93,12 +94,14 @@ Set {
       "name": "my-project",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "projectRoot": #
     "registry": undefined,
     "resolved": undefined,
     "version": "1.0.0",
   },
   Node {
+    "confused": false,
     "edgesIn": Set {},
     "edgesOut": Map {},
     "graph": "Graph {}",
@@ -112,12 +115,14 @@ Set {
       [Symbol.for(newline)]: "",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "projectRoot": #
     "registry": undefined,
     "resolved": undefined,
     "version": "1.0.0",
   },
   Node {
+    "confused": false,
     "edgesIn": Set {},
     "edgesOut": Map {},
     "graph": "Graph {}",
@@ -131,6 +136,7 @@ Set {
       [Symbol.for(newline)]: "",
       "version": "1.0.0",
     },
+    "modifier": undefined,
     "projectRoot": #
     "registry": undefined,
     "resolved": undefined,

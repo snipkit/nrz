@@ -1,24 +1,49 @@
-import {
-  error,
-  syntaxError,
-  typeError,
-  asErrorCause,
-  isErrorRoot,
-} from '../src/index.ts'
+import { error, syntaxError, typeError } from '../src/index.ts'
+import type { ErrorCauseOptions } from '../src/index.ts'
 import t from 'tap'
 
-t.test('setting cause', t => {
-  const cause = { status: 1 }
-  const te = typeError('status is one', cause)
-  t.equal(te.cause, cause)
-  t.end()
+t.test('error types', async t => {
+  t.equal(error('x').name, 'Error')
+  t.equal(typeError('x').name, 'TypeError')
+  t.equal(syntaxError('x').name, 'SyntaxError')
 })
 
-t.test('setting cause about syntax', t => {
-  const cause = { found: 'x', wanted: /[a-b]/ }
-  const te = syntaxError('x is not a or b', cause)
-  t.equal(te.cause, cause)
-  t.end()
+t.test('setting causes', async t => {
+  t.test('object', async t => {
+    const typeCause = (_: ErrorCauseOptions) => {}
+    const cause = { status: 1 }
+    const er = error('status is one', cause)
+    typeCause(er.cause)
+    t.strictSame(er.cause, cause)
+  })
+
+  t.test('error', async t => {
+    const typeCause = (_: Error) => {}
+    const cause = new Error('foo')
+    const er = error('msg', cause)
+    typeCause(er.cause)
+    t.strictSame(er.cause, cause)
+  })
+
+  t.test('missing cause', async t => {
+    const typeCause = (_: unknown) => {}
+    const er = error('msg')
+    typeCause(er.cause)
+    t.equal(er.cause, undefined)
+  })
+
+  t.test('error try/catch', async t => {
+    const typeCause = (_: ErrorCauseOptions) => {}
+    let cause: unknown = null
+    try {
+      throw new Error('foo')
+    } catch (er) {
+      cause = er
+    }
+    const er = error('msg', { cause })
+    typeCause(er.cause)
+    t.strictSame(er.cause, { cause })
+  })
 })
 
 t.test('invalid causes cause TS errors', t => {
@@ -27,11 +52,11 @@ t.test('invalid causes cause TS errors', t => {
   //@ts-expect-error
   error('x', { code: 1 })
   //@ts-expect-error
-  typeError('x', { code: 123 })
+  error('x', { code: 123 })
   //@ts-expect-error
-  typeError('x', { code: 'E_I_AM_SO_CREATIVE' })
+  error('x', { code: 'E_I_AM_SO_CREATIVE' })
   //@ts-expect-error
-  syntaxError('x', { status: true })
+  error('x', { status: true })
   //@ts-expect-error
   error('x', { version: true })
   //@ts-expect-error
@@ -48,28 +73,5 @@ t.test('stack pruning', t => {
     return error('x', undefined, bar)
   }
   t.match(foo().stack, /Error: x\n {4}at foo/)
-  t.end()
-})
-
-t.test('asErrorCause', t => {
-  const err = new Error('an error')
-  t.strictSame(asErrorCause(err), err)
-  const errCause = { code: 'ok' }
-  t.strictSame(asErrorCause(errCause), errCause)
-  t.match(asErrorCause(0), new Error('0'))
-  t.match(asErrorCause(false), new Error('false'))
-  t.match(asErrorCause(true), new Error('true'))
-  const unknownErr = new Error('Unknown error')
-  t.match(asErrorCause(''), unknownErr)
-  t.match(asErrorCause(null), unknownErr)
-  t.match(asErrorCause(undefined), unknownErr)
-  t.match(asErrorCause([]), unknownErr)
-  t.end()
-})
-
-t.test('isErrorRoot', t => {
-  t.equal(isErrorRoot(new Error('', { cause: {} })), true)
-  t.equal(isErrorRoot(new Error('')), false)
-  t.equal(isErrorRoot(new Error('', { cause: null })), false)
   t.end()
 })

@@ -1,17 +1,16 @@
-import { type PackageInfoClient } from '@nrz/package-info'
+import { graphStep } from '@nrz/output'
+import type { PackageInfoClient } from '@nrz/package-info'
 import { RollbackRemove } from '@nrz/rollback-remove'
 import { availableParallelism } from 'node:os'
 import { callLimit } from 'promise-call-limit'
-import {
-  load as loadActual,
-  type LoadOptions,
-} from '../actual/load.ts'
-import {
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
+import type { LoadOptions } from '../actual/load.ts'
+import { load as loadActual } from '../actual/load.ts'
+import type {
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
 } from '../dependencies.ts'
 import { Diff } from '../diff.ts'
-import { type Graph } from '../graph.ts'
+import type { Graph } from '../graph.ts'
 import { lockfile } from '../index.ts'
 import {
   lockfileData,
@@ -23,9 +22,9 @@ import { addNodes } from './add-nodes.ts'
 import { build } from './build.ts'
 import { deleteEdges } from './delete-edges.ts'
 import { deleteNodes } from './delete-nodes.ts'
+import { internalHoist } from './internal-hoist.ts'
 import { rollback } from './rollback.ts'
 import { updatePackageJson } from './update-importers-package-json.ts'
-import { graphStep } from '@nrz/output'
 
 const limit = Math.max(availableParallelism() - 1, 1) * 8
 
@@ -71,6 +70,8 @@ export const reify = async (options: ReifyOptions) => {
   }
 
   done()
+
+  return diff
 }
 
 const reify_ = async (
@@ -113,6 +114,8 @@ const reify_ = async (
     remover,
   )
   if (edgeActions.length) await Promise.all(edgeActions)
+
+  await internalHoist(diff.to, options, remover)
 
   // run lifecycles and chmod bins
   await build(diff, packageJson, scurry)

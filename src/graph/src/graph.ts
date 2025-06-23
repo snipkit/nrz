@@ -1,14 +1,19 @@
-import { getId, joinDepIDTuple, type DepID } from '@nrz/dep-id'
+import { getId, joinDepIDTuple } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
 import { satisfies } from '@nrz/satisfies'
-import { Spec, type SpecOptions } from '@nrz/spec'
-import { type Manifest, type DependencyTypeShort } from '@nrz/types'
-import { type Monorepo } from '@nrz/workspaces'
-import { inspect, type InspectOptions } from 'util'
-import { type Edge } from './edge.ts'
+import { Spec } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import type { Manifest, DependencySaveType } from '@nrz/types'
+import type { Monorepo } from '@nrz/workspaces'
+import { inspect } from 'node:util'
+import type { InspectOptions } from 'node:util'
+import type { Edge } from './edge.ts'
 import { lockfileData } from './lockfile/save.ts'
-import { Node, type NodeOptions } from './node.ts'
-import { type GraphLike, type NodeLike } from './types.ts'
+import { Node } from './node.ts'
+import type { NodeOptions } from './node.ts'
+import type { GraphLike, NodeLike } from './types.ts'
+import { resolveSaveType } from './resolve-save-type.ts'
 
 const kCustomInspect = Symbol.for('nodejs.util.inspect.custom')
 
@@ -152,7 +157,7 @@ export class Graph implements GraphLike {
   }
 
   /**
-   * Delete all nodes that are unreachable from the importers.
+   * Delete all nodes and edges that are unreachable from the importers.
    * The collection of deleted nodes is returned.
    *
    * NOTE: This can be extremely slow for large graphs, and is almost always
@@ -162,13 +167,16 @@ export class Graph implements GraphLike {
    */
   gc() {
     const { nodes } = this
+    this.edges.clear()
     this.nodes = new Map()
     const marked = new Set(this.importers)
     for (const imp of marked) {
       // don't delete the importer!
       nodes.delete(imp.id)
       this.nodes.set(imp.id, imp)
-      for (const { to } of imp.edgesOut.values()) {
+      for (const edge of imp.edgesOut.values()) {
+        this.edges.add(edge)
+        const { to } = edge
         if (!to || marked.has(to)) continue
         marked.add(to)
         nodes.delete(to.id)
@@ -187,7 +195,7 @@ export class Graph implements GraphLike {
    * pointing to nothing will be created to represent that missing dependency.
    */
   addEdge(
-    type: DependencyTypeShort,
+    type: DependencySaveType,
     spec: Spec,
     from: NodeLike,
     to?: NodeLike,
@@ -212,6 +220,9 @@ export class Graph implements GraphLike {
         edge.spec.bareSpec === spec.bareSpec
       ) {
         if (to && to !== edge.to) {
+          // removes this edge from its destination edgesIn ref
+          edge.to?.edgesIn.delete(edge)
+          // now swap the destination to the new one
           edge.to = to as Node
           edge.to.edgesIn.add(edge)
         }
@@ -220,7 +231,11 @@ export class Graph implements GraphLike {
       this.edges.delete(edge)
     }
     const f = from as Node
-    const edgeOut = f.addEdgesTo(type, spec, to as Node | undefined)
+    const edgeOut = f.addEdgesTo(
+      resolveSaveType(from, spec.name, type),
+      spec,
+      to as Node | undefined,
+    )
     this.edges.add(edgeOut)
     return edgeOut
   }
@@ -305,10 +320,11 @@ export class Graph implements GraphLike {
    */
   placePackage(
     fromNode: Node,
-    depType: DependencyTypeShort,
+    depType: DependencySaveType,
     spec: Spec,
     manifest?: Manifest,
     id?: DepID,
+    extra?: string,
   ) {
     // if no manifest is available, then create an edge that has no
     // reference to any other node, representing a missing dependency
@@ -326,7 +342,7 @@ export class Graph implements GraphLike {
         depType === 'peerOptional',
     }
 
-    const depId = id || (manifest && getId(spec, manifest))
+    const depId = id || (manifest && getId(spec, manifest, extra))
 
     /* c8 ignore start - should not be possible */
     if (!depId) {
@@ -350,10 +366,11 @@ export class Graph implements GraphLike {
     }
 
     // creates a new node and edges to its parent
-    const toNode = this.addNode(depId, manifest)
+    const toNode = this.addNode(depId, manifest, spec)
     toNode.registry = spec.registry
     toNode.dev = flags.dev
     toNode.optional = flags.optional
+    toNode.modifier = extra
     this.addEdge(depType, spec, fromNode, toNode)
     return toNode
   }

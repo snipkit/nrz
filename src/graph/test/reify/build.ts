@@ -1,6 +1,6 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
 import { PackageJson } from '@nrz/package-json'
-import { type RunOptions } from '@nrz/run'
+import type { RunOptions } from '@nrz/run'
 import { Monorepo } from '@nrz/workspaces'
 import * as FSP from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -73,7 +73,7 @@ t.test(
           a: '',
         },
       }),
-      'nrz-workspaces.json': '"src/*"',
+      'nrz.json': JSON.stringify({ workspaces: 'src/*' }),
       node_modules: {
         '.bin': {
           x: t.fixture(

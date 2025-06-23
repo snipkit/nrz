@@ -1,37 +1,62 @@
-import { useEffect, useState } from 'react'
-import { useGraphStore } from '@/state/index.js'
+import { useLocation } from 'react-router'
+import { useMemo } from 'react'
+import { useGraphStore } from '@/state/index.ts'
+import { InlineCode } from '@/components/ui/inline-code.tsx'
+import { ChevronRight } from 'lucide-react'
 
 const routeNames = new Map<string, string>([
   ['/', 'Dashboard'],
   ['/error', 'Error'],
   ['/explore', 'Explore'],
-  ['/dashboard', 'Dashboard'],
-  ['/new-project', 'New Project'],
   ['/queries', 'Queries'],
   ['/labels', 'Labels'],
+  ['/help', 'Help'],
+  ['/help/selectors', 'Help / Selectors'],
 ])
 
 const Header = () => {
-  const [routeName, setRouteName] = useState<string>('')
-  const route = useGraphStore(state => state.activeRoute)
+  const { pathname } = useLocation()
+  const projectInfo = useGraphStore(state => state.projectInfo)
+  const appData = useGraphStore(state => state.appData)
+  const graph = useGraphStore(state => state.graph)
 
-  useEffect(() => {
-    /**
-     * Set a clean route on the state for display
-     */
-    const mappedName = routeNames.get(route)
-    if (mappedName) {
-      setRouteName(mappedName)
-    } else {
-      setRouteName('NRZ')
-    }
-  }, [route])
+  const contextValue = useMemo(() => {
+    if (pathname.includes('/explore'))
+      return graph?.projectRoot ? graph.projectRoot : null
+  }, [pathname, graph])
 
-  if (route.includes('error')) return null
+  const routeName = useMemo(() => {
+    if (pathname.includes('error')) return null
+    if (pathname === '/create-new-project') return null
+    if (projectInfo.nrzInstalled === false && pathname === '/explore')
+      return null
+
+    return routeNames.get(pathname) || 'NRZ /vōlt/'
+  }, [pathname, projectInfo.nrzInstalled])
+
+  if (!routeName) return null
 
   return (
-    <div className="flex w-full justify-between bg-white px-8 py-3 dark:bg-black">
-      <h3 className="mt-1 text-2xl font-medium">{routeName}</h3>
+    <div className="flex h-[65px] w-full cursor-default items-center rounded-t-lg border-x-[1px] border-t-[1px] px-8 py-3">
+      <div className="flex w-full max-w-8xl items-end">
+        <h3 className="text-md font-medium">{routeName}</h3>
+        {contextValue && (
+          <div className="mx-2 flex items-center gap-2">
+            <ChevronRight
+              className="text-muted-foreground"
+              size={16}
+            />
+            <InlineCode className="mx-0" variant="mono">
+              {contextValue}
+            </InlineCode>
+          </div>
+        )}
+        {appData?.buildVersion && (
+          <p className="ml-auto hidden font-courier text-xs font-medium text-muted-foreground md:block">
+            build: v{appData.buildVersion}
+          </p>
+        )}
+      </div>
     </div>
   )
 }

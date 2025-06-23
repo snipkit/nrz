@@ -4,12 +4,12 @@
 // Every method ends up with the checked out working dir
 // at the specified ref, and resolves with the git sha.
 
-import { type RevDoc, type RevDocEntry } from '@nrz/types'
+import type { RevDoc, RevDocEntry } from '@nrz/types'
 import { gitScpURL } from '@nrz/git-scp-url'
-import { mkdir, stat } from 'fs/promises'
-import { basename, resolve } from 'path'
-import { fileURLToPath } from 'url'
-import { type GitOptions } from './index.ts'
+import { mkdir, stat } from 'node:fs/promises'
+import { basename, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type { GitOptions } from './index.ts'
 import { isWindows } from './is-windows.ts'
 import { resolveRef } from './resolve.ts'
 import { revs as getRevs } from './revs.ts'

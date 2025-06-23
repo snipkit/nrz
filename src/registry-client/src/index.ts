@@ -1,13 +1,18 @@
 import { Cache } from '@nrz/cache'
-import { register } from '@nrz/cache-unzip'
+import { register as cacheUnzipRegister } from '@nrz/cache-unzip'
 import { error } from '@nrz/error-cause'
-import { type Integrity } from '@nrz/types'
+import { asError } from '@nrz/types'
+import { logRequest } from '@nrz/output'
+import type { Integrity } from '@nrz/types'
 import { urlOpen } from '@nrz/url-open'
 import { XDG } from '@nrz/xdg'
+import { dirname, resolve } from 'node:path'
 import { setTimeout } from 'node:timers/promises'
 import { loadPackageJson } from 'package-json-from-dist'
-import { Agent, RetryAgent, type Dispatcher } from 'undici'
+import type { Dispatcher } from 'undici'
+import { Agent, RetryAgent } from 'undici'
 import { addHeader } from './add-header.ts'
+import type { Token } from './auth.ts'
 import {
   deleteToken,
   getKC,
@@ -15,36 +20,41 @@ import {
   isToken,
   keychains,
   setToken,
-  type Token,
 } from './auth.ts'
-import { CacheEntry, type JSONObj } from './cache-entry.ts'
+import type { JSONObj } from './cache-entry.ts'
+import { CacheEntry } from './cache-entry.ts'
+import { register } from './cache-revalidate.ts'
 import { bun, deno, node } from './env.ts'
 import { handle304Response } from './handle-304-response.ts'
 import { otplease } from './otplease.ts'
 import { isRedirect, redirect } from './redirect.ts'
 import { setCacheHeaders } from './set-cache-headers.ts'
-import { logRequest } from '@nrz/output'
-import {
-  isTokenResponse,
-  type TokenResponse,
-} from './token-response.ts'
-import {
-  isWebAuthChallenge,
-  type WebAuthChallenge,
-} from './web-auth-challenge.ts'
+import type { TokenResponse } from './token-response.ts'
+import { isTokenResponse } from './token-response.ts'
+import type { WebAuthChallenge } from './web-auth-challenge.ts'
+import { isWebAuthChallenge } from './web-auth-challenge.ts'
 export {
+  CacheEntry,
+  deleteToken,
+  getKC,
+  isToken,
+  keychains,
+  setToken,
   type JSONObj,
-  type CacheEntry,
   type Token,
-  type WebAuthChallenge,
   type TokenResponse,
+  type WebAuthChallenge,
 }
-export { keychains, getKC, setToken, deleteToken, isToken }
+
+export type CacheableMethod = 'GET' | 'HEAD'
+export const isCacheableMethod = (m: unknown): m is CacheableMethod =>
+  m === 'GET' || m === 'HEAD'
 
 export type RegistryClientOptions = {
   /**
    * Path on disk where the cache should be stored
-   * @default `$HOME/.config/nrz/cache`
+   *
+   * Defaults to the XDG cache folder for `nrz/registry-client`
    */
   cache?: string
   /**
@@ -61,6 +71,23 @@ export type RegistryClientOptions = {
 
   /** the identity to use for storing auth tokens */
   identity?: string
+
+  /**
+   * If the server does not serve a `stale-while-revalidate` value in the
+   * `cache-control` header, then this multiplier is applied to the `max-age`
+   * or `s-maxage` values.
+   *
+   * By default, this is `60`, so for example a response that is cacheable for
+   * 5 minutes will allow a stale response while revalidating for up to 5
+   * hours.
+   *
+   * If the server *does* provide a `stale-while-revalidate` value, then that
+   * is always used.
+   *
+   * Set to 0 to prevent any `stale-while-revalidate` behavior unless
+   * explicitly allowed by the server's `cache-control` header.
+   */
+  'stale-while-revalidate-factor'?: number
 }
 
 export type RegistryClientRequestOptions = Omit<
@@ -88,6 +115,13 @@ export type RegistryClientRequestOptions = Omit<
   integrity?: Integrity
 
   /**
+   * Set to true if the integrity should be trusted implicitly without
+   * a recalculation, for example if it comes from a trusted registry that
+   * also serves the tarball itself.
+   */
+  trustIntegrity?: boolean
+
+  /**
    * Follow up to 10 redirections by default. Set this to 0 to just return
    * the 3xx response. If the max redirections are expired, and we still get
    * a redirection response, then fail the request. Redirection cycles are
@@ -106,7 +140,7 @@ export type RegistryClientRequestOptions = Omit<
    * Set to `false` to suppress ANY lookups from cache. This will also
    * prevent storing the result to the cache.
    */
-  cache?: false
+  useCache?: false
 
   /**
    * Set to pass an `npm-otp` header on the request.
@@ -116,17 +150,29 @@ export type RegistryClientRequestOptions = Omit<
    * @internal
    */
   otp?: string
+
+  /**
+   * Set to false to explicitly prevent `stale-while-revalidate` behavior,
+   * for use in revalidating while stale.
+   * @internal
+   */
+  staleWhileRevalidate?: false
 }
 
-const { version } = loadPackageJson(import.meta.filename) as {
+const { version } = loadPackageJson(
+  import.meta.filename,
+  process.env.__NRZ_INTERNAL_REGISTRY_CLIENT_PACKAGE_JSON,
+) as {
   version: string
 }
+
 const nua =
   (globalThis.navigator as Navigator | undefined)?.userAgent ??
   (bun ? `Bun/${bun}`
   : deno ? `Deno/${deno}`
   : node ? `Node.js/${node}`
   : '(unknown platform)')
+
 export const userAgent = `@nrz/registry-client/${version} ${nua}`
 
 const agentOptions: Agent.Options = {
@@ -151,21 +197,28 @@ export class RegistryClient {
   agent: RetryAgent
   cache: Cache
   identity: string
+  staleWhileRevalidateFactor: number
 
   constructor(options: RegistryClientOptions) {
     const {
-      cache = xdg.cache('registry-client'),
+      cache = xdg.cache(),
       'fetch-retry-factor': timeoutFactor = 2,
       'fetch-retry-mintimeout': minTimeout = 0,
       'fetch-retry-maxtimeout': maxTimeout = 30_000,
       'fetch-retries': maxRetries = 3,
       identity = '',
+      'stale-while-revalidate-factor':
+        staleWhileRevalidateFactor = 60,
     } = options
     this.identity = identity
+    this.staleWhileRevalidateFactor = staleWhileRevalidateFactor
+    const path = resolve(cache, 'registry-client')
     this.cache = new Cache({
-      path: cache,
+      path,
       onDiskWrite(_path, key, data) {
-        if (CacheEntry.decode(data).isGzip) register(cache, key)
+        if (CacheEntry.isGzipEntry(data)) {
+          cacheUnzipRegister(path, key)
+        }
       },
     })
     const dispatch = new Agent(agentOptions)
@@ -234,14 +287,14 @@ export class RegistryClient {
       key: string
       token: string
     }>(tokensUrl, ({ token }) => s.startsWith(token), {
-      cache: false,
+      useCache: false,
     }).catch(() => undefined)
 
     if (record) {
       const { key } = record
       await this.request(
         new URL(`-/npm/v1/tokens/token/${key}`, registry),
-        { cache: false, method: 'DELETE' },
+        { useCache: false, method: 'DELETE' },
       )
     }
 
@@ -265,7 +318,7 @@ export class RegistryClient {
     const webLoginURL = new URL('-/v1/login', registry)
     const response = await this.request(webLoginURL, {
       method: 'POST',
-      cache: false,
+      useCache: false,
       headers: {
         'content-type': 'application/json',
         'npm-auth-type': 'web',
@@ -305,7 +358,7 @@ export class RegistryClient {
         return result
       }),
       urlOpen(loginUrl, { signal }).catch((er: unknown) => {
-        if ((er as Error).name === 'AbortError') return
+        if (asError(er).name === 'AbortError') return
         ac.abort()
         throw er
       }),
@@ -320,7 +373,7 @@ export class RegistryClient {
   ): Promise<TokenResponse> {
     const response = await this.request(url, {
       ...options,
-      cache: false,
+      useCache: false,
     })
     const { signal } = options as { signal?: AbortSignal }
     if (response.statusCode === 202) {
@@ -353,27 +406,35 @@ export class RegistryClient {
       redirections = new Set(),
       signal,
       otp = (process.env.NRZ_OTP ?? '').trim(),
+      staleWhileRevalidate = true,
     } = options
+    let { trustIntegrity } = options
 
-    const { cache = method === 'GET' || method === 'HEAD' } = options
+    const m = isCacheableMethod(method) ? method : undefined
+    const { useCache = !!m } = options
 
     ;(signal as AbortSignal | null)?.throwIfAborted()
 
     // first, try to get from the cache before making any request.
-    const { origin, pathname } = u
-    const key = JSON.stringify([origin, method, pathname])
+    const { origin } = u
+    const key = `${method !== 'GET' ? method + ' ' : ''}${u}`
     const buffer =
-      cache ?
+      useCache ?
         await this.cache.fetch(key, { context: { integrity } })
       : undefined
 
     const entry = buffer ? CacheEntry.decode(buffer) : undefined
-    if (entry?.valid) return entry
-    // TODO: stale-while-revalidate timeout, say 1 day, where we'll
-    // use the cached response even if it's invalid, and validate
-    // in the background without waiting for it.
+    if (entry?.valid) {
+      return entry
+    }
 
-    // either no cache entry, or need to revalidate it.
+    if (staleWhileRevalidate && entry?.staleWhileRevalidate && m) {
+      // revalidate while returning the stale entry
+      register(dirname(this.cache.path()), m, url)
+      return entry
+    }
+
+    // either no cache entry, or need to revalidate before use.
     setCacheHeaders(options, entry)
 
     redirections.add(String(url))
@@ -396,6 +457,13 @@ export class RegistryClient {
     if (otp) {
       options.headers = addHeader(options.headers, 'npm-otp', otp)
     }
+    if (integrity) {
+      options.headers = addHeader(
+        options.headers,
+        'accept-integrity',
+        integrity,
+      )
+    }
     options.method = options.method ?? 'GET'
 
     // will remove if we don't have a token.
@@ -405,14 +473,42 @@ export class RegistryClient {
       await getToken(origin, this.identity),
     )
 
+    let response: Dispatcher.ResponseData | null = null
+    try {
+      response = await this.agent.request(
+        options as Dispatcher.RequestOptions,
+      )
+      /* c8 ignore start */
+    } catch (er) {
+      // Rethrow so we get a better stack trace
+      throw error('Request failed', {
+        code: 'EREQUEST',
+        cause: er,
+        url,
+        method,
+      })
+    }
+    /* c8 ignore stop */
+
     const result = await this.#handleResponse(
       u,
       options,
-      await this.agent.request(options as Dispatcher.RequestOptions),
+      response,
       entry,
     )
 
-    if (cache) this.cache.set(key, result.encode())
+    if (result.getHeader('integrity')) {
+      trustIntegrity = true
+    }
+
+    if (result.isGzip && !trustIntegrity) {
+      result.checkIntegrity({ url })
+    }
+    if (useCache) {
+      this.cache.set(key, result.encode(), {
+        integrity: result.integrity,
+      })
+    }
     return result
   }
 
@@ -440,29 +536,26 @@ export class RegistryClient {
       }
     }
 
+    const { integrity, trustIntegrity } = options
     const result = new CacheEntry(
       /* c8 ignore next - should always have a status code */
       response.statusCode || 200,
       h,
-      options.integrity,
+      {
+        integrity,
+        trustIntegrity,
+        'stale-while-revalidate-factor':
+          this.staleWhileRevalidateFactor,
+      },
     )
 
     if (isRedirect(result)) {
       response.body.resume()
-      // remove the try/catch once rebasing onto main with Luke's error-cause stuff
-      try {
-        const [nextURL, nextOptions] = redirect(options, result, url)
-        if (nextOptions && nextURL) {
-          return await this.request(nextURL, nextOptions)
-        }
-        return result
-      } catch (er) {
-        /* c8 ignore start */
-        throw er instanceof Error ? er : (
-            new Error(typeof er === 'string' ? er : 'Unknown error')
-          )
-        /* c8 ignore stop */
+      const [nextURL, nextOptions] = redirect(options, result, url)
+      if (nextOptions && nextURL) {
+        return await this.request(nextURL, nextOptions)
       }
+      return result
     }
 
     response.body.on('data', (chunk: Buffer) => result.addBody(chunk))

@@ -1,11 +1,15 @@
+/** plugins */
 import animate from 'tailwindcss-animate'
-import { type Config } from 'tailwindcss'
+import typograhy from '@tailwindcss/typography'
+import scrollbar from 'tailwind-scrollbar'
+
+import type { Config } from 'tailwindcss'
 
 export default {
   darkMode: ['class'],
   content: [
     'src/index.tsx',
-    'src/app/*.{ts,tsx}',
+    'src/app/**/*.{ts,tsx}',
     'src/components/**/*.{ts,tsx}',
     'src/lib/**/*.{ts,tsx}',
   ],
@@ -19,6 +23,19 @@ export default {
       },
     },
     extend: {
+      fontSize: {
+        xxs: '0.625rem',
+        sm: '0.813rem',
+      },
+      size: {
+        '7.5': '1.875rem',
+      },
+      maxWidth: {
+        '8xl': '92rem',
+      },
+      screens: {
+        '8xl': '92rem',
+      },
       backgroundImage: {
         'gradient-radial':
           'radial-gradient(circle, var(--tw-gradient-stops))',
@@ -68,6 +85,7 @@ export default {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
+          accent: 'hsl(var(--card-accent))',
         },
       },
       borderRadius: {
@@ -78,6 +96,8 @@ export default {
       fontFamily: {
         sans: ['inter', 'sans-serif'],
         mono: ['geistMono', 'serif'],
+        zed: ['zed', 'monospace'],
+        courier: ['courier', 'monospace'],
       },
       keyframes: {
         'accordion-down': {
@@ -95,5 +115,5 @@ export default {
       },
     },
   },
-  plugins: [animate],
+  plugins: [animate, typograhy, scrollbar],
 } satisfies Config

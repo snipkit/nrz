@@ -1,11 +1,13 @@
 import { hydrate, joinDepIDTuple } from '@nrz/dep-id'
-import { kCustomInspect, Spec, type SpecOptions } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import { kCustomInspect, Spec } from '@nrz/spec'
+import { unload } from '@nrz/nrz-json'
 import { Monorepo } from '@nrz/workspaces'
 import { inspect } from 'node:util'
 import t from 'tap'
 import { Edge } from '../src/edge.ts'
 import { Graph } from '../src/graph.ts'
-import { type GraphLike } from '../src/types.ts'
+import type { GraphLike } from '../src/types.ts'
 
 t.cleanSnapshot = s =>
   s.replace(/^(\s+)"projectRoot": .*$/gm, '$1"projectRoot": #')
@@ -28,10 +30,13 @@ t.test('Graph', async t => {
     name: 'my-project',
     version: '1.0.0',
   }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     ...configData,
     mainManifest,
-    projectRoot: t.testdirName,
+    projectRoot,
   })
   t.strictSame(
     graph.mainImporter.manifest?.name,
@@ -121,23 +126,49 @@ t.test('Graph', async t => {
   t.same(graph.nodesByName.get('foo'), new Set([newNode, fooTwo]))
 
   graph.addEdge(
-    'prod',
+    'implicit',
     Spec.parse('foo', '^1.0.0 || 2'),
     graph.mainImporter,
     newNode,
   )
-  t.strictSame(
+  t.equal(
     graph.mainImporter.edgesOut.size,
     1,
     'should add edge to the list of edgesOut in its origin node',
   )
-  graph.addEdge(
+  t.equal(
+    graph.mainImporter.edgesOut.get('foo')?.type,
     'prod',
+    '"implicit" type is saved as prod if not already existing',
+  )
+  graph.addEdge(
+    'dev',
     Spec.parse('foo@^1.0.0'),
     graph.mainImporter,
     newNode,
   )
-  t.strictSame(
+  t.equal(
+    graph.mainImporter.edgesOut.get('foo')?.type,
+    'dev',
+    'saving as dev moves prod dep to dev',
+  )
+  graph.addEdge(
+    'implicit',
+    Spec.parse('foo@^1.0.1'),
+    graph.mainImporter,
+    newNode,
+  )
+  t.equal(
+    graph.mainImporter.edgesOut.get('foo')?.type,
+    'dev',
+    'saving as "implicit" leaves dep as dev',
+  )
+  t.equal(
+    String(graph.mainImporter.edgesOut.get('foo')?.spec),
+    'foo@^1.0.1',
+    'version was updated',
+  )
+  t.equal(
     graph.mainImporter.edgesOut.size,
     1,
     'should not allow for adding new edges between same nodes',
@@ -159,8 +190,11 @@ t.test('using placePackage', async t => {
       missing: '^1.0.0',
     },
   }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
-    projectRoot: t.testdirName,
+    projectRoot,
     ...configData,
     mainManifest,
   })
@@ -195,7 +229,7 @@ t.test('using placePackage', async t => {
       name: 'baz',
       version: '1.0.0',
       dist: {
-        tarball: 'https://registry.khulnasoft.com/baz',
+        tarball: 'https://registry.nrz.sh/baz',
       },
     },
   )
@@ -253,8 +287,11 @@ t.test('main manifest missing name', async t => {
   const mainManifest = {
     version: '1.0.0',
   }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
-    projectRoot: t.testdirName,
+    projectRoot,
     ...configData,
     mainManifest,
   })
@@ -276,10 +313,12 @@ t.test('workspaces', async t => {
     name: 'my-project',
     version: '1.0.0',
   }
-  const dir = t.testdir({
+  const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
     packages: {
       a: {
@@ -296,9 +335,11 @@ t.test('workspaces', async t => {
       },
     },
   })
-  const monorepo = Monorepo.maybeLoad(dir)
+  t.chdir(projectRoot)
+  unload('project')
+  const monorepo = Monorepo.maybeLoad(projectRoot)
   const graph = new Graph({
-    projectRoot: t.testdirName,
+    projectRoot,
     ...configData,
     mainManifest,
     monorepo,
@@ -340,10 +381,13 @@ t.test('prevent duplicate edges', async t => {
     name: 'bar',
     version: '3.0.0',
   }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     ...configData,
     mainManifest,
-    projectRoot: t.testdirName,
+    projectRoot,
   })
   graph.placePackage(
     graph.mainImporter,
@@ -441,5 +485,336 @@ t.test('prevent duplicate edges', async t => {
       joinDepIDTuple(['registry', '', 'bar@3.0.0']),
     ]),
     'garbage-collected nodes are returned',
+  )
+})
+t.test('in-place edge replacement', async t => {
+  const mainManifest = {
+    name: 'my-project',
+    version: '1.0.0',
+    dependencies: { foo: '*' },
+  }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
+  const graph = new Graph({
+    ...configData,
+    mainManifest,
+    projectRoot,
+  })
+
+  // Create multiple versions of the same package
+  const bar1 = graph.addNode(
+    joinDepIDTuple(['registry', '', 'bar@1.0.0']),
+    {
+      name: 'bar',
+      version: '1.0.0',
+    },
+    Spec.parse('bar@1.0.0'),
+  )
+
+  const bar2 = graph.addNode(
+    joinDepIDTuple(['registry', 'custom', 'bar@2.0.0']),
+    {
+      name: 'bar',
+      version: '2.0.0',
+    },
+    Spec.parse('bar@2.0.0'),
+  )
+
+  // Create an edge from main importer to bar1
+  const spec = Spec.parse('bar@*')
+  const edge = graph.addEdge('prod', spec, graph.mainImporter, bar1)
+
+  // Verify initial edge setup is correct
+  t.equal(edge.to, bar1, 'edge initially points to bar1')
+  t.ok(bar1.edgesIn.has(edge), 'bar1 has the edge in its edgesIn set')
+  t.notOk(
+    bar2.edgesIn.has(edge),
+    'bar2 does not have the edge in its edgesIn set',
+  )
+  t.equal(
+    graph.mainImporter.edgesOut.get('bar'),
+    edge,
+    'edge is in mainImporter edgesOut',
+  )
+
+  // Now replace the edge destination with bar2
+  const replacedEdge = graph.addEdge(
+    'prod',
+    spec,
+    graph.mainImporter,
+    bar2,
+  )
+
+  // Verify the edge was properly updated
+  t.equal(replacedEdge, edge, 'the same edge object was returned')
+  t.equal(edge.to, bar2, 'edge now points to bar2')
+  t.notOk(
+    bar1.edgesIn.has(edge),
+    'bar1 no longer has the edge in its edgesIn set',
+  )
+  t.ok(
+    bar2.edgesIn.has(edge),
+    'bar2 now has the edge in its edgesIn set',
+  )
+  t.equal(
+    graph.mainImporter.edgesOut.get('bar'),
+    edge,
+    'edge is still in mainImporter edgesOut',
+  )
+  t.equal(graph.edges.size, 1, 'graph still has only one edge')
+})
+
+t.test('garbage collection', async t => {
+  const mainManifest = {
+    name: 'my-project',
+    version: '1.0.0',
+    dependencies: { foo: '*' },
+  }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
+  const graph = new Graph({
+    ...configData,
+    mainManifest,
+    projectRoot,
+  })
+
+  // Add connected nodes that should be kept
+  const foo = graph.placePackage(
+    graph.mainImporter,
+    'prod',
+    Spec.parse('foo@*'),
+    {
+      name: 'foo',
+      version: '1.0.0',
+      dependencies: { bar: '*' },
+    },
+  )
+
+  graph.placePackage(foo!, 'prod', Spec.parse('bar@*'), {
+    name: 'bar',
+    version: '1.0.0',
+  })
+
+  // Add disconnected nodes that should be collected
+  const baz = graph.addNode(
+    joinDepIDTuple(['registry', '', 'baz@1.0.0']),
+    {
+      name: 'baz',
+      version: '1.0.0',
+    },
+  )
+
+  const qux = graph.addNode(
+    joinDepIDTuple(['registry', '', 'qux@1.0.0']),
+    {
+      name: 'qux',
+      version: '1.0.0',
+    },
+  )
+
+  // Create an edge between the disconnected nodes
+  graph.addEdge('prod', Spec.parse('qux@*'), baz, qux)
+
+  // Check initial state
+  t.equal(graph.nodes.size, 5, 'graph initially has 5 nodes')
+  t.equal(graph.edges.size, 3, 'graph initially has 3 edges')
+  t.ok(
+    graph.nodes.has(joinDepIDTuple(['registry', '', 'baz@1.0.0'])),
+    'baz node exists',
+  )
+  t.ok(
+    graph.nodes.has(joinDepIDTuple(['registry', '', 'qux@1.0.0'])),
+    'qux node exists',
+  )
+
+  // Run garbage collection
+  const collected = graph.gc()
+
+  // Verify nodes connected to importers are preserved
+  t.equal(graph.nodes.size, 3, 'graph has 3 nodes after gc')
+  t.ok(
+    graph.nodes.has(joinDepIDTuple(['file', '.'])),
+    'main importer node is preserved',
+  )
+  t.ok(
+    graph.nodes.has(joinDepIDTuple(['registry', '', 'foo@1.0.0'])),
+    'foo node is preserved',
+  )
+  t.ok(
+    graph.nodes.has(joinDepIDTuple(['registry', '', 'bar@1.0.0'])),
+    'bar node is preserved',
+  )
+
+  // Verify disconnected nodes are collected
+  t.equal(collected.size, 2, 'gc collected 2 nodes')
+  t.ok(
+    collected.has(joinDepIDTuple(['registry', '', 'baz@1.0.0'])),
+    'baz node was collected',
+  )
+  t.ok(
+    collected.has(joinDepIDTuple(['registry', '', 'qux@1.0.0'])),
+    'qux node was collected',
+  )
+
+  // Verify edge between baz and qux is removed
+  t.equal(graph.edges.size, 2, 'graph has 2 edges after gc')
+
+  // Verify the nodesByName entries are updated
+  t.notOk(
+    graph.nodesByName.has('baz'),
+    'baz removed from nodesByName',
+  )
+  t.notOk(
+    graph.nodesByName.has('qux'),
+    'qux removed from nodesByName',
+  )
+
+  // Add more nodes and run gc again to test the path where nodes are marked during traversal
+  graph.addNode(joinDepIDTuple(['registry', '', 'newnode@1.0.0']), {
+    name: 'newnode',
+    version: '1.0.0',
+  })
+
+  t.equal(
+    graph.nodes.size,
+    4,
+    'graph has 4 nodes after adding newnode',
+  )
+
+  const secondCollected = graph.gc()
+
+  t.equal(secondCollected.size, 1, 'second gc collected 1 node')
+  t.equal(graph.nodes.size, 3, 'graph has 3 nodes after second gc')
+  t.ok(
+    secondCollected.has(
+      joinDepIDTuple(['registry', '', 'newnode@1.0.0']),
+    ),
+    'newnode was collected',
+  )
+})
+
+t.test('extra parameter for modifiers', async t => {
+  const mainManifest = {
+    name: 'root-project',
+    version: '1.0.0',
+    dependencies: {
+      a: '^1.0.0',
+      b: '^1.0.0',
+    },
+  }
+  const projectRoot = t.testdir({
+    'nrz.json': JSON.stringify({
+      modifiers: {
+        ':root > #a': '1.0.0',
+        ':root > #a > #c': '1.0.0',
+      },
+    }),
+  })
+  t.chdir(projectRoot)
+  unload('project')
+
+  const graph = new Graph({
+    ...configData,
+    mainManifest,
+    projectRoot,
+  })
+
+  // Place package a with a selector path modifier ":root > #a"
+  const nodeA = graph.placePackage(
+    graph.mainImporter,
+    'prod',
+    Spec.parse('a@^1.0.0'),
+    {
+      name: 'a',
+      version: '1.0.0',
+      dependencies: {
+        c: '^1.0.0',
+      },
+    },
+    undefined,
+    ':root > #a',
+  )
+
+  t.ok(nodeA, 'node a was created successfully')
+  t.equal(
+    nodeA?.modifier,
+    ':root > #a',
+    'node a has the correct modifier',
+  )
+
+  // Place package b with no extra parameter
+  const nodeB = graph.placePackage(
+    graph.mainImporter,
+    'prod',
+    Spec.parse('b@^1.0.0'),
+    {
+      name: 'b',
+      version: '1.0.0',
+    },
+  )
+
+  t.ok(nodeB, 'node b was created successfully')
+  t.equal(nodeB?.modifier, undefined, 'node b has no modifier')
+
+  // Place package c with a nested selector path ":root > #a > #c"
+  const nodeC = graph.placePackage(
+    nodeA!,
+    'prod',
+    Spec.parse('c@^1.0.0'),
+    {
+      name: 'c',
+      version: '1.0.0',
+    },
+    undefined,
+    ':root > #a > #c',
+  )
+
+  t.ok(nodeC, 'node c was created successfully')
+  t.equal(
+    nodeC?.modifier,
+    ':root > #a > #c',
+    'node c has the correct modifier',
+  )
+
+  // Verify that we can find the nodes in the graph by their modifiers
+  const foundNodeA = [...graph.nodes.values()].find(
+    node => node.modifier === ':root > #a',
+  )
+
+  t.equal(foundNodeA, nodeA, 'can find node a by its modifier')
+
+  const foundNodeC = [...graph.nodes.values()].find(
+    node => node.modifier === ':root > #a > #c',
+  )
+
+  t.equal(foundNodeC, nodeC, 'can find node c by its modifier')
+
+  // Verify that the nodes have the correct structure
+  t.equal(nodeA?.name, 'a', 'node a has the correct name')
+
+  t.equal(nodeC?.name, 'c', 'node c has the correct name')
+
+  t.ok(
+    graph.mainImporter.edgesOut.has('a'),
+    'main importer has an edge to node a',
+  )
+
+  t.ok(nodeA?.edgesOut.has('c'), 'node a has an edge to node c')
+
+  // Verify the edge structure matches the selector paths
+  const edgeToA = graph.mainImporter.edgesOut.get('a')
+  t.equal(
+    edgeToA?.to,
+    nodeA,
+    'edge from root to a points to the correct node',
+  )
+
+  const edgeToC = nodeA?.edgesOut.get('c')
+  t.equal(
+    edgeToC?.to,
+    nodeC,
+    'edge from a to c points to the correct node',
   )
 })

@@ -1,8 +1,10 @@
-import t, { type Test } from 'tap'
-import { join, parse } from 'path'
-import { tmpdir } from 'os'
-import { find, type FindOpts } from '../src/find.ts'
-import { type GitOptions } from '../src/index.ts'
+import t from 'tap'
+import type { Test } from 'tap'
+import { join, parse } from 'node:path'
+import { tmpdir } from 'node:os'
+import { find } from '../src/find.ts'
+import type { FindOpts } from '../src/find.ts'
+import type { GitOptions } from '../src/index.ts'
 
 t.test('find the git dir many folders up', t => {
   const root = t.testdir({
@@ -59,8 +61,10 @@ t.test('mock is', async t => {
 
   const mockFind = async (t: Test, opts?: GitOptions) => {
     const seen: (string | undefined)[] = []
-    const { find: mocked } = await t.mockImport('../src/find.ts', {
-      '../src/is.js': {
+    const { find: mocked } = await t.mockImport<
+      typeof import('../src/find.ts')
+    >('../src/find.ts', {
+      '../src/is.ts': {
         is: async (o: GitOptions) => {
           seen.push(o.cwd)
           return false

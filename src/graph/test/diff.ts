@@ -1,16 +1,13 @@
-import {
-  type DepID,
-  type DepIDTuple,
-  joinDepIDTuple,
-} from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import type { DepID, DepIDTuple } from '@nrz/dep-id'
 import t from 'tap'
-import { inspect } from 'util'
+import { inspect } from 'node:util'
 import { Diff } from '../src/diff.ts'
-import {
-  type Graph,
-  type LockfileEdgeKey,
-  type LockfileEdges,
-  type LockfileNode,
+import type {
+  Graph,
+  LockfileEdgeKey,
+  LockfileEdges,
+  LockfileNode,
 } from '../src/index.ts'
 import { loadObject } from '../src/lockfile/load.ts'
 
@@ -28,8 +25,10 @@ t.test('graphs must have same projectRoot', t => {
 
 t.test('diff two graphs', async t => {
   const projectRoot = t.testdir({
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
     packages: {
       a: {

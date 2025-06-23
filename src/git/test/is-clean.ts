@@ -1,5 +1,5 @@
-import { writeFile } from 'fs/promises'
-import { resolve } from 'path'
+import { writeFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import t from 'tap'
 import { isClean } from '../src/is-clean.ts'
 import { spawn } from '../src/spawn.ts'
@@ -20,8 +20,10 @@ t.test('create git repo', async () => {
 })
 
 t.test('fail if spawned process fails', async t => {
-  const { isClean } = await t.mockImport('../src/is-clean.ts', {
-    '../src/spawn.js': {
+  const { isClean } = await t.mockImport<
+    typeof import('../src/is-clean.ts')
+  >('../src/is-clean.ts', {
+    '../src/spawn.ts': {
       spawn: async () => ({ status: 1, hello: 'world' }),
     },
   })

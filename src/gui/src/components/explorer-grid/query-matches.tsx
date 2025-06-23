@@ -1,34 +1,29 @@
-import { type SavedQuery } from '@/state/types.js'
-import { useEffect, useState } from 'react'
-import { useGraphStore } from '@/state/index.js'
+import { NavLink, useNavigate } from 'react-router'
+import type { SavedQuery } from '@/state/types.ts'
+import { useMemo } from 'react'
+import { useGraphStore } from '@/state/index.ts'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover.jsx'
+} from '@/components/ui/popover.tsx'
 import {
   Tooltip,
   TooltipProvider,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip.jsx'
-import { LabelBadge } from '@/components/labels/label-badge.jsx'
+} from '@/components/ui/tooltip.tsx'
+import { LabelBadge } from '@/components/labels/label-badge.tsx'
 
 const QueryMatches = () => {
   const savedQueries = useGraphStore(state => state.savedQueries)
   const activeQuery = useGraphStore(state => state.query)
-  const [matchedQueries, setMatchedQueries] = useState<SavedQuery[]>(
-    [],
+  const matchedQueries = useMemo(
+    () =>
+      savedQueries?.filter(query => query.query === activeQuery) ??
+      [],
+    [savedQueries, activeQuery],
   )
-
-  useEffect(() => {
-    if (savedQueries && savedQueries.length !== 0) {
-      const filteredQueries = savedQueries.filter(
-        query => query.query === activeQuery,
-      )
-      setMatchedQueries(filteredQueries)
-    }
-  }, [savedQueries, activeQuery])
 
   return (
     <>
@@ -51,15 +46,10 @@ const LabelTags = ({
   queries: SavedQuery[]
   className?: string
 }) => {
-  const updateRoute = useGraphStore(state => state.updateActiveRoute)
+  const navigate = useNavigate()
 
   const navigateToLabel = (labelName: string) => {
-    updateRoute('/labels')
-    history.pushState(
-      { route: '/labels' },
-      '',
-      `/labels?name=${encodeURIComponent(labelName)}`,
-    )
+    void navigate(`/labels?name=${encodeURIComponent(labelName)}`)
   }
 
   return (
@@ -122,11 +112,11 @@ const Notification = ({
   query: string
 }) => {
   return (
-    <a
-      href={`/queries?query=${encodeURIComponent(query)}`}
+    <NavLink
+      to={`/queries?query=${encodeURIComponent(query)}`}
       className={`flex h-[1.5rem] cursor-pointer items-center justify-center rounded-sm border border-muted-foreground/20 bg-muted px-2 py-1 text-[10px] transition-all ${className}`}>
       Matches {numberOfQueries} Queries
-    </a>
+    </NavLink>
   )
 }
 

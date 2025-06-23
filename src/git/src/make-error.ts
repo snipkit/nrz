@@ -1,6 +1,6 @@
-import {
-  type SpawnResultStderr,
-  type SpawnResultString,
+import type {
+  SpawnResultStderr,
+  SpawnResultString,
 } from '@nrz/promise-spawn'
 
 import { error } from '@nrz/error-cause'

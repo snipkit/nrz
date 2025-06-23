@@ -1,14 +1,16 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { type DependencyTypeShort } from '@nrz/types'
-import { type PackageInfoClient } from '@nrz/package-info'
-import { kCustomInspect, Spec, type SpecOptions } from '@nrz/spec'
+import type { PackageInfoClient } from '@nrz/package-info'
+import type { SpecOptions } from '@nrz/spec'
+import { kCustomInspect, Spec } from '@nrz/spec'
+import type { DependencySaveType } from '@nrz/types'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
-import {
-  type AddImportersDependenciesMap,
-  type Dependency,
+import type {
+  AddImportersDependenciesMap,
+  Dependency,
 } from '../../src/dependencies.ts'
 import { Graph } from '../../src/graph.ts'
+import type { GraphModifier } from '../../src/modifiers.ts'
 import { addNodes } from '../../src/ideal/add-nodes.ts'
 import { objectLikeOutput } from '../../src/visualization/object-like-output.ts'
 
@@ -58,7 +60,7 @@ t.test('addNodes', async t => {
   } as PackageInfoClient
   const addEntry = (
     name: string,
-    type: DependencyTypeShort = 'prod',
+    type: DependencySaveType = 'implicit',
   ) =>
     new Map(
       Object.entries({
@@ -121,7 +123,7 @@ t.test('addNodes', async t => {
   // now it should install the package bar to the main importer
   await addNodes({
     add: new Map([
-      [joinDepIDTuple(['file', '.']), addEntry('bar')],
+      [joinDepIDTuple(['file', '.']), addEntry('bar', 'dev')],
     ]) as AddImportersDependenciesMap,
     scurry: new PathScurry(t.testdirName),
     graph,
@@ -131,4 +133,39 @@ t.test('addNodes', async t => {
     objectLikeOutput(graph),
     'graph after adding a previously missing dependency bar',
   )
+
+  t.test('with modifiers', async t => {
+    const modifierCalls = {
+      tryImporter: 0,
+      tryDependencies: 0,
+    }
+
+    const mockModifier = {
+      tryImporter: () => {
+        modifierCalls.tryImporter++
+        return undefined
+      },
+      tryDependencies: () => {
+        modifierCalls.tryDependencies++
+        return new Map()
+      },
+    } as unknown as GraphModifier
+
+    await addNodes({
+      add: new Map([
+        [joinDepIDTuple(['file', '.']), addEntry('foo')],
+      ]) as AddImportersDependenciesMap,
+      graph,
+      packageInfo,
+      scurry: new PathScurry(t.testdirName),
+      modifiers: mockModifier,
+    })
+
+    t.equal(modifierCalls.tryImporter, 1, 'tryImporter was called')
+    t.equal(
+      modifierCalls.tryDependencies,
+      2,
+      'tryDependencies was called',
+    )
+  })
 })

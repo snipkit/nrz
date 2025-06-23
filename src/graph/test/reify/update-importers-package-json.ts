@@ -1,21 +1,36 @@
 import t from 'tap'
 import { PackageJson } from '@nrz/package-json'
-import { type DepID } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { Spec } from '@nrz/spec'
 import { Graph } from '../../src/graph.ts'
-import {
-  type Dependency,
-  asDependency,
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
+import { asDependency } from '../../src/dependencies.ts'
+import type {
+  Dependency,
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
 } from '../../src/dependencies.ts'
 import { updatePackageJson } from '../../src/reify/update-importers-package-json.ts'
+
+const specOptions = {
+  registry: 'https://registry.npmjs.org',
+  registries: {
+    custom: 'http://example.com',
+  },
+}
 
 t.test('updatePackageJson', async t => {
   const rootMani = {
     name: 'root',
     version: '1.0.0',
+    peerDependencies: {
+      pdep: '1.2.3',
+      becomeprod: '1.2.3',
+    },
+    peerDependenciesMeta: {
+      becomeprod: { optional: true },
+    },
   }
+
   const graph = new Graph({
     mainManifest: rootMani,
     projectRoot: t.testdirName,
@@ -32,7 +47,42 @@ t.test('updatePackageJson', async t => {
     fooMani.name,
     fooMani.version,
   )
+
+  const newPeerOptionalSpec = Spec.parse('newpeeroptional@1.0.0')
+  const newPeerOptionalMani = {
+    name: 'newpeeroptional',
+    version: '1.0.0',
+  }
+  const newPeerOptional = graph.addNode(
+    undefined,
+    newPeerOptionalMani,
+    newPeerOptionalSpec,
+    newPeerOptionalMani.name,
+    newPeerOptionalMani.version,
+  )
+
+  const becomeProdSpec = Spec.parse('becomeprod@1.0.0')
+  const becomeProdMani = {
+    name: 'newpeeroptional',
+    version: '1.0.0',
+  }
+  const becomeProd = graph.addNode(
+    undefined,
+    becomeProdMani,
+    becomeProdSpec,
+    becomeProdMani.name,
+    becomeProdMani.version,
+  )
+
   graph.addEdge('prod', fooSpec, root, foo)
+  graph.addEdge(
+    'peerOptional',
+    newPeerOptionalSpec,
+    root,
+    newPeerOptional,
+  )
+  graph.addEdge('prod', becomeProdSpec, root, becomeProd)
+
   const add = new Map<DepID, Map<string, Dependency>>([
     [
       rootID,
@@ -41,6 +91,20 @@ t.test('updatePackageJson', async t => {
           'foo',
           asDependency({
             spec: fooSpec,
+            type: 'prod',
+          }),
+        ],
+        [
+          'newpeeroptional',
+          asDependency({
+            spec: newPeerOptionalSpec,
+            type: 'peerOptional',
+          }),
+        ],
+        [
+          'becomeprod',
+          asDependency({
+            spec: becomeProdSpec,
             type: 'prod',
           }),
         ],
@@ -265,7 +329,7 @@ t.test('updatePackageJson', async t => {
       packageJson,
       graph,
       remove: new Map([
-        [rootID, new Set(['foo'])],
+        [rootID, new Set(['foo', 'newpeeroptional'])],
       ]) as RemoveImportersDependenciesMap,
     })()
 
@@ -335,6 +399,130 @@ t.test('updatePackageJson', async t => {
     t.matchSnapshot(
       mani,
       'should use provided range in package json save',
+    )
+  })
+
+  await t.test('aliased install', async t => {
+    const aliasedMani = { name: 'a', version: '1.0.0' }
+    const aliasedSpec = Spec.parse('b', 'npm:a@1.0.0')
+    const aliased = graph.addNode(
+      undefined,
+      aliasedMani,
+      aliasedSpec,
+      aliasedMani.name,
+      aliasedMani.version,
+    )
+    graph.addEdge('prod', aliasedSpec, root, aliased)
+
+    updatePackageJson({
+      packageJson,
+      graph,
+      add: new Map([
+        [
+          rootID,
+          new Map([
+            [
+              'b',
+              asDependency({
+                spec: aliasedSpec,
+                type: 'prod',
+              }),
+            ],
+          ]),
+        ],
+      ]) as AddImportersDependenciesMap,
+    })()
+
+    const res = retrieveManifestResult()
+    const [mani] = res
+    t.strictSame(res.length, 1, 'should have been called once')
+    t.matchSnapshot(
+      mani,
+      'should use provided aliased in package json save',
+    )
+  })
+
+  await t.test('aliased install from dist-tag', async t => {
+    const aliasedMani = { name: 'a', version: '1.0.0' }
+    const aliasedSpec = Spec.parse('b', 'npm:a@latest')
+    const aliased = graph.addNode(
+      undefined,
+      aliasedMani,
+      aliasedSpec,
+      aliasedMani.name,
+      aliasedMani.version,
+    )
+    graph.addEdge('prod', aliasedSpec, root, aliased)
+
+    updatePackageJson({
+      packageJson,
+      graph,
+      add: new Map([
+        [
+          rootID,
+          new Map([
+            [
+              'b',
+              asDependency({
+                spec: aliasedSpec,
+                type: 'prod',
+              }),
+            ],
+          ]),
+        ],
+      ]) as AddImportersDependenciesMap,
+    })()
+
+    const res = retrieveManifestResult()
+    const [mani] = res
+    t.strictSame(res.length, 1, 'should have been called once')
+    t.matchSnapshot(
+      mani,
+      'should use resolved version in package json save',
+    )
+  })
+
+  await t.test('custom aliased install', async t => {
+    const aliasedMani = { name: 'a', version: '1.0.0' }
+    const aliasedSpec = Spec.parse(
+      'b',
+      'custom:a@latest',
+      specOptions,
+    )
+    const aliased = graph.addNode(
+      undefined,
+      aliasedMani,
+      aliasedSpec,
+      aliasedMani.name,
+      aliasedMani.version,
+    )
+    graph.addEdge('prod', aliasedSpec, root, aliased)
+
+    updatePackageJson({
+      packageJson,
+      graph,
+      add: new Map([
+        [
+          rootID,
+          new Map([
+            [
+              'b',
+              asDependency({
+                spec: aliasedSpec,
+                type: 'prod',
+              }),
+            ],
+          ]),
+        ],
+      ]) as AddImportersDependenciesMap,
+    })()
+
+    const res = retrieveManifestResult()
+    const [mani] = res
+    t.strictSame(res.length, 1, 'should have been called once')
+    t.matchSnapshot(
+      mani,
+      'should use custom aliased registry in package json save',
     )
   })
 })

@@ -1,7 +1,9 @@
+import { asAttributeNode } from '@nrz/dss-parser'
 import { error } from '@nrz/error-cause'
-import { type NodeLike } from '@nrz/graph'
-import { type JSONField, type Manifest } from '@nrz/types'
-import { asAttributeNode, type ParserState } from './types.ts'
+import { removeDanglingEdges } from './pseudo/helpers.ts'
+import type { NodeLike } from '@nrz/graph'
+import type { JSONField, Manifest } from '@nrz/types'
+import type { ParserState } from './types.ts'
 
 export type ComparatorFn = (attr: string, value?: string) => boolean
 
@@ -128,17 +130,7 @@ export const filterAttributes = (
     }
   }
 
-  for (const edge of state.partial.edges) {
-    // edge.name is a special case in order
-    // to be able to match missing nodes by name
-    if (propertyName === 'name' && check(edge.name)) {
-      continue
-    }
-    // remove any remaining dangling edge
-    if (!edge.to) {
-      state.partial.edges.delete(edge)
-    }
-  }
+  removeDanglingEdges(state)
   return state
 }
 
@@ -173,14 +165,18 @@ export const attribute = async (
       return state
     }
 
-    throw new Error(
-      `Unsupported attribute operator: ${curr.operator}`,
-    )
+    throw error(`Unsupported attribute operator: ${curr.operator}`, {
+      found: state.current,
+    })
   }
 
   const value = curr.value || ''
   const propertyName = curr.attribute
   const insensitive = !!curr.insensitive
+
+  // Increment the commonCounter for specificity
+  state.specificity.commonCounter += 1
+
   return filterAttributes(
     state,
     operatorFn,

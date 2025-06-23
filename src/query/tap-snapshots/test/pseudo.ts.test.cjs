@@ -54,6 +54,13 @@ Object {
 }
 `
 
+exports[`test/pseudo.ts > TAP > pseudo > cycle > query > ":dev" 1`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
 exports[`test/pseudo.ts > TAP > pseudo > cycle > query > ":empty" 1`] = `
 Object {
   "edges": Array [],
@@ -133,7 +140,16 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > missing node > query > ":has(.dev)" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > missing node > query > ":dev" 1`] = `
+Object {
+  "edges": Array [
+    "b",
+  ],
+  "nodes": Array [],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > missing node > query > ":has(:dev)" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [],
@@ -495,6 +511,37 @@ Object {
 }
 `
 
+exports[`test/pseudo.ts > TAP > pseudo > query > ":dev" 1`] = `
+Object {
+  "edges": Array [
+    "@x/y",
+    "b",
+  ],
+  "nodes": Array [
+    "@x/y",
+    "b",
+  ],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > query > ":dev" 2`] = `
+Object {
+  "edges": Array [
+    "b",
+  ],
+  "nodes": Array [
+    "b",
+  ],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > query > ":dev" 3`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
 exports[`test/pseudo.ts > TAP > pseudo > query > ":empty" 1`] = `
 Object {
   "edges": Array [
@@ -702,6 +749,13 @@ Object {
 }
 `
 
+exports[`test/pseudo.ts > TAP > pseudo > query > ":is(:foo)" 1`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
 exports[`test/pseudo.ts > TAP > pseudo > query > ":is(:root)" 1`] = `
 Object {
   "edges": Array [],
@@ -740,7 +794,7 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > query > ":is(#foo, .asdf, [name===z], :root +, :nonexistingselector)" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > query > ":is(#foo, [name===z], :root +, :nonexistingselector)" 1`] = `
 Object {
   "edges": Array [
     "@x/y",
@@ -865,7 +919,7 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > query > ":project" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > query > ":project /*all*/" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [
@@ -874,21 +928,17 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > query > ":project" 2`] = `
+exports[`test/pseudo.ts > TAP > pseudo > query > ":project /*b*/" 1`] = `
 Object {
   "edges": Array [],
-  "nodes": Array [
-    "my-project",
-  ],
+  "nodes": Array [],
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > query > ":project" 3`] = `
+exports[`test/pseudo.ts > TAP > pseudo > query > ":project /*empty*/" 1`] = `
 Object {
   "edges": Array [],
-  "nodes": Array [
-    "my-project",
-  ],
+  "nodes": Array [],
 }
 `
 
@@ -921,24 +971,8 @@ Object {
 
 exports[`test/pseudo.ts > TAP > pseudo > query > ":scope" 1`] = `
 Object {
-  "edges": Array [
-    "@x/y",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "e",
-    "f",
-  ],
+  "edges": Array [],
   "nodes": Array [
-    "@x/y",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
     "my-project",
   ],
 }
@@ -946,10 +980,23 @@ Object {
 
 exports[`test/pseudo.ts > TAP > pseudo > query > ":scope" 2`] = `
 Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > query > ":scope" 3`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > query > ":semver("<2.0.0")" 1`] = `
+Object {
   "edges": Array [
     "@x/y",
     "a",
-    "b",
     "c",
     "d",
     "e",
@@ -959,7 +1006,6 @@ Object {
   "nodes": Array [
     "@x/y",
     "a",
-    "b",
     "c",
     "d",
     "e",
@@ -969,27 +1015,24 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > query > ":scope" 3`] = `
+exports[`test/pseudo.ts > TAP > pseudo > query > ":semver(^2)" 1`] = `
 Object {
   "edges": Array [
-    "@x/y",
-    "a",
     "b",
-    "c",
-    "d",
-    "e",
-    "e",
-    "f",
   ],
   "nodes": Array [
-    "@x/y",
-    "a",
     "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "my-project",
+  ],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > query > ":semver(=2.0.0)" 1`] = `
+Object {
+  "edges": Array [
+    "b",
+  ],
+  "nodes": Array [
+    "b",
   ],
 }
 `
@@ -1042,6 +1085,20 @@ Object {
 }
 `
 
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":dev" 1`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":dev" 2`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [],
+}
+`
+
 exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":empty" 1`] = `
 Object {
   "edges": Array [],
@@ -1052,7 +1109,7 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(.workspace, :root)" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(:workspace, :root)" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [
@@ -1062,14 +1119,14 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(.workspace, :root)" 2`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(:workspace, :root)" 2`] = `
 Object {
   "edges": Array [],
   "nodes": Array [],
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(.workspace)" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(:workspace)" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [
@@ -1078,7 +1135,7 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(.workspace)" 2`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":is(:workspace)" 2`] = `
 Object {
   "edges": Array [],
   "nodes": Array [],
@@ -1101,14 +1158,14 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":not(.workspace, :root)" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":not(:workspace, :root)" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [],
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":not(.workspace)" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":not(:workspace)" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [
@@ -1124,7 +1181,7 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":project" 1`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":project /*all*/" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [
@@ -1134,22 +1191,18 @@ Object {
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":project" 2`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":project /*empty*/" 1`] = `
 Object {
   "edges": Array [],
-  "nodes": Array [
-    "w",
-    "ws",
-  ],
+  "nodes": Array [],
 }
 `
 
-exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":project" 3`] = `
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":project /*w*/" 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [
     "w",
-    "ws",
   ],
 }
 `
@@ -1180,6 +1233,15 @@ Object {
 `
 
 exports[`test/pseudo.ts > TAP > pseudo > workspace > query > ":type(workspace)" 1`] = `
+Object {
+  "edges": Array [],
+  "nodes": Array [
+    "w",
+  ],
+}
+`
+
+exports[`test/pseudo.ts > TAP > pseudo > workspace > query > customScopedID 1`] = `
 Object {
   "edges": Array [],
   "nodes": Array [

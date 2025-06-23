@@ -1,19 +1,20 @@
-import { useStore } from '@/state'
-
 const Logo = () => {
-  const { getResolvedTheme } = useStore()
-  const theme = getResolvedTheme()
-
   return (
-    <img
-      src={
-        theme === 'dark' ?
-          '/logos/nrz-logo-light.png'
-        : '/logos/nrz-logo-dark.png'
-      }
-      height={43}
-      width={94}
-    />
+    <>
+      <img
+        className="hidden dark:block"
+        src="/logos/nrz-logo-light.png"
+        height={43}
+        width={94}
+      />
+
+      <img
+        className="block dark:hidden"
+        src="/logos/nrz-logo-dark.png"
+        height={43}
+        width={94}
+      />
+    </>
   )
 }
 

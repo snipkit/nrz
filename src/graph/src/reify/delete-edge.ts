@@ -1,6 +1,6 @@
-import { type RollbackRemove } from '@nrz/rollback-remove'
-import { type PathScurry } from 'path-scurry'
-import { type Edge } from '../edge.ts'
+import type { RollbackRemove } from '@nrz/rollback-remove'
+import type { PathScurry } from 'path-scurry'
+import type { Edge } from '../edge.ts'
 import { binPaths } from './bin-paths.ts'
 
 const rmBinPosix = (remover: RollbackRemove, bin: string) => {
@@ -11,7 +11,7 @@ const rmBinWin32 = (remover: RollbackRemove, bin: string) => {
   return [
     remover.rm(bin),
     remover.rm(bin + '.cmd'),
-    remover.rm(bin + '.pwsh'),
+    remover.rm(bin + '.ps1'),
   ]
 }
 

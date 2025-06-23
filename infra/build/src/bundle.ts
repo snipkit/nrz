@@ -1,118 +1,198 @@
-import {
-  rmSync,
-  mkdirSync,
-  writeFileSync,
-  readdirSync,
-  cpSync,
-} from 'node:fs'
+import { mkdirSync, cpSync, existsSync, readdirSync } from 'node:fs'
 import {
   join,
   relative,
   dirname,
+  sep,
   basename,
   extname,
   resolve,
 } from 'node:path'
+import { readFile } from 'node:fs/promises'
 import * as esbuild from 'esbuild'
-import { findPackageJson } from 'package-json-from-dist'
 import { builtinModules, createRequire } from 'node:module'
 import assert from 'node:assert'
-import { Bins, Paths, EXT } from './index.ts'
-import type * as types from './types.ts'
-import {
-  transformSourcePlugin,
-  Globals,
-  IMPORT_META,
-  ident,
-  readJson,
-  readPkg,
-  getSrcPath,
-} from './transform-source.ts'
+import { BINS_DIR, BINS } from './bins.ts'
+import type { Bin } from './bins.ts'
+import { EOL } from 'node:os'
+import { Variants } from './variants.ts'
 
-const bundle = async (o: {
-  plugins: esbuild.BuildOptions['plugins']
-  sourcemap: esbuild.BuildOptions['sourcemap']
-  minify: esbuild.BuildOptions['minify']
-  outdir: string
-  in: string
-  out: string
-}) => {
-  const globals = new Globals(
-    // These are globals that are needed to run in all runtimes
-    Globals.var('global', 'globalThis'),
-    Globals.import('process', 'process'),
-    Globals.import(['Buffer'], 'buffer'),
-    Globals.import(['setImmediate', 'clearImmediate'], 'timers'),
-    // These are to shim import.meta properties
-    {
-      [IMPORT_META.Dirname]: (id, { fn }) =>
-        Globals.var(
-          id,
-          fn('path.resolve', [
-            IMPORT_META.Dirname,
-            Globals.quote(
-              relative(resolve(o.outdir, dirname(o.out)), o.outdir),
+export const CLI = dirname(
+  createRequire(import.meta.url).resolve('@nrz/cli-sdk/package.json'),
+)
+
+const WORKSPACE_DIR = resolve(CLI, '..')
+
+const filterRegex = (...parts: string[]) =>
+  new RegExp(`\\${sep}${parts.join(`\\${sep}`)}$`)
+
+const toPosix = (p: string) => p.replaceAll(sep, '/')
+
+export const basenameWithoutExtension = (p: string) =>
+  basename(p, extname(p))
+
+export const withoutExtension = (p: string) =>
+  join(dirname(p), basenameWithoutExtension(p))
+
+export const findEntryBins = (dir: string, names?: readonly Bin[]) =>
+  BINS.filter(b => (names ? names.includes(b) : true))
+    .map(b => join(dir, b))
+    .flatMap(b => [b, `${b}.js`, `${b}.ts`])
+    .filter(b => existsSync(b))
+
+const nodeImports: esbuild.Plugin = {
+  name: 'node-imports',
+  setup({ onResolve }) {
+    onResolve({ filter: /()/, namespace: 'file' }, args => {
+      if (
+        builtinModules.includes(args.path) &&
+        !args.path.startsWith('node:')
+      ) {
+        return {
+          path: `node:${args.path}`,
+          external: true,
+        }
+      }
+    })
+  },
+}
+
+const addBinHashbangs: esbuild.Plugin = {
+  name: 'hashbangs',
+  setup({ onLoad }) {
+    onLoad(
+      {
+        filter: filterRegex(
+          'infra',
+          'build',
+          'src',
+          'bins',
+          `(${BINS.join('|')})\\.ts$`,
+        ),
+        namespace: 'file',
+      },
+      async args => {
+        const contents = await readFile(args.path, 'utf8')
+        return {
+          contents: [
+            `#!/usr/bin/env -S node ${Variants.Bundle?.env?.NODE_OPTIONS}`.trim(),
+            contents,
+          ].join(EOL),
+          loader: 'ts' as esbuild.Loader,
+        }
+      },
+    )
+  },
+}
+
+const codeSplitPlugin = (): {
+  paths: () => { source: string; out: string }[]
+  plugin: esbuild.Plugin
+} => {
+  const codeSplitIdentifier =
+    'export const __CODE_SPLIT_SCRIPT_NAME ='
+  const found = new Set<{ source: string; out: string }>()
+
+  const fn = async (o: esbuild.OnLoadArgs) => {
+    const source = await readFile(o.path, 'utf8')
+    if (source.includes(codeSplitIdentifier)) {
+      const out = withoutExtension(
+        relative(WORKSPACE_DIR, o.path),
+      ).replaceAll(sep, '-')
+      found.add({ source: o.path, out })
+      return {
+        // keep this as a single line because it could affect source maps
+        contents: [
+          'import {resolve} from "node:path"',
+          `${codeSplitIdentifier} resolve(import.meta.dirname, "${toPosix(out)}.js")`,
+        ]
+          .map(l => `${l};`)
+          .join(EOL),
+        loader: 'ts' as esbuild.Loader,
+      }
+    }
+  }
+
+  const workspaceNames = readdirSync(WORKSPACE_DIR, {
+    withFileTypes: true,
+  })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
+
+  // All files that will be code split into external scripts
+  // export __CODE_SPLIT_SCRIPT_NAME which we change to a path
+  // to that external script instead
+  return {
+    paths: () => [...found],
+    plugin: {
+      name: 'code-split-plugin',
+      setup({ onLoad }) {
+        onLoad(
+          {
+            filter: filterRegex(
+              'src',
+              `(${workspaceNames.join('|')})`,
+              'src',
+              `.*\\.ts$`,
             ),
-          ]),
-        ),
-      [IMPORT_META.Filename]: (id, { fn, get }) =>
-        Globals.var(
-          id,
-          fn('path.resolve', [
-            get(IMPORT_META.Dirname),
-            Globals.quote(basename(o.out) + EXT),
-          ]),
-        ),
-      [IMPORT_META.Url]: (id, { fn, get }) =>
-        Globals.var(
-          id,
-          `${fn('url.pathToFileURL', [get(IMPORT_META.Filename)])}.toString()`,
-        ),
-      [IMPORT_META.Resolve]: (id, { fn, get }) => {
-        const arg = ident()
-        return Globals.var(
-          id,
-          `(${arg}) => ${fn('url.pathToFileURL', [
-            fn('path.resolve', [get(IMPORT_META.Dirname), arg]),
-          ])}`,
+            namespace: 'file',
+          },
+          fn,
         )
       },
     },
-    ({ fn, get }) =>
-      Globals.var(
-        'require',
-        fn('module.createRequire', [get(IMPORT_META.Filename)]),
-      ),
-  )
+  }
+}
 
-  const { errors, warnings, metafile } = await esbuild.build({
-    entryPoints: [{ in: o.in, out: o.out }],
-    plugins: o.plugins,
+type CreateBundleOptions = {
+  sourcemap: Exclude<esbuild.BuildOptions['sourcemap'], undefined>
+  minify: Exclude<esbuild.BuildOptions['minify'], undefined>
+  splitting: Exclude<esbuild.BuildOptions['splitting'], undefined>
+  outdir: string
+  define: Record<string, string>
+}
+
+type BundleOptions = {
+  entryPoints: Exclude<esbuild.BuildOptions['entryPoints'], undefined>
+  plugins?: esbuild.BuildOptions['plugins']
+}
+
+const bundleEntryPoints = async (
+  o: CreateBundleOptions & BundleOptions,
+) => {
+  const { errors, warnings } = await esbuild.build({
+    entryPoints: o.entryPoints,
+    plugins: [nodeImports, ...(o.plugins ?? [])],
     sourcemap: o.sourcemap,
     minify: o.minify,
     outdir: o.outdir,
+    splitting: o.splitting,
     format: 'esm',
-    metafile: true,
     bundle: true,
     platform: 'node',
-    target: readJson(join(Paths.MONO_ROOT, 'tsconfig.json'))
-      .compilerOptions.target,
-    // Define global variables that are required for our deps and testing
-    // runtime support
+    target: 'es2022',
     banner: {
-      [EXT.slice(1)]: globals.toString(),
+      // Create globals for 3rd party code
+      js: [
+        // alias globalThis to global for Deno compat and make Buffer a global
+        // https://docs.deno.com/runtime/reference/cli/unstable_flags/#--unstable-node-globals
+        'var global = globalThis',
+        `import {Buffer} from "node:buffer"`,
+        // Explicitly set all global timers to the Node.js timers
+        // otherwise Deno might use its web timers which have a different signature.
+        // https://docs.deno.com/api/web/~/setTimeout
+        `import {setTimeout,clearTimeout,setImmediate,clearImmediate,setInterval,clearInterval} from "node:timers"`,
+        // Create a require function since we are bundling to ESM
+        'import {createRequire as _nrz_createRequire} from "node:module"',
+        'var require = _nrz_createRequire(import.meta.filename)',
+      ]
+        .map(l => `${l};`)
+        .join(EOL),
     },
     define: {
       'process.env.NODE_ENV': '"production"',
-      'process.env._NRZ_DEV_LIVE_RELOAD': 'false',
-      // The import.meta shims are then globally replaced with our newly defined values
-      ...Object.values(IMPORT_META).reduce(
-        (acc, k) => {
-          acc[k] = globals.get(k)
-          return acc
-        },
-        {} as Record<`import.meta.${keyof ImportMeta}`, string>,
-      ),
+      'process.env.TAP': 'false',
+      ...o.define,
     },
   })
 
@@ -120,146 +200,100 @@ const bundle = async (o: {
     !errors.length && !warnings.length,
     new Error('esbuild error', { cause: { errors, warnings } }),
   )
-
-  return metafile
 }
 
-const createWorkspace = (base: string, source: string) => {
-  const pkg = readPkg(source)
-  const dest = join(base, basename(source))
-  mkdirSync(dest, { recursive: true })
-  return { pkg, dest }
+const createBundler =
+  (o: CreateBundleOptions) => (b: BundleOptions) =>
+    bundleEntryPoints({ ...o, ...b })
+
+export type Options = {
+  outdir: string
+  bins?: readonly Bin[]
+  minify?: boolean
+  splitting?: boolean
+  sourcemap?: boolean
+  hashbang?: boolean
+  internalDefine?: { [key: string]: string }
 }
 
-export default async ({
+export const bundle = async ({
   outdir,
-  minify,
-  externalCommands,
-  sourcemap,
-}: types.BundleFactors & { outdir: string }): Promise<
-  esbuild.Metafile & { outdir: string }
-> => {
-  rmSync(outdir, { recursive: true, force: true })
+  bins,
+  minify = false,
+  splitting = true,
+  sourcemap = true,
+  hashbang = false,
+  internalDefine,
+}: Options) => {
   mkdirSync(outdir, { recursive: true })
 
-  const transformSource = transformSourcePlugin({
-    externalCommands,
+  const define = {
+    GUI_ASSETS_DIR: 'gui-assets',
+    CLI_PACKAGE_JSON: 'cli-package.json',
+    REGISTRY_CLIENT_PACKAGE_JSON: 'registry-client-package.json',
+    LIVE_RELOAD: false,
+    ...internalDefine,
+  }
+
+  const esbuildBundle = createBundler({
+    minify,
+    sourcemap,
+    splitting,
+    outdir,
+    define: Object.fromEntries(
+      Object.entries(define).map(([k, v]) => [
+        `process.env.__NRZ_INTERNAL_${k}`,
+        // wraps strings in double quotes since the values
+        // are replaced inline in the built code
+        JSON.stringify(v),
+      ]),
+    ),
   })
 
-  const nodeImports: esbuild.Plugin = {
-    name: 'node-imports',
-    setup({ onResolve }) {
-      onResolve({ filter: /()/, namespace: 'file' }, args => {
-        if (
-          builtinModules.includes(args.path) &&
-          !args.path.startsWith('node:')
-        ) {
-          return {
-            path: `node:${args.path}`,
-            external: true,
-          }
-        }
-      })
-    },
-  }
+  // assume that cliDir is a member of the workspaces src dir
+  const codeSplit = codeSplitPlugin()
 
-  const files: esbuild.Metafile[] = []
-  const bundleFiles = async (
-    bundles: {
-      in: string
-      out: string
-    }[],
-  ) => {
-    for (const b of bundles) {
-      files.push(
-        await bundle({
-          ...b,
-          plugins: [transformSource.plugin, nodeImports],
-          sourcemap,
-          minify,
-          outdir,
-        }),
-      )
-    }
-  }
+  const entryBins = findEntryBins(BINS_DIR, bins)
+  assert(entryBins.length, 'no bins found')
 
-  await bundleFiles(
-    Bins.map(bin => ({
-      in: join(Paths.CLI, bin),
-      out: basename(bin, extname(bin)),
+  await esbuildBundle({
+    entryPoints: entryBins.map(file => ({
+      in: file,
+      out: basenameWithoutExtension(file),
     })),
-  )
+    plugins: [
+      codeSplit.plugin,
+      hashbang ? addBinHashbangs : null,
+    ].filter(v => v !== null),
+  })
 
-  if (externalCommands) {
-    await bundleFiles(
-      readdirSync(Paths.COMMANDS, {
-        withFileTypes: true,
-      })
-        .filter(p => p.isFile() && extname(p.name) === '.js')
-        .map(c => ({
-          in: join(c.parentPath, c.name),
-          out: `commands/${basename(c.name, extname(c.name))}`,
-        })),
-    )
-  }
-
-  await bundleFiles(
-    transformSource.paths.codeSplit().map(p => ({
-      in: p,
-      out: getSrcPath(p).replaceAll(EXT, ''),
-    })),
-  )
-
-  for (const file of transformSource.paths.readPackageJson()) {
-    const { pkg, dest } = createWorkspace(
-      outdir,
-      dirname(findPackageJson(file)),
-    )
-    writeFileSync(
-      join(dest, 'package.json'),
-      JSON.stringify(
-        {
-          name: pkg.name,
-          version: pkg.version,
-        },
-        null,
-        2,
-      ),
-    )
-  }
-
-  for (const dir of transformSource.paths.metaResolve()) {
-    const { pkg, dest } = createWorkspace(outdir, dir)
-    const main = pkg.exports['.']
-    assert(typeof main === 'string')
-    cpSync(join(dir, main), join(dest), {
-      recursive: true,
+  // bundle manually code split files determined from the
+  // transform souce plugin. these are scripts that are exec'd
+  // at runtime by the CLI
+  const codeSplitPaths = codeSplit.paths()
+  assert(codeSplitPaths.length, 'no code split paths found')
+  for (const { source, out } of codeSplit.paths()) {
+    await esbuildBundle({
+      entryPoints: [{ in: source, out }],
     })
   }
 
-  // yoga.wasm is loaded at runtime by `ink` so we need to copy
-  // that file to the build directory
+  // copy package jsons that get read at runtime
   cpSync(
-    createRequire(
-      createRequire(join(Paths.CLI, 'node_modules')).resolve('ink'),
-    ).resolve('yoga-wasm-web/dist/yoga.wasm'),
-    join(outdir, 'yoga.wasm'),
+    join(WORKSPACE_DIR, 'registry-client/package.json'),
+    join(outdir, define.REGISTRY_CLIENT_PACKAGE_JSON),
+  )
+  cpSync(
+    join(CLI, 'package.json'),
+    join(outdir, define.CLI_PACKAGE_JSON),
   )
 
-  const { inputs, outputs } = files.reduce<esbuild.Metafile>(
-    (a, m) => ({
-      inputs: { ...a.inputs, ...m.inputs },
-      outputs: { ...a.outputs, ...m.outputs },
-    }),
-    { inputs: {}, outputs: {} },
+  // copy built gui assets
+  cpSync(
+    join(WORKSPACE_DIR, 'gui/dist'),
+    join(outdir, define.GUI_ASSETS_DIR),
+    { recursive: true },
   )
 
-  writeFileSync(
-    join(outdir, 'package.json'),
-    JSON.stringify({
-      type: 'module',
-    }),
-  )
-
-  return { inputs, outputs, outdir }
+  return { outdir }
 }

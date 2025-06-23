@@ -9,52 +9,60 @@ import {
 } from 'vitest'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { type Query } from '@nrz/query'
-import {
-  type EdgeLike,
-  type GraphLike,
-  type NodeLike,
-} from '@nrz/graph'
+import type {
+  Query,
+  QueryResponseEdge,
+  QueryResponseNode,
+} from '@nrz/query'
+import type { EdgeLike, GraphLike, NodeLike } from '@nrz/graph'
 import { cleanup, render } from '@testing-library/react'
 import html from 'diffable-html'
-import { useGraphStore as useStore } from '@/state/index.js'
-import { Explorer } from '@/app/explorer.jsx'
+import { useGraphStore as useStore } from '@/state/index.ts'
+import { Explorer } from '@/app/explorer.tsx'
 import { joinDepIDTuple } from '@nrz/dep-id/browser'
 
-vi.mock('@/components/search-bar.jsx', () => ({
-  SearchBar: 'gui-search-bar',
+vi.mock('react-router', () => ({
+  useNavigate: vi.fn(),
 }))
 
-vi.mock('@/components/ui/logo.jsx', () => ({
+vi.mock('@/components/query-bar/index.tsx', () => ({
+  QueryBar: 'gui-query-bar',
+}))
+
+vi.mock('@/components/ui/logo.tsx', () => ({
   Logo: 'gui-logo',
 }))
 
-vi.mock('@/components/ui/title.jsx', () => ({
+vi.mock('@/components/ui/title.tsx', () => ({
   Title: 'gui-title',
 }))
 
-vi.mock('@/components/ui/card.jsx', () => ({
+vi.mock('@/components/ui/card.tsx', () => ({
   Card: 'gui-card',
   CardDescription: 'gui-card-description',
   CardHeader: 'gui-card-header',
   CardTitle: 'gui-card-title',
 }))
 
-vi.mock('@/components/explorer-grid/index.jsx', () => ({
+vi.mock('@/components/explorer-grid/index.tsx', () => ({
   ExplorerGrid: 'gui-explorer-grid',
 }))
 
-vi.mock('@/components/explorer-grid/setup-project.jsx', () => ({
+vi.mock('@/components/explorer-grid/setup-project.tsx', () => ({
   SetupProject: 'gui-setup-project',
 }))
 
-vi.mock('@/components/explorer-grid/root-button.jsx', () => ({
+vi.mock('@/components/explorer-grid/root-button.tsx', () => ({
   RootButton: 'gui-root-button',
 }))
 
 export const restHandlers = [
   http.get('/graph.json', () => {
     return HttpResponse.json({
+      specOptions: {
+        registry: 'https://registry.npmjs.org',
+      },
+      hasDashboard: false,
       importers: [
         {
           id: joinDepIDTuple(['file', '.']),
@@ -69,6 +77,10 @@ export const restHandlers = [
         },
       ],
       lockfile: { options: {}, nodes: [], edges: [] },
+      projectInfo: {
+        tools: ['nrz'],
+        nrzInstalled: true,
+      },
     })
   }),
 ]
@@ -159,6 +171,69 @@ test('update nodes and edges info on query change', async () => {
     nodesResult,
     nodes,
     'should update nodes with result from query',
+  )
+})
+
+test('render no results if search throws', async () => {
+  const q = {
+    search() {
+      throw new Error('ERR')
+    },
+  }
+
+  const Container = () => {
+    const updateNodes = useStore(state => state.updateNodes)
+    const updateEdges = useStore(state => state.updateEdges)
+    const updateGraph = useStore(state => state.updateGraph)
+    const updateProjectInfo = useStore(
+      state => state.updateProjectInfo,
+    )
+    const updateQ = useStore(state => state.updateQ)
+    const updateQuery = useStore(state => state.updateQuery)
+
+    // sets a node and edge just to test it got reset later on
+    const node = {
+      name: 'foo',
+      version: '1.0.0',
+    } as unknown as QueryResponseNode
+    updateNodes([node])
+    updateEdges([
+      {
+        name: 'foo',
+        to: node,
+      } as unknown as QueryResponseEdge,
+    ])
+
+    updateGraph({ projectRoot: '/path/to/project' } as GraphLike)
+    updateProjectInfo({ tools: ['nrz'], nrzInstalled: true })
+    updateQ(q as unknown as Query)
+    updateQuery('#bar')
+    return <Explorer />
+  }
+  render(<Container />)
+  expect(window.document.body.innerHTML).toMatchSnapshot()
+
+  await new Promise(resolve => setTimeout(resolve, 0))
+
+  let edgesResult
+  let nodesResult
+  const Retrieve = () => {
+    edgesResult = useStore(state => state.edges)
+    nodesResult = useStore(state => state.nodes)
+    return ''
+  }
+  render(<Retrieve />)
+
+  // results should now have been reset to empty
+  assert.deepEqual(
+    edgesResult,
+    [],
+    'should update edges with empty result',
+  )
+  assert.deepEqual(
+    nodesResult,
+    [],
+    'should update nodes with empty result',
   )
 })
 

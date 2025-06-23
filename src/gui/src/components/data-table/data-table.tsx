@@ -1,15 +1,17 @@
 import {
-  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  type VisibilityState,
-  type SortingState,
-  type Table as ITable,
-  type PaginationState,
   getFilteredRowModel,
   getSortedRowModel,
+} from '@tanstack/react-table'
+import type {
+  ColumnDef,
+  VisibilityState,
+  SortingState,
+  Table as ITable,
+  PaginationState,
 } from '@tanstack/react-table'
 import {
   Table,
@@ -19,10 +21,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table.jsx'
-import { Button } from '@/components/ui/button.jsx'
+} from '@/components/ui/table.tsx'
+import { Button } from '@/components/ui/button.tsx'
 import { useEffect, useState } from 'react'
-import { TablePageSelect } from '@/components/data-table/table-page-select.jsx'
+import { TablePageSelect } from '@/components/data-table/table-page-select.tsx'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -46,7 +48,6 @@ export const DataTable = <TData, TValue>({
   onClickHandler,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = useState<string>('')
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -58,7 +59,6 @@ export const DataTable = <TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     columnResizeMode: 'onChange',
@@ -66,24 +66,20 @@ export const DataTable = <TData, TValue>({
     onPaginationChange: setPagination,
     state: {
       sorting,
-      globalFilter,
+      globalFilter: filterValue,
       columnVisibility,
       pagination,
     },
   })
 
   useEffect(() => {
-    setGlobalFilter(filterValue)
-  }, [filterValue])
-
-  useEffect(() => {
     setTable(table)
-  }, [table])
+  }, [table, setTable])
 
   return (
     <>
-      <div className="rounded-md border bg-white dark:bg-black">
-        <Table className="">
+      <div className="rounded-md border border-muted bg-card">
+        <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
@@ -91,6 +87,7 @@ export const DataTable = <TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
+                      className="text-foreground"
                       style={{ width: `${header.getSize()}px` }}>
                       {header.isPlaceholder ? null : (
                         flexRender(
@@ -114,8 +111,7 @@ export const DataTable = <TData, TValue>({
                       : null
                   }}
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className={onClickHandler ? 'cursor-pointer' : ''}>
+                  data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map(cell => (
                     <TableCell
                       key={cell.id}
@@ -137,7 +133,7 @@ export const DataTable = <TData, TValue>({
               </TableRow>
             }
           </TableBody>
-          <TableFooter>
+          <TableFooter className="bg-sidebar-background">
             <TableRow>
               <TableCell
                 colSpan={table.getVisibleFlatColumns().length - 1}>

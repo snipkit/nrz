@@ -2,47 +2,39 @@
 /docs
 /example
 /node_modules
-/package.json
 /pnpm-lock.yaml
+/nrz-lock.json
 /scripts/fixtures
 /tap-snapshots
-/test/**/fixtures
+/test/fixtures/**/*.json
+/.*/
 
 /src/*/.*/
 /src/*/dist
 /src/*/docs
 /src/*/example
 /src/*/node_modules
-/src/*/package.json
 /src/*/scripts/fixtures
 /src/*/tap-snapshots
-/src/*/test/**/fixtures/**
-!/src/*/test/**/fixtures/*.ts
+/src/*/test/fixtures/**/*.json
 
 /infra/*/.*/
 /infra/*/dist
 /infra/*/docs
 /infra/*/example
 /infra/*/node_modules
-/infra/*/package.json
 /infra/*/scripts/fixtures
 /infra/*/tap-snapshots
-/infra/*/test/**/fixtures/**
-!/infra/*/test/**/fixtures/*.ts
+/infra/*/test/fixtures/**/*.json
 
 /www/*/.*/
 /www/*/dist
 /www/*/docs
 /www/*/example
 /www/*/node_modules
-/www/*/package.json
 /www/*/scripts/fixtures
 /www/*/tap-snapshots
-/www/*/test/**/fixtures/**
-!/www/*/test/**/fixtures/*.ts
+/www/*/test/fixtures/**/*.json
 
 /www/docs/src/content/docs/packages/
-/www/docs/src/content/docs/cli/commands/
-/www/docs/src/content/docs/cli/commands.md
-/www/docs/src/content/docs/cli/configuring.md
 /www/docs/tsconfig.typedoc-workspaces.json

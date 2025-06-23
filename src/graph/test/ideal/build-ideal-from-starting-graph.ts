@@ -1,28 +1,27 @@
-import {
-  type DepID,
-  type DepIDTuple,
-  joinDepIDTuple,
-} from '@nrz/dep-id'
-import { manifest, type PackageInfoClient } from '@nrz/package-info'
+import type { DepID, DepIDTuple } from '@nrz/dep-id'
+import { joinDepIDTuple } from '@nrz/dep-id'
+import { PackageInfoClient } from '@nrz/package-info'
 import { PackageJson } from '@nrz/package-json'
-import { Spec, type SpecOptions } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import { Spec } from '@nrz/spec'
+import { unload } from '@nrz/nrz-json'
 import { Monorepo } from '@nrz/workspaces'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
 import { load as loadActual } from '../../src/actual/load.ts'
+import type {
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
+} from '../../src/dependencies.ts'
 import { buildIdealFromStartingGraph } from '../../src/ideal/build-ideal-from-starting-graph.ts'
-import {
-  type LockfileData,
-  type LockfileEdgeKey,
-  type LockfileEdges,
-  type LockfileNode,
+import type {
+  LockfileData,
+  LockfileEdgeKey,
+  LockfileEdges,
+  LockfileNode,
 } from '../../src/index.ts'
 import { load as loadVirtual } from '../../src/lockfile/load.ts'
 import { objectLikeOutput } from '../../src/visualization/object-like-output.ts'
-import {
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
-} from '../../src/dependencies.ts'
 
 const edgeKey = (from: DepIDTuple, to: string): LockfileEdgeKey =>
   `${joinDepIDTuple(from)} ${to}`
@@ -71,7 +70,7 @@ const packageInfo = {
         return missingManifest
       case 'linked':
       case 'link':
-        return manifest(spec, options)
+        return new PackageInfoClient(options).manifest(spec, options)
       default:
         return null
     }
@@ -136,6 +135,8 @@ t.test('build from a virtual graph', async t => {
       }),
     },
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const virtual = loadVirtual({
     ...configData,
@@ -199,6 +200,8 @@ t.test('add from manifest file only', async t => {
     'nrz-lock.json': JSON.stringify(lockfileData),
     'package.json': JSON.stringify(mainManifest),
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const virtual = loadVirtual({
     ...configData,
@@ -265,6 +268,8 @@ t.test('remove from manifest file only', async t => {
       }),
     },
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const virtual = loadVirtual({
     ...configData,
@@ -505,10 +510,14 @@ t.test('build from an actual graph', async t => {
         }),
       },
     },
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
   })
+  t.chdir(projectRoot)
+  unload('project')
 
   const actual = loadActual({
     scurry: new PathScurry(projectRoot),

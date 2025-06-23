@@ -1,9 +1,10 @@
-import { Spec, type SpecOptions, kCustomInspect } from '@nrz/spec'
+import { Spec, kCustomInspect } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
 import { inspect } from 'node:util'
 import t from 'tap'
 import { Edge } from '../src/edge.ts'
 import { Node } from '../src/node.ts'
-import { type GraphLike } from '../src/types.ts'
+import type { GraphLike } from '../src/types.ts'
 
 t.cleanSnapshot = s =>
   s.replace(/^(\s+)projectRoot: .*$/gm, '$1projectRoot: #')

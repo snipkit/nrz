@@ -1,32 +1,35 @@
-import { useEffect, useState } from 'react'
-import {
-  type SavedQuery,
-  type Action,
-  type QueryLabel,
-} from '@/state/types.js'
-import { useGraphStore } from '@/state/index.js'
-import { Input } from '@/components/ui/input.jsx'
-import { Button } from '@/components/ui/button.jsx'
-import { useToast } from '@/components/hooks/use-toast.js'
-import { Checkbox } from '@/components/ui/checkbox.jsx'
-import { Label } from '@/components/ui/label.jsx'
-import { LabelBadge } from '@/components/labels/label-badge.jsx'
-import { ArrowRight, ChevronsUpDown } from 'lucide-react'
-import { LabelSelect } from '@/components/labels/label-select.jsx'
+import { useNavigate } from 'react-router'
+import { useEffect, useState, useMemo } from 'react'
+import type {
+  SavedQuery,
+  Action,
+  QueryLabel,
+  DashboardData,
+} from '@/state/types.ts'
+import { useGraphStore } from '@/state/index.ts'
+import { Input } from '@/components/ui/input.tsx'
+import { Button } from '@/components/ui/button.tsx'
+import { useToast } from '@/components/hooks/use-toast.ts'
+import { Checkbox } from '@/components/ui/checkbox.tsx'
+import { Label } from '@/components/ui/label.tsx'
+import { LabelBadge } from '@/components/labels/label-badge.tsx'
+import { CircleHelp, ArrowRight, ChevronsUpDown } from 'lucide-react'
+import { LabelSelect } from '@/components/labels/label-select.tsx'
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/components/ui/popover.jsx'
+} from '@/components/ui/popover.tsx'
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from '@/components/ui/tooltip.jsx'
+} from '@/components/ui/tooltip.tsx'
+import { DirectorySelect } from '@/components/directory-select.tsx'
 
 type SelectQueryOptions = {
-  updateActiveRoute: Action['updateActiveRoute']
+  navigate: (route: string) => void
   updateErrorCause: Action['updateErrorCause']
   updateQuery: Action['updateQuery']
   updateStamp: Action['updateStamp']
@@ -37,7 +40,7 @@ type SelectQueryOptions = {
 // TODO: should reuse / share the project select logic from:
 // src/gui/src/components/dashboard-grid/index.tsx
 export const selectQuery = async ({
-  updateActiveRoute,
+  navigate,
   updateErrorCause,
   updateQuery,
   updateStamp,
@@ -57,7 +60,7 @@ export const selectQuery = async ({
     })
   } catch (err) {
     console.error(err)
-    updateActiveRoute('/error')
+    navigate('/error')
     updateErrorCause('Failed to request project selection.')
     return
   }
@@ -72,10 +75,10 @@ export const selectQuery = async ({
   if (projectSelected) {
     window.scrollTo(0, 0)
     updateQuery(item.query)
-    updateActiveRoute('/explore')
+    navigate('/explore')
     updateStamp()
   } else {
-    updateActiveRoute('/error')
+    navigate('/error')
     updateErrorCause('Failed to select project.')
   }
 }
@@ -84,28 +87,26 @@ const SavedQueryItem = ({
   item,
   handleSelect,
   checked,
+  dashboard,
 }: {
   item: SavedQuery
   handleSelect: (item: SavedQuery) => void
   checked: boolean
+  dashboard?: DashboardData
 }) => {
+  const navigate = useNavigate()
   const { toast } = useToast()
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const [editName, setEditName] = useState<string>('')
   const [editContext, setEditContext] = useState<string>('')
-  const [_labelSelectOpen, setLabelSelectOpen] =
-    useState<boolean>(false)
+  const [, setLabelSelectOpen] = useState<boolean>(false)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [selectedLabels, setSelectedLabels] = useState<QueryLabel[]>(
     [],
   )
   const [editQuery, setEditQuery] = useState<string>('')
-  const [isValid, setIsValid] = useState<boolean>(false)
   const updateSavedQuery = useGraphStore(
     state => state.updateSavedQuery,
-  )
-  const updateActiveRoute = useGraphStore(
-    state => state.updateActiveRoute,
   )
   const updateErrorCause = useGraphStore(
     state => state.updateErrorCause,
@@ -120,13 +121,9 @@ const SavedQueryItem = ({
     setSelectedLabels(item.labels ?? [])
   }, [item])
 
-  useEffect(() => {
-    if (editName !== '' && editQuery !== '') {
-      setIsValid(true)
-    } else {
-      setIsValid(false)
-    }
-  }, [editName, editContext, editQuery])
+  const isValid = useMemo(() => {
+    return editName !== '' && editQuery !== ''
+  }, [editName, editQuery])
 
   const handleEdit = () => {
     setIsExpanded(!isExpanded)
@@ -150,7 +147,7 @@ const SavedQueryItem = ({
 
   const runQuery = async (): Promise<void> => {
     await selectQuery({
-      updateActiveRoute,
+      navigate,
       updateErrorCause,
       updateQuery,
       updateStamp,
@@ -161,13 +158,13 @@ const SavedQueryItem = ({
 
   return (
     <div
-      className={`group flex flex-col rounded-sm border border-[1px] bg-neutral-50 transition-all hover:border-foreground/50 dark:bg-neutral-950 ${isExpanded ? 'border-foreground/50' : 'border-muted-foreground/25'}`}>
+      className={`group flex flex-col rounded-sm border border-[1px] bg-card transition-all hover:bg-card-accent ${isExpanded ? 'border-muted-foreground' : 'border-muted'}`}>
       <div className="grid grid-cols-12 gap-4 px-3 py-2">
         <div className="col-span-2 flex grow items-center gap-3">
           <Checkbox
             checked={checked}
             onCheckedChange={() => handleSelect(item)}
-            className="border-muted-foreground/25 group-hover:border-muted-foreground/50"
+            className={`border-muted-foreground/25 opacity-0 group-hover:border-muted-foreground/50 group-hover:opacity-100 ${checked ? 'opacity-100' : ''}`}
           />
           <p className="truncate text-sm font-medium">
             {editName.trim() !== '' ? editName : 'Query Name'}
@@ -182,7 +179,7 @@ const SavedQueryItem = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger className="w-full truncate text-left text-sm">
-                {item.context}
+                {item.context.trim() === '' ? 'Global' : item.context}
               </TooltipTrigger>
               <TooltipContent>{item.context}</TooltipContent>
             </Tooltip>
@@ -247,14 +244,27 @@ const SavedQueryItem = ({
               />
             </div>
             <div className="flex grow flex-col gap-2">
-              <Label className="border-none text-sm font-medium">
-                Directory
-              </Label>
-              <Input
-                type="text"
-                value={editContext}
-                onChange={e => setEditContext(e.target.value)}
-                placeholder="Directory (optional)"
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="inline-flex cursor-default items-center">
+                    <Label className="border-none text-sm font-medium">
+                      Directory (optional)
+                    </Label>
+                    <CircleHelp
+                      className="text-muted-foreground"
+                      size={18}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Set directory to 'Global' to reuse across all
+                    projects.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <DirectorySelect
+                dashboard={dashboard}
+                setDirectory={setEditContext}
+                directory={editContext}
               />
             </div>
             <div className="flex grow flex-col gap-2">

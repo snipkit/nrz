@@ -2,7 +2,7 @@ import t from 'tap'
 import { loadNodes } from '../../src/lockfile/load-nodes.ts'
 import { Graph } from '../../src/graph.ts'
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { type LockfileData } from '../../src/index.ts'
+import type { LockfileData } from '../../src/index.ts'
 
 t.cleanSnapshot = s =>
   s.replace(
@@ -117,5 +117,52 @@ t.test('load nodes with manifest', async t => {
   t.matchSnapshot(
     [...graph.nodes.values()].map(n => n.toJSON()),
     'should load nodes into graph with manifest data',
+  )
+})
+
+t.test('load nodes with confused manifest', async t => {
+  const graph = new Graph({
+    mainManifest: {
+      name: 'my-project',
+      version: '1.0.0',
+    },
+    projectRoot: t.testdirName,
+  })
+  const nodes = {
+    [joinDepIDTuple(['registry', '', 'foo@1.0.0'])]: [
+      0,
+      'foo',
+      'sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==',
+      null,
+      'node_modules/.pnpm/foo@1.0.0/node_modules/foo',
+      {
+        name: 'foo',
+        version: '1.0.0',
+      },
+      {
+        name: 'test',
+        version: '1.0.0',
+      },
+    ],
+  } as LockfileData['nodes']
+  loadNodes(graph, nodes)
+  const loadedFoo = graph.nodes.get(
+    joinDepIDTuple(['registry', '', 'foo@1.0.0']),
+  )
+  t.ok(loadedFoo, 'should load the confused node')
+  t.equal(loadedFoo?.confused, true, 'should have confused flag set')
+  t.equal(
+    loadedFoo?.manifest?.name,
+    'foo',
+    'should have fixed manifest name',
+  )
+  t.equal(
+    loadedFoo?.rawManifest?.name,
+    'test',
+    'should have original manifest name',
+  )
+  t.matchSnapshot(
+    loadedFoo?.toJSON(),
+    'should load node with confused manifest',
   )
 })

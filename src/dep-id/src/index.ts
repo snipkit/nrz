@@ -1,6 +1,7 @@
 import { error } from '@nrz/error-cause'
-import { Spec, type SpecOptions } from '@nrz/spec'
-import { type Manifest } from '@nrz/types'
+import { Spec } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import type { Manifest } from '@nrz/types'
 
 export const delimiter: Delimiter = '·'
 export type Delimiter = '·'
@@ -18,7 +19,7 @@ export type Delimiter = '·'
  *   url to a registry. If empty, it is the default registry. Examples:
  *   - `··some-package@2.0.1`
  *   - `·npm·whatever@1.2.3`
- *   - `·http%3A%2F%2Fkhulnasoft.com%2F·x@1.2.3`
+ *   - `·http%3A%2F%2Fnrz.sh%2F·x@1.2.3`
  * - `git`: `'git·<git remote>·<git selector>'`. For example:
  *   - `git·github:user/project·branchname`
  *   - `git·git%2Bssh%3A%2F%2Fuser%40host%3Aproject.git·semver:1.x`
@@ -95,11 +96,20 @@ export const joinDepIDTuple = (list: DepIDTuple): DepID => {
 }
 
 // allow @, but otherwise, escape everything urls do
-const encode = (s: string): string =>
-  encodeURIComponent(s)
-    .replaceAll('%40', '@')
-    .replaceAll('%2f', '§')
-    .replaceAll('%2F', '§')
+const encode = (s?: string) =>
+  s ?
+    encodeURIComponent(s)
+      .replaceAll('%40', '@')
+      .replaceAll('%2f', '§')
+      .replaceAll('%2F', '§')
+  : s
+
+const decode = (s?: string) =>
+  s ?
+    decodeURIComponent(
+      s.replaceAll('@', '%40').replaceAll('§', '%2F'),
+    )
+  : s
 
 /**
  * turn a {@link DepID} into a {@link DepIDTuple}
@@ -119,15 +129,14 @@ export const splitDepID = (id: string): DepIDTuple => {
         type || 'registry',
         f,
         decodeURIComponent(second),
+        decode(extra),
       ]
-      if (extra) t.push(decodeURIComponent(extra))
       return t
     }
     case 'file':
     case 'remote':
     case 'workspace': {
-      const t: DepIDTuple = [type, f]
-      if (second) t.push(decodeURIComponent(second))
+      const t: DepIDTuple = [type, f, decode(second)]
       return t
     }
     default: {
@@ -255,7 +264,11 @@ const omitDefReg = (s?: string): string =>
  * in the manifest, registry ID types will use the name or bareSpec from the
  * specifier, so at least there's something to use later.
  */
-export const getTuple = (spec: Spec, mani: Manifest): DepIDTuple => {
+export const getTuple = (
+  spec: Spec,
+  mani: Manifest,
+  extra?: string,
+): DepIDTuple => {
   const f = spec.final
   switch (f.type) {
     case 'registry': {
@@ -271,10 +284,17 @@ export const getTuple = (spec: Spec, mani: Manifest): DepIDTuple => {
           }
         }
       }
+      const version =
+        mani.version ?
+          mani.version.startsWith('v') ?
+            mani.version.slice(1)
+          : mani.version
+        : f.bareSpec
       return [
         f.type,
         f.namedRegistry ?? reg,
-        `${mani.name ?? spec.name}@${mani.version ?? spec.bareSpec}`,
+        `${isPackageNameConfused(spec, mani.name) ? spec.name : (mani.name ?? f.name)}@${version}`,
+        extra,
       ]
     }
     case 'git': {
@@ -296,16 +316,17 @@ export const getTuple = (spec: Spec, mani: Manifest): DepIDTuple => {
           f.type,
           `${namedGitHost}:${namedGitHostPath}`,
           gitSelector,
+          extra,
         ]
       } else {
-        return [f.type, gitRemote, gitSelector]
+        return [f.type, gitRemote, gitSelector, extra]
       }
     }
     case 'remote': {
       const { remoteURL } = f
       if (!remoteURL)
         throw error('no URL on remote specifier', { spec })
-      return [f.type, remoteURL]
+      return [f.type, remoteURL, extra]
     }
     case 'file':
     case 'workspace':
@@ -314,10 +335,23 @@ export const getTuple = (spec: Spec, mani: Manifest): DepIDTuple => {
 }
 
 /**
+ * Checks for a potentially manifest-confused package name.
+ * Returns `true` if the package name is confused, `false` otherwise.
+ */
+export const isPackageNameConfused = (spec?: Spec, name?: string) =>
+  !!spec?.name && // a nameless spec can't be checked
+  !spec.subspec && // it's not an aliased package or using a custom protocol
+  spec.type === 'registry' && // the defined spec is of type registry
+  spec.name !== name // its name is not the same as the defined spec name
+
+/**
  * Get the {@link DepID} for a given {@link Spec} and {@link Manifest}. The
  * Manifest is used to get the name and version, if possible. If not found in
  * the manifest, registry ID types will use the name or bareSpec from the
  * specifier, so at least there's something to use later.
  */
-export const getId = (spec: Spec, mani: Manifest): DepID =>
-  joinDepIDTuple(getTuple(spec, mani))
+export const getId = (
+  spec: Spec,
+  mani: Manifest,
+  extra?: string,
+): DepID => joinDepIDTuple(getTuple(spec, mani, extra))

@@ -1,25 +1,30 @@
 import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button.jsx'
-import { LabelBadge } from '@/components/labels/label-badge.jsx'
-import { Label } from '@/components/ui/label.jsx'
-import { Input } from '@/components/ui/input.jsx'
+import { Button } from '@/components/ui/button.tsx'
+import { LabelBadge } from '@/components/labels/label-badge.tsx'
+import { Label } from '@/components/ui/label.tsx'
+import { Input } from '@/components/ui/input.tsx'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover.jsx'
-import { ColorPicker } from '@/components/ui/color-picker.jsx'
+} from '@/components/ui/popover.tsx'
+import { ColorPicker } from '@/components/ui/color-picker.tsx'
 import { Palette } from 'lucide-react'
-import { useGraphStore } from '@/state/index.js'
-import { type Color } from '@/state/types.js'
-import { useToast } from '@/components/hooks/use-toast.js'
+import { useGraphStore } from '@/state/index.ts'
+import type { Color } from '@/state/types.ts'
+import { useToast } from '@/components/hooks/use-toast.ts'
 import { v4 as uuidv4 } from 'uuid'
+import { cn } from '@/lib/utils.ts'
 
 interface CreateLabelProps {
   closeCreate: () => void
+  className?: string
 }
 
-const CreateLabel = ({ closeCreate }: CreateLabelProps) => {
+const CreateLabel = ({
+  className,
+  closeCreate,
+}: CreateLabelProps) => {
   const [labelName, setLabelName] = useState<string>('Label preview')
   const [labelDescription, setLabelDescription] = useState<string>('')
   const [selectedColor, setSelectedColor] = useState<Color>('#00FF5F')
@@ -57,7 +62,11 @@ const CreateLabel = ({ closeCreate }: CreateLabelProps) => {
   }, [labelName, labelDescription, selectedColor])
 
   return (
-    <div className="rounded-sm border border-[1px] border-muted-foreground/25 bg-neutral-100 transition-all dark:bg-neutral-950">
+    <div
+      className={cn(
+        'rounded-sm border border-[1px] border-muted-foreground/25 bg-card transition-all',
+        className,
+      )}>
       <div className="flex flex-col gap-3 px-3 py-3">
         {/* label preview */}
         <div>

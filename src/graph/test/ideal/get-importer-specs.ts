@@ -1,19 +1,21 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
 import { PackageJson } from '@nrz/package-json'
 import { kCustomInspect, Spec } from '@nrz/spec'
+import { unload } from '@nrz/nrz-json'
 import { Monorepo } from '@nrz/workspaces'
 import { inspect } from 'node:util'
 import { PathScurry } from 'path-scurry'
 import t from 'tap'
 import { load } from '../../src/actual/load.ts'
-import {
-  asDependency,
-  type AddImportersDependenciesMap,
-  type RemoveImportersDependenciesMap,
+import type {
+  AddImportersDependenciesMap,
+  RemoveImportersDependenciesMap,
 } from '../../src/dependencies.ts'
+import { asDependency } from '../../src/dependencies.ts'
+import { Edge } from '../../src/edge.ts'
 import { Graph } from '../../src/graph.ts'
 import { getImporterSpecs } from '../../src/ideal/get-importer-specs.ts'
-import { Edge } from '../../src/edge.ts'
+import type { GraphModifier } from '../../src/modifiers.ts'
 
 Object.assign(Spec.prototype, {
   [kCustomInspect](this: Spec) {
@@ -22,10 +24,13 @@ Object.assign(Spec.prototype, {
 })
 
 t.test('empty graph and nothing to add', async t => {
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
-    projectRoot: t.testdirName,
+    projectRoot,
     mainManifest: {},
-    monorepo: Monorepo.maybeLoad(t.testdirName),
+    monorepo: Monorepo.maybeLoad(projectRoot),
   })
   const add = new Map() as AddImportersDependenciesMap
   const remove = new Map() as RemoveImportersDependenciesMap
@@ -51,10 +56,14 @@ t.test('empty graph with workspaces and nothing to add', async t => {
         }),
       },
     },
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
   })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = load({
     projectRoot,
     scurry: new PathScurry(projectRoot),
@@ -67,10 +76,13 @@ t.test('empty graph with workspaces and nothing to add', async t => {
 })
 
 t.test('empty graph and something to add', async t => {
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
-    projectRoot: t.testdirName,
+    projectRoot,
     mainManifest: {},
-    monorepo: Monorepo.maybeLoad(t.testdirName),
+    monorepo: Monorepo.maybeLoad(projectRoot),
   })
   const add = new Map([
     [
@@ -110,7 +122,10 @@ t.test('graph specs and nothing to add', async t => {
   }
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = load({
     projectRoot,
     scurry: new PathScurry(projectRoot),
@@ -135,7 +150,10 @@ t.test('graph specs and new things to add', async t => {
   }
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = load({
     projectRoot,
     scurry: new PathScurry(projectRoot),
@@ -176,7 +194,10 @@ t.test('graph specs and something to update', async t => {
   }
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = load({
     projectRoot,
     scurry: new PathScurry(projectRoot),
@@ -210,7 +231,10 @@ t.test('installing over a dangling edge', async t => {
   }
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
+    'nrz.json': '{}',
   })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = load({
     projectRoot,
     scurry: new PathScurry(projectRoot),
@@ -274,10 +298,14 @@ t.test(
           }),
         },
       },
-      'nrz-workspaces.json': JSON.stringify({
-        packages: ['./packages/*'],
+      'nrz.json': JSON.stringify({
+        workspaces: {
+          packages: ['./packages/*'],
+        },
       }),
     })
+    t.chdir(projectRoot)
+    unload('project')
     const graph = load({
       projectRoot,
       scurry: new PathScurry(projectRoot),
@@ -329,10 +357,13 @@ t.test(
 )
 
 t.test('adding to a non existing importer', async t => {
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
-    projectRoot: t.testdirName,
+    projectRoot: projectRoot,
     mainManifest: {},
-    monorepo: Monorepo.maybeLoad(t.testdirName),
+    monorepo: Monorepo.maybeLoad(projectRoot),
   })
   const add = new Map([
     // this workspace id does not exist in the given graph
@@ -487,10 +518,14 @@ t.test(
           },
         },
       },
-      'nrz-workspaces.json': JSON.stringify({
-        packages: ['./packages/*'],
+      'nrz.json': JSON.stringify({
+        workspaces: {
+          packages: ['./packages/*'],
+        },
       }),
     })
+    t.chdir(projectRoot)
+    unload('project')
     const graph = load({
       projectRoot,
       scurry: new PathScurry(projectRoot),
@@ -508,3 +543,126 @@ t.test(
     )
   },
 )
+
+t.test('graph specs with modifiers', async t => {
+  const mainManifest = {
+    name: 'my-project',
+    version: '1.0.0',
+    dependencies: {
+      foo: '^1.0.0',
+      bar: '^1.0.0',
+    },
+  }
+  const projectRoot = t.testdir({
+    'package.json': JSON.stringify(mainManifest),
+    'nrz.json': '{}',
+  })
+  t.chdir(projectRoot)
+  unload('project')
+
+  // Create a graph manually instead of loading from files
+  const graph = new Graph({
+    projectRoot,
+    mainManifest,
+  })
+
+  // Create nodes and edges manually instead of loading from filesystem
+  const fooSpec = Spec.parse('foo', '^1.0.0')
+  const barSpec = Spec.parse('bar', '^1.0.0')
+
+  // Create foo and bar nodes with manifests
+  const fooManifest = { name: 'foo', version: '1.0.0' }
+  const barManifest = { name: 'bar', version: '1.0.0' }
+
+  // Place packages in the graph with proper nodes
+  graph.placePackage(graph.mainImporter, 'prod', fooSpec, fooManifest)
+  graph.placePackage(graph.mainImporter, 'prod', barSpec, barManifest)
+
+  // Verify nodes and edges are properly set up
+  t.ok(
+    graph.mainImporter.edgesOut.get('foo')?.to,
+    'should have edge to foo',
+  )
+  t.ok(
+    graph.mainImporter.edgesOut.get('bar')?.to,
+    'should have edge to bar',
+  )
+
+  const mockModifier = {
+    maybeHasModifier: (depName: string) => depName === 'foo',
+  } as unknown as GraphModifier
+
+  const add = new Map() as AddImportersDependenciesMap
+  const remove = new Map() as RemoveImportersDependenciesMap
+  const specs = getImporterSpecs({
+    add,
+    graph,
+    remove,
+    modifiers: mockModifier,
+  })
+
+  // Check that the 'foo' dependency is in the check map but not 'bar'
+  const checkDeps = specs.check.get(joinDepIDTuple(['file', '.']))
+  t.ok(checkDeps, 'should have check deps for root')
+  t.ok(checkDeps?.has('foo'), 'should have foo in check deps')
+  t.notOk(checkDeps?.has('bar'), 'should not have bar in check deps')
+
+  // Instead of comparing the entire complex object, just check for the structure
+  const checkDepKeys = [...specs.check.keys()]
+  t.equal(checkDepKeys.length, 1, 'should have one importer in check')
+  t.equal(
+    checkDepKeys[0],
+    joinDepIDTuple(['file', '.']),
+    'should have the main importer as the key',
+  )
+
+  const fooDepEntry = checkDeps?.get('foo')
+  t.ok(fooDepEntry, 'foo dependency entry should exist')
+  t.equal(
+    fooDepEntry?.type,
+    'prod',
+    'should have correct dependency type',
+  )
+  t.ok(
+    fooDepEntry?.spec.name === 'foo',
+    'should have correct dependency name in spec',
+  )
+})
+
+t.test('graph specs with no modifiers', async t => {
+  const mainManifest = {
+    name: 'my-project',
+    version: '1.0.0',
+    dependencies: {
+      foo: '^1.0.0',
+    },
+  }
+  const projectRoot = t.testdir({
+    'package.json': JSON.stringify(mainManifest),
+    'nrz.json': '{}',
+  })
+  t.chdir(projectRoot)
+  unload('project')
+  const graph = load({
+    projectRoot,
+    scurry: new PathScurry(projectRoot),
+    packageJson: new PackageJson(),
+  })
+
+  const mockModifier = {
+    maybeHasModifier: () => false,
+  } as unknown as GraphModifier
+
+  const add = new Map() as AddImportersDependenciesMap
+  const remove = new Map() as RemoveImportersDependenciesMap
+  const specs = getImporterSpecs({
+    add,
+    graph,
+    remove,
+    modifiers: mockModifier,
+  })
+
+  const checkDeps = specs.check.get(joinDepIDTuple(['file', '.']))
+  t.ok(checkDeps, 'should have empty check deps for root')
+  t.equal(checkDeps?.size, 0, 'should have no deps to check')
+})

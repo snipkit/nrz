@@ -1,6 +1,6 @@
-import { type DepID } from '@nrz/dep-id'
-import { type Manifest, type DependencyTypeShort } from '@nrz/types'
-import { type Spec, type SpecLikeBase } from '@nrz/spec'
+import type { DepID } from '@nrz/dep-id'
+import type { Manifest, DependencyTypeShort } from '@nrz/types'
+import type { Spec, SpecLikeBase } from '@nrz/spec'
 
 export type EdgeLike = {
   name: string
@@ -8,6 +8,8 @@ export type EdgeLike = {
   spec: SpecLikeBase
   to?: NodeLike
   type: DependencyTypeShort
+  optional?: boolean
+  peer?: boolean
 }
 
 export type GraphLike = {
@@ -33,10 +35,12 @@ export type GraphLike = {
 
 export type NodeLike = {
   id: DepID
+  confused: boolean
   edgesIn: Set<EdgeLike>
   edgesOut: Map<string, EdgeLike>
   location?: string
   manifest?: Manifest | null
+  rawManifest?: Manifest | null
   name?: string | null
   version?: string | null
   integrity?: string | null
@@ -47,6 +51,24 @@ export type NodeLike = {
   projectRoot: string
   dev: boolean
   optional: boolean
+  toJSON: () => Pick<
+    NodeLike,
+    | 'id'
+    | 'name'
+    | 'version'
+    | 'location'
+    | 'importer'
+    | 'manifest'
+    | 'projectRoot'
+    | 'integrity'
+    | 'resolved'
+    | 'dev'
+    | 'optional'
+    | 'confused'
+  > & {
+    rawManifest?: NodeLike['manifest']
+  }
   toString(): string
   setResolved(): void
+  setConfusedManifest(fixed: Manifest, confused?: Manifest): void
 }

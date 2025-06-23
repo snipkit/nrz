@@ -1,10 +1,11 @@
 import { delimiter, getId, joinDepIDTuple } from '@nrz/dep-id'
-import { Spec, type SpecOptions } from '@nrz/spec'
+import { Spec } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
 import { inspect } from 'node:util'
 import t from 'tap'
 import { Edge } from '../src/edge.ts'
 import { Node } from '../src/node.ts'
-import { type GraphLike } from '../src/types.ts'
+import type { GraphLike } from '../src/types.ts'
 import { PathScurry } from 'path-scurry'
 
 t.cleanSnapshot = s =>
@@ -84,6 +85,11 @@ t.test('Node', async t => {
 
   t.matchSnapshot(String(foo), 'should stringify registry node')
 
+  t.strictSame(
+    foo.rawManifest,
+    fooMani,
+    'should have the raw manifest',
+  )
   t.strictSame(
     foo.location,
     './arbitrary',
@@ -283,6 +289,23 @@ t.test('Node', async t => {
     version: '1.0.0',
   })
   t.matchSnapshot(String(wsMani), 'should stringify workspace node')
+
+  const prefixedVersionMani = {
+    name: 'prefixed-version',
+    version: 'v1.0.0',
+  }
+  const prefixedVersionSpec = Spec.parse('foo@^1.0.0')
+  const prefixedVersionNode = new Node(
+    opts,
+    undefined,
+    prefixedVersionMani,
+    prefixedVersionSpec,
+  )
+  t.strictSame(
+    prefixedVersionNode.version,
+    '1.0.0',
+    'should return a normalized version value',
+  )
 })
 
 t.test('nodeModules path and inNrzStore flag', t => {
@@ -450,6 +473,34 @@ t.test('dev flag is contagious', t => {
   // now if d becomes non-optional, oo does as well
   d.dev = false
   t.equal(dd.isDev(), false)
+
+  t.end()
+})
+
+t.test('rawManifest getter and setter', t => {
+  const opts = {
+    ...options,
+    projectRoot: t.testdirName,
+    graph: {} as GraphLike,
+  }
+  const mani = {
+    name: 'test',
+    version: '1.0.0',
+  }
+  const spec = Spec.parse('foo', '^1.0.0')
+  const node = new Node(opts, undefined, mani, spec)
+
+  // rawManifest should be set to the originally set manifest
+  t.strictSame(node.rawManifest?.name, 'test')
+  t.equal(node.confused, true)
+
+  // the manifest should have a fixed up name when the package name is confused
+  t.strictSame(node.manifest?.name, 'foo')
+
+  t.matchSnapshot(node.toJSON(), 'should serialize node to JSON')
+
+  // string representation
+  t.strictSame(node.toString(), 'npm:foo@1.0.0')
 
   t.end()
 })

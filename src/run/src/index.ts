@@ -1,16 +1,16 @@
 import { error } from '@nrz/error-cause'
 import { PackageJson } from '@nrz/package-json'
-import {
-  promiseSpawn,
-  type PromiseSpawnOptions,
-  type SpawnResultNoStdio,
-  type SpawnResultStdioStrings,
+import type {
+  PromiseSpawnOptions,
+  SpawnResultNoStdio,
+  SpawnResultStdioStrings,
 } from '@nrz/promise-spawn'
-import { type Manifest } from '@nrz/types'
+import { promiseSpawn } from '@nrz/promise-spawn'
+import type { Manifest } from '@nrz/types'
 import { foregroundChild } from 'foreground-child'
 import { proxySignals } from 'foreground-child/proxy-signals'
 import { statSync } from 'node:fs'
-import { delimiter, resolve } from 'node:path'
+import { delimiter, resolve, sep } from 'node:path'
 import { walkUp } from 'walk-up-path'
 
 /** map of which node_modules/.bin folders exist */
@@ -30,6 +30,8 @@ const dirExists = (p: string) => {
   }
 }
 
+const nmBin = `${sep}node_modules${sep}.bin`
+
 /**
  * Add all exsting `node_modules/.bin` folders to the PATH that
  * exist between the cwd and the projectRoot, so dependency bins
@@ -41,7 +43,15 @@ const addPaths = (
   env: NodeJS.ProcessEnv,
 ): NodeJS.ProcessEnv => {
   const { PATH = '' } = env
+  const PATHsplit = PATH.split(delimiter)
   const paths = new Set<string>()
+  // anything in the PATH that already has node_modules/.bin is a thing
+  // we put there, perhaps for the nrx exec cache usage
+  for (const p of PATHsplit) {
+    if (p.endsWith(nmBin)) {
+      paths.add(p)
+    }
+  }
   for (const p of walkUp(cwd)) {
     const dotBin = resolve(p, 'node_modules/.bin')
     if (dirExists(dotBin)) paths.add(dotBin)
@@ -80,6 +90,13 @@ export type SharedOptions = PromiseSpawnOptions & {
    * platform-specific shell will be used.
    */
   'script-shell'?: boolean | string
+
+  /**
+   * If true, then `FORCE_COLOR=1` will be set in the environment so that
+   * scripts will typically have colored output enablled, even if the output
+   * is not a tty.
+   */
+  color?: boolean
 }
 
 /**
@@ -196,6 +213,7 @@ const runImpl = async <
     packageJson = new PackageJson(),
     ignoreMissing = false,
     manifest,
+    'script-shell': shell = true,
     ...execArgs
   } = options
   const pjPath = resolve(options.cwd, 'package.json')
@@ -243,6 +261,7 @@ const runImpl = async <
       await execImpl({
         arg0: precommand,
         ...execArgs,
+        'script-shell': shell,
         args: [],
         env: {
           ...execArgs.env,
@@ -258,6 +277,7 @@ const runImpl = async <
   const result: RunImplResult<R> = await execImpl({
     arg0: command,
     ...execArgs,
+    'script-shell': shell,
     env: {
       ...execArgs.env,
       npm_package_json: pjPath,
@@ -276,6 +296,7 @@ const runImpl = async <
   const post = await execImpl({
     arg0: postcommand,
     ...execArgs,
+    'script-shell': shell,
     args: [],
     env: {
       ...execArgs.env,
@@ -305,7 +326,8 @@ export const exec = async (
     cwd,
     env = {},
     projectRoot,
-    'script-shell': shell = true,
+    'script-shell': shell = false,
+    color = false,
     ...spawnOptions
   } = options
 
@@ -318,6 +340,7 @@ export const exec = async (
     env: addPaths(projectRoot, cwd, {
       ...process.env,
       ...env,
+      FORCE_COLOR: color ? '1' : '0',
     }),
     windowsHide: true,
   })
@@ -337,7 +360,8 @@ export const execFG = async (
     cwd,
     projectRoot,
     env = {},
-    'script-shell': shell = true,
+    'script-shell': shell = false,
+    color = true,
     ...spawnOptions
   } = options
 
@@ -352,6 +376,7 @@ export const execFG = async (
         env: addPaths(projectRoot, cwd, {
           ...process.env,
           ...env,
+          FORCE_COLOR: color ? '1' : '0',
         }),
       },
       (status, signal) => {

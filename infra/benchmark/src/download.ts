@@ -1,14 +1,20 @@
-#!/usr/bin/env -S node --experimental-strip-types --no-warnings --conditions=@nrz/source
+#!/usr/bin/env -S node --experimental-strip-types --no-warnings
 
 // run this script as many times in parallel as necessary
 // it'll randomize and skip any it's already downloaded.
 
-import { randomBytes } from 'crypto'
-import { mkdirSync, writeFileSync, existsSync, renameSync } from 'fs'
+import { randomBytes } from 'node:crypto'
+import {
+  mkdirSync,
+  writeFileSync,
+  existsSync,
+  renameSync,
+} from 'node:fs'
 import pacote from 'pacote'
-import { resolve } from 'path'
-import { gunzipSync } from 'zlib'
-import { type EXT, randomize, packages, SOURCE } from './index.ts'
+import { resolve } from 'node:path'
+import { gunzipSync } from 'node:zlib'
+import { randomize, packages, SOURCE } from './index.ts'
+import type { EXT } from './index.ts'
 
 const download = async (spec: string, ext: EXT) => {
   if (ext === 'tgz') return gunzipSync(await pacote.tarball(spec))

@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import {
-  type State,
-  type Action,
-  type SavedQuery,
-  type QueryLabel,
+import type {
+  State,
+  Action,
+  SavedQuery,
+  QueryLabel,
 } from './types.ts'
 
 export const DEFAULT_QUERY = ':root'
@@ -32,14 +32,12 @@ const DEFAULT_QUERY_LABELS: QueryLabel[] = [
 const newStamp = () => String(Math.random()).slice(2)
 
 const initialState: State = {
-  activeRoute: location.pathname,
-  previousRoute: '',
+  appData: undefined,
   dashboard: undefined,
   graph: undefined,
   edges: [],
   errorCause: '',
   hasDashboard: false,
-  linePositionReference: 258,
   nodes: [],
   projectInfo: {
     tools: [],
@@ -50,7 +48,6 @@ const initialState: State = {
       window.location.href || 'http://localhost',
     ).searchParams.get('query') ?? DEFAULT_QUERY,
   q: undefined,
-  selectedNode: undefined,
   specOptions: undefined,
   stamp: newStamp(),
   theme: localStorage.getItem('vite-ui-theme') as State['theme'],
@@ -82,14 +79,8 @@ const initialState: State = {
 export const useGraphStore = create<Action & State>((set, get) => {
   const store = {
     ...initialState,
-    updateActiveRoute: (activeRoute: State['activeRoute']) =>
-      set(state => ({
-        previousRoute: state.activeRoute,
-        activeRoute,
-        stamp: String(Math.random()).slice(2),
-      })),
-    updatePreviousRoute: (previousRoute: State['activeRoute']) =>
-      set(() => ({ previousRoute })),
+    updateAppData: (appData: State['appData']) =>
+      set(() => ({ appData })),
     updateDashboard: (dashboard: State['dashboard']) =>
       set(() => ({ dashboard })),
     updateGraph: (graph: State['graph']) => set(() => ({ graph })),
@@ -100,13 +91,9 @@ export const useGraphStore = create<Action & State>((set, get) => {
       set(() => ({ errorCause })),
     updateHasDashboard: (hasDashboard: State['hasDashboard']) =>
       set(() => ({ hasDashboard })),
-    updateLinePositionReference: (position: number) =>
-      set(() => ({ linePositionReference: position })),
     updateNodes: (nodes: State['nodes']) => set(() => ({ nodes })),
     updateProjectInfo: (projectInfo: State['projectInfo']) =>
       set(() => ({ projectInfo })),
-    updateSelectedNode: (selectedNode: State['selectedNode']) =>
-      set(() => ({ selectedNode })),
     updateSpecOptions: (specOptions: State['specOptions']) =>
       set(() => ({ specOptions })),
     updateStamp: () => set(() => ({ stamp: newStamp() })),
@@ -258,20 +245,16 @@ export const useGraphStore = create<Action & State>((set, get) => {
     },
   }
 
-  // updates internal state anytime the browser URL changes
+  /** update the `query` state based on the state stored in the history entry */
   window.addEventListener('popstate', (e: PopStateEvent): void => {
     if (!e.state) return
-    const { query, route } = e.state as {
+    const { query } = e.state as {
       query?: string
-      route?: string
     }
     if (query != null) {
       store.updateQuery(query)
     }
-    if (route) {
-      store.updatePreviousRoute(store.activeRoute)
-      store.updateActiveRoute(route)
-    }
   })
+
   return store
 })

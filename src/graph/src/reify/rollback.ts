@@ -1,6 +1,6 @@
 import { RollbackRemove } from '@nrz/rollback-remove'
-import { type PathScurry } from 'path-scurry'
-import { type Diff } from '../diff.ts'
+import type { PathScurry } from 'path-scurry'
+import type { Diff } from '../diff.ts'
 import { deleteEdge } from './delete-edge.ts'
 
 export const rollback = async (

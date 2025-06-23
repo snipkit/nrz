@@ -1,8 +1,8 @@
-import { type Action } from '@/state/types.js'
-import { DEFAULT_QUERY } from '@/state/index.js'
+import type { Action } from '@/state/types.ts'
+import { DEFAULT_QUERY } from '@/state/index.ts'
 
 export type RequestRouteTransitionOptions<T> = {
-  updateActiveRoute: Action['updateActiveRoute']
+  navigate: (route: string) => void
   updateErrorCause: Action['updateErrorCause']
   updateQuery: Action['updateQuery']
   updateStamp: Action['updateStamp']
@@ -13,7 +13,7 @@ export type RequestRouteTransitionOptions<T> = {
 }
 
 export const requestRouteTransition = async <T>({
-  updateActiveRoute,
+  navigate,
   updateErrorCause,
   updateQuery,
   updateStamp,
@@ -32,9 +32,8 @@ export const requestRouteTransition = async <T>({
       body: JSON.stringify(body),
     })
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error(err)
-    updateActiveRoute('/error')
+    navigate('/error')
     updateErrorCause('Failed to submit request.')
     return
   }
@@ -43,17 +42,16 @@ export const requestRouteTransition = async <T>({
   try {
     projectSelected = (await req.json()) === 'ok'
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error(err)
   }
 
   if (projectSelected) {
     window.scrollTo(0, 0)
     updateQuery(DEFAULT_QUERY)
-    updateActiveRoute(destinationRoute)
+    navigate(destinationRoute)
     updateStamp()
   } else {
-    updateActiveRoute('/error')
+    navigate('/error')
     updateErrorCause(errorMessage)
   }
 }

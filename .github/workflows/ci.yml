@@ -1,77 +1,154 @@
 name: CI
 
 on:
-  workflow_dispatch:
-    inputs:
-      filter:
-        description: 'run-script filter for tests'
   push:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: 'An optional filter to run a subset of workspaces. This will be passed directly to pnpm --filter.'
+      full-matrix:
+        description: 'Whether to run the full matrix of environments for testing.'
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  pre-check:
+    name: Pre-Check
+    runs-on: ubuntu-latest
+    outputs:
+      release-pr: ${{ steps.release-pr.outputs.value }}
+      changed: ${{ steps.filters.outputs.changed }}
+      dependent: ${{ steps.filters.outputs.dependent }}
+      related: ${{ steps.filters.outputs.related }}
+      base-ref: ${{ steps.filters.outputs.base-ref }}
+      full-matrix: ${{ steps.full-matrix.outputs.value }}
+    steps:
+      - name: Release PR
+        id: release-pr
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.head_ref }}" == "release" ]]; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Recursive
+        id: recursive
+        run: |
+          if [[
+            "${{ steps.release-pr.outputs.value }}" == "true" ||
+            "${{ github.event_name }}" == "push" ||
+            ("${{ github.event_name }}" == "workflow_dispatch" && -z "${{ inputs.filter }}")
+          ]]; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Filters
+        id: filters
+        run: |
+          if [[ "${{ steps.recursive.outputs.value }}" == "true" ]]; then
+            echo "changed=--recursive" >> "$GITHUB_OUTPUT"
+            echo "dependent=--recursive" >> "$GITHUB_OUTPUT"
+            echo "related=--recursive" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ -n "${{ inputs.filter}}" ]]; then
+            filter="${{ inputs.filter }}"
+          else
+            filter="[origin/${{ github.base_ref }}]"
+            echo "base-ref=${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "changed=--filter \"$filter\"" >> "$GITHUB_OUTPUT"
+          echo "dependent=--filter \"...$filter\"" >> "$GITHUB_OUTPUT"
+          echo "related=--filter \"...$filter...\"" >> "$GITHUB_OUTPUT"
+
+      - name: Matrix
+        id: full-matrix
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [[
+            "${{ github.event_name }}" == "push" ||
+            "${{ steps.release-pr.outputs.value }}" == "true" ||
+            "${{ inputs.full-matrix }}" == "true"
+          ]]; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[
+            "${{ github.event_name }}" == "pull_request" &&
+            "$PR_TITLE" == *"[ci full-matrix]"*
+          ]]; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "value=false" >> "$GITHUB_OUTPUT"
+
   lint:
     name: Lint
-
+    # TODO: use filters to run a subset of lint/format
+    needs: pre-check
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
           run_install: false
 
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '^22.14.0'
           cache: pnpm
           check-latest: true
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: pnpm install
 
-      # TODO: if the lint job starts to take too long, it can be sped up
-      # by making any of the steps operate on only changed workspaces.
-      # For now any steps that dont use filters are run from the root
-      # on all workspaces.
       - name: Formatting
-        run: pnpm run format:check
         id: format
         continue-on-error: true
+        run: pnpm run format:check
 
       - name: Linting
-        run: pnpm run lint:check
         id: lint
         continue-on-error: true
+        run: pnpm run lint:check
 
       - name: Dependencies
-        run: node ./scripts/check-deps.js
         id: deps
         continue-on-error: true
+        run: pnpm run deps:check
 
       - name: Docs
-        run: pnpm -F docs typedoc:check
         id: docs
         continue-on-error: true
+        run: pnpm --filter docs typedoc:check
 
       - name: Consistent Workspaces
+        id: workspaces
+        continue-on-error: true
         run: |
-          node ./scripts/consistent-package-json.js
+          pnpm run fix:pkg
+          pnpm -r run tshy
           if [ -n "$(git status --porcelain)" ]; then
             git diff
             exit 1
           fi
-        id: workspaces
-        continue-on-error: true
 
       - name: Check Results
         run: |
@@ -94,10 +171,14 @@ jobs:
 
   test:
     name: Test - ${{ matrix.platform.name }} - ${{ matrix.node-version }}
-
+    needs: pre-check
+    runs-on: ${{ matrix.platform.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [22.x, 24.x]
         platform:
           - name: Ubuntu
             os: ubuntu-latest
@@ -115,27 +196,15 @@ jobs:
             os: windows-latest
             shell: powershell
         exclude:
-          - platform: ${{ fromJSON(github.event_name == 'pull_request' && '{"name":"macOS","os":"macos-latest","shell":"bash"}') }}
-          - platform: ${{ fromJSON(github.event_name == 'pull_request' && '{"name":"macOS Intel","os":"macos-13","shell":"bash"}') }}
-          - platform: ${{ fromJSON(github.event_name == 'pull_request' && '{"name":"Windows Powershell","os":"windows-latest","shell":"powershell"}') }}
+          - node-version: '24.x'
+          - platform: ${{ fromJSON(needs.pre-check.outputs.full-matrix == 'false' && '{"name":"macOS","os":"macos-latest","shell":"bash"}') }}
+          - platform: ${{ fromJSON(needs.pre-check.outputs.full-matrix == 'false' && '{"name":"macOS Intel","os":"macos-13","shell":"bash"}') }}
+          - platform: ${{ fromJSON(needs.pre-check.outputs.full-matrix == 'false' && '{"name":"Windows Powershell","os":"windows-latest","shell":"powershell"}') }}
       fail-fast: false
-
-    runs-on: ${{ matrix.platform.os }}
-    defaults:
-      run:
-        shell: ${{ matrix.platform.shell }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Fetch base ref
-        if: github.event_name == 'pull_request'
-        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - uses: denoland/setup-deno@v2
         with:
@@ -143,7 +212,6 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
           run_install: false
 
       - name: Use Nodejs ${{ matrix.node-version }}
@@ -153,22 +221,41 @@ jobs:
           cache: pnpm
           check-latest: true
 
-      - name: Set run-script filters
-        id: filters
-        shell: bash
-        run: ./scripts/run-script-filter "${{ github.event_name }}" "${{ inputs.filter || github.base_ref }}"
+      - name: Fetch Git Ref to Compare
+        if: needs.pre-check.outputs.base-ref
+        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/${{ needs.pre-check.outputs.base-ref }}:refs/remotes/origin/${{ needs.pre-check.outputs.base-ref }}
 
-      - name: Install dependencies
-        if: steps.filters.outputs.prepare
-        run: pnpm ${{ steps.filters.outputs.prepare }} install --ignore-scripts
+      - name: Install Dependencies
+        run: pnpm ${{ needs.pre-check.outputs.related }} --filter="!smoke-test" install --ignore-scripts
 
       - name: Prepare
-        if: steps.filters.outputs.prepare
-        run: pnpm ${{ steps.filters.outputs.prepare }} prepare
+        run: pnpm ${{ needs.pre-check.outputs.related }} --filter="!smoke-test" prepare
 
       - name: Run Tests
-        if: steps.filters.outputs.test
-        run: |
-          pnpm config set enable-pre-post-scripts false --location=project
-          pnpm ${{ steps.filters.outputs.test }} --no-bail --aggregate-output test
-          pnpm ${{ steps.filters.outputs.test }} --no-bail --aggregate-output posttest
+        run: pnpm ${{ needs.pre-check.outputs.dependent }} --filter="!smoke-test" --no-bail --aggregate-output test
+
+  on-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.pre-check.outputs.release-pr == 'true' && (needs.lint.result == 'failure' || needs.test.result == 'failure') }}
+    needs:
+      - pre-check
+      - lint
+      - test
+    steps:
+      - name: Slack Notify
+        uses: rtCamp/action-slack-notify@v2.3.3
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_GITHUB_ALERTS_WEBHOOK_URL }}
+          SLACK_USERNAME: nrzops
+          SLACK_CHANNEL: github-alerts
+          SLACK_ICON: https://github.com/khulnasoft-lab.png
+          SLACK_COLOR: failure
+          SLACK_FOOTER: ''
+          SLACKIFY_MARKDOWN: true
+          MSG_MINIMAL: 'actions url,commit'
+          SLACK_TITLE: ${{ github.event.pull_request.title }} Lint/Test Failed
+          SLACK_MESSAGE: |
+            [PR ${{ github.event.number }}](https://github.com/${{ github.repository }}/pull/${{ github.event.number }})
+            Lint: ${{ needs.lint.result == 'failure' && ':x:' || ':white_check_mark:' }}
+            Test: ${{ needs.test.result == 'failure' && ':x:' || ':white_check_mark:' }}

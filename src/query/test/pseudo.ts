@@ -1,4 +1,5 @@
 import t from 'tap'
+import { joinDepIDTuple } from '@nrz/dep-id'
 import { pseudo } from '../src/pseudo.ts'
 import {
   getCycleGraph,
@@ -7,14 +8,19 @@ import {
   getMultiWorkspaceGraph,
   getSimpleGraph,
   getSingleWorkspaceGraph,
+  getPathBasedGraph,
 } from './fixtures/graph.ts'
 import {
   copyGraphSelectionState,
   getGraphSelectionState,
   selectorFixture,
 } from './fixtures/selector.ts'
-import { type TestCase } from './fixtures/types.ts'
-import { type GraphSelectionState } from '../src/types.ts'
+import type { PostcssNodeWithChildren } from '@nrz/dss-parser'
+import type { TestCase } from './fixtures/types.ts'
+import type {
+  GraphSelectionState,
+  ParserState,
+} from '../src/types.ts'
 
 const testPseudo = selectorFixture(pseudo)
 
@@ -35,24 +41,12 @@ t.test('pseudo', async t => {
     [':root', all, ['my-project']], // from initial nodes
     [':root', empty, ['my-project']], // from empty nodes
     [':root', b, ['my-project']], // from diff node
-    [':project', all, ['my-project']], // no workspaces in graph
-    [':project', empty, ['my-project']], // from empty nodes
-    [':project', b, ['my-project']], // from diff node
-    [
-      ':scope',
-      all,
-      ['my-project', 'a', 'b', 'c', 'd', 'e', 'f', '@x/y'],
-    ], // :scope refers to the initial values from initial
-    [
-      ':scope',
-      b,
-      ['my-project', 'a', 'b', 'c', 'd', 'e', 'f', '@x/y'],
-    ], // :scope resets the initial values from a partial
-    [
-      ':scope',
-      empty,
-      ['my-project', 'a', 'b', 'c', 'd', 'e', 'f', '@x/y'],
-    ], // :scope resets the initial values from empty partial
+    [':project /*all*/', all, ['my-project']], // no workspaces in graph
+    [':project /*empty*/', empty, []], // from empty nodes
+    [':project /*b*/', b, []], // from diff node
+    [':scope', all, ['my-project']], // :scope refers to the initial values from initial
+    [':scope', b, []], // :scope resets the initial values from a partial
+    [':scope', empty, []], // :scope resets the initial values from empty partial
     // :attr selector
     [':attr([scripts])', all, ['b']], // prop lookup only
     [':attr([scripts])', b, ['b']], // start with a single node
@@ -121,11 +115,11 @@ t.test('pseudo', async t => {
     [':is([name=a], [name=b], [name=f])', all, ['a', 'b', 'f']], // can match multiple nodes
     [':is(:root)', empty, []], // can't match from empty partial
     [
-      ':is(#foo, .asdf, [name===z], :root +, :nonexistingselector)',
+      ':is(#foo, [name===z], :root +, :nonexistingselector)',
       all,
       ['my-project', 'a', 'b', 'c', 'd', 'e', 'f', '@x/y'],
     ], // ignore any invalid selectors on loose mode
-    //[':is(.asdf)', all, ['my-project', 'a', 'b', 'c', 'd', 'e', 'f', '@x/y']], // ignore broken selectors on loose mode
+    [':is(:foo)', all, []], // broken selectors fail to match items when in loose mode
     [':is([name=a], [name=b], [name=f])', empty, []], // can match multiple nodes if no partial
     [':missing', all, []], // no dangling edges in this graph
     [':not(:root)', all, ['a', 'b', 'c', 'd', 'e', 'f', '@x/y']], // can negate single node
@@ -140,10 +134,20 @@ t.test('pseudo', async t => {
     [':private', d, ['d']], // single :private item
     [':private', b, []], // single not :private item
     [':private', empty, []], // no items to filter
+    [':semver(^2)', all, ['b']], // semver selector
+    [':semver(=2.0.0)', all, ['b']], // semver selector
+    [
+      ':semver("<2.0.0")',
+      all,
+      ['my-project', 'a', 'c', 'd', 'e', 'f', '@x/y'],
+    ], // quoted semver selector
     [':type(file)', all, ['my-project', '@x/y']], // type selector
     [':type(git)', all, []], // type selector, no matches
     [':type(registry)', all, ['a', 'b', 'c', 'd', 'e', 'f']], // type selector, no matches
     [':type(registry)', empty, []], // type selector, nothing to match
+    [':dev', all, ['b', '@x/y']], // select dev deps
+    [':dev', b, ['b']], // single item dev dep
+    [':dev', empty, []], // empty starting partial
   ])
   const initial = copyGraphSelectionState(all)
   for (const [query, partial, expected] of queryToExpected) {
@@ -172,29 +176,36 @@ t.test('pseudo', async t => {
       edges: new Set(wsGraph.edges),
       nodes: new Set(wsGraph.nodes.values()),
     }
-    const w = getGraphSelectionState(wsGraph, 'w')
+    const w: GraphSelectionState = {
+      edges: new Set(),
+      nodes: new Set([
+        wsGraph.nodes.get(joinDepIDTuple(['workspace', 'w']))!,
+      ]),
+    }
     const empty: GraphSelectionState = {
       edges: new Set(),
       nodes: new Set(),
     }
     const queryToExpected = new Set<TestCase>([
       [':root', all, ['ws']], // root
-      [':project', all, ['ws', 'w']], // project = root & workspaces
-      [':project', empty, ['ws', 'w']], // from empty nodes
-      [':project', w, ['ws', 'w']], // from single node
+      [':project /*all*/', all, ['ws', 'w']], // project = root & workspaces
+      [':project /*empty*/', empty, []], // from empty nodes
+      [':project /*w*/', w, ['w']], // from single node
       [':empty', all, ['ws', 'w']], // deps with no deps
-      [':is(.workspace, :root)', all, ['ws', 'w']],
-      [':is(.workspace, :root)', empty, []],
-      [':is(.workspace)', all, ['w']],
-      [':is(.workspace)', empty, []],
-      [':not(.workspace, :root)', all, []], // excludes all items
-      [':not(.workspace)', all, ['ws']], // excludes workspaces
+      [':is(:workspace, :root)', all, ['ws', 'w']],
+      [':is(:workspace, :root)', empty, []],
+      [':is(:workspace)', all, ['w']],
+      [':is(:workspace)', empty, []],
+      [':not(:workspace, :root)', all, []], // excludes all items
+      [':not(:workspace)', all, ['ws']], // excludes workspaces
       [':not(:root)', all, ['w']], // excludes root
       [':not(:root)', empty, []], // empty starting partial
       [':private', all, []], // private dep
       [':type(registry)', all, []], // type selector
       [':type(workspace)', all, ['w']], // type selector workspace
       [':type(file)', all, ['ws']], // type selector root
+      [':dev', all, []], // no dev deps in this graph
+      [':dev', empty, []], // empty starting partial
     ])
     const initial = copyGraphSelectionState(all)
     for (const [query, partial, expected] of queryToExpected) {
@@ -216,6 +227,27 @@ t.test('pseudo', async t => {
         `query > "${query}"`,
       )
     }
+
+    // test custom scopedID
+    const result = await testPseudo(
+      ':scope',
+      initial,
+      copyGraphSelectionState(all),
+      false,
+      [joinDepIDTuple(['workspace', 'w'])],
+    )
+    t.strictSame(
+      result.nodes.map(i => i.name),
+      ['w'],
+      'query > customScopedID',
+    )
+    t.matchSnapshot(
+      {
+        edges: result.edges.map(i => i.name).sort(),
+        nodes: result.nodes.map(i => i.name).sort(),
+      },
+      'query > customScopedID',
+    )
   })
 
   await t.test('complex workspace', async t => {
@@ -266,6 +298,7 @@ t.test('pseudo', async t => {
       [':is([name=a])', all, ['a']],
       [':private', all, []], // private dep
       [':type(registry)', all, ['a', 'b']], // type selector
+      [':dev', all, []], // no dev deps in this graph
     ])
     const initial = copyGraphSelectionState(all)
     for (const [query, partial, expected] of queryToExpected) {
@@ -332,8 +365,9 @@ t.test('pseudo', async t => {
     // giving that we want to assert missing / present edges
     const queryToExpected = new Set<TestCase>([
       [':missing', all, []],
-      [':has(.dev)', all, []],
+      [':has(:dev)', all, []],
       [':private', all, []],
+      [':dev', all, []], // test that :dev works with missing nodes as well
     ])
     const initial = copyGraphSelectionState(all)
     for (const [query, partial] of queryToExpected) {
@@ -354,12 +388,6 @@ t.test('pseudo', async t => {
 
   await t.test('missing importers info on nodes', async t => {
     await t.rejects(
-      testPseudo(':project'),
-      /:project pseudo-element works on local graphs only/,
-      'should throw an local-graph-only error',
-    )
-
-    await t.rejects(
       testPseudo(':root'),
       /:root pseudo-element works on local graphs only/,
       'should throw an local-graph-only error',
@@ -369,7 +397,7 @@ t.test('pseudo', async t => {
 
 t.test('bad selector type', async t => {
   await t.rejects(
-    testPseudo('.dev'),
+    testPseudo('[name=a]'),
     /Mismatching query node/,
     'should throw an error',
   )
@@ -381,6 +409,159 @@ t.test('unsupported pseudo', async t => {
     /Unsupported pseudo-class: :unsupportedpseudoclass/,
     'should throw an unsupported selector error',
   )
+})
+
+t.test('specificity calculation for pseudo selectors', async t => {
+  const simpleGraph = getSimpleGraph()
+  const all = {
+    edges: new Set(simpleGraph.edges),
+    nodes: new Set(simpleGraph.nodes.values()),
+  }
+  const initial = copyGraphSelectionState(all)
+
+  // Create mock specOptions
+  const mockSpecOptions = {
+    registry: 'https://registry.npmjs.org',
+    registries: {
+      custom: 'http://example.com',
+    },
+  }
+
+  // Test normal pseudo selectors (should increment commonCounter)
+  const normalState: ParserState = {
+    cancellable: async () => {},
+    collect: {
+      nodes: new Set(simpleGraph.nodes.values()),
+      edges: new Set(simpleGraph.edges),
+    },
+    current: {
+      type: 'pseudo',
+      value: ':dev',
+      spaces: { before: '', after: '' },
+    } as any,
+    initial: copyGraphSelectionState(initial),
+    loose: false,
+    partial: copyGraphSelectionState(initial),
+    retries: 0,
+    securityArchive: undefined,
+    signal: { throwIfAborted: () => {} } as AbortSignal,
+    walk: async (state: ParserState) => state,
+    specificity: { idCounter: 0, commonCounter: 0 },
+    comment: '',
+    specOptions: mockSpecOptions,
+  }
+
+  const result = await pseudo(normalState)
+  t.equal(
+    result.specificity.commonCounter,
+    1,
+    ':dev should increment commonCounter',
+  )
+
+  // Test :not, :is, :has pseudo selectors (should not increment commonCounter)
+  const notCounter = { idCounter: 0, commonCounter: 0 }
+  const isCounter = { idCounter: 0, commonCounter: 0 }
+  const hasCounter = { idCounter: 0, commonCounter: 0 }
+
+  const notState: ParserState = {
+    ...normalState,
+    current: {
+      type: 'pseudo',
+      value: ':not',
+      spaces: { before: '', after: '' },
+      nodes: [],
+    } as unknown as PostcssNodeWithChildren,
+    specificity: { ...notCounter },
+  }
+
+  const isState: ParserState = {
+    ...normalState,
+    current: {
+      type: 'pseudo',
+      value: ':is',
+      spaces: { before: '', after: '' },
+      nodes: [],
+    } as unknown as PostcssNodeWithChildren,
+    specificity: { ...isCounter },
+  }
+
+  const hasState: ParserState = {
+    ...normalState,
+    current: {
+      type: 'pseudo',
+      value: ':has',
+      spaces: { before: '', after: '' },
+      nodes: [],
+    } as unknown as PostcssNodeWithChildren,
+    specificity: { ...hasCounter },
+  }
+
+  const notResult = await pseudo(notState)
+  const isResult = await pseudo(isState)
+  const hasResult = await pseudo(hasState)
+
+  t.equal(
+    notResult.specificity.commonCounter,
+    0,
+    ':not should not increment commonCounter',
+  )
+  t.equal(
+    isResult.specificity.commonCounter,
+    0,
+    ':is should not increment commonCounter',
+  )
+  t.equal(
+    hasResult.specificity.commonCounter,
+    0,
+    ':has should not increment commonCounter',
+  )
+})
+
+t.test(':path selector', async t => {
+  const pathBasedGraph = getPathBasedGraph()
+  const all = {
+    edges: new Set(pathBasedGraph.edges),
+    nodes: new Set(pathBasedGraph.nodes.values()),
+  }
+  const empty: GraphSelectionState = {
+    edges: new Set(),
+    nodes: new Set(),
+  }
+
+  const queryToExpected = new Set<TestCase>([
+    // Test basic path matching - all patterns must be quoted
+    [
+      ':path("*")',
+      all,
+      ['path-based-project', 'a', 'b', 'c', 'x', 'y'],
+    ], // Match all workspace and file nodes
+    [':path("packages/*")', all, ['a', 'b']], // Match workspace packages in packages directory
+    [':path("packages/a")', all, ['a']], // Match specific workspace
+    [':path(".")', all, ['path-based-project']], // Match root project
+    [':path("x")', all, ['x']], // Match file dependency
+    [':path("packages/**")', all, ['a', 'b', 'y']], // Match with glob patterns
+    [':path("packages/a/*")', all, ['y']], // Match nested file paths
+    [':path("nonexistent/**")', all, []], // No matches
+
+    // Test edge cases
+    [':path("")', all, []], // Empty pattern should match nothing
+    [':path()', all, []], // Missing pattern should match nothing
+
+    // Test from empty partial
+    [':path("*")', empty, []], // Empty input should return empty
+  ])
+
+  for (const [query, partial, expectedNames] of queryToExpected) {
+    try {
+      // Convert string names to DepID array
+      const expectedDepIDs = expectedNames.map(name =>
+        joinDepIDTuple(['registry', '', `${name}@1.0.0`]),
+      )
+      await testPseudo(query, all, partial, false, expectedDepIDs)
+    } catch (error) {
+      t.fail(`Failed query "${query}": ${error}`)
+    }
+  }
 })
 
 t.test('unexpected attr usage', async t => {

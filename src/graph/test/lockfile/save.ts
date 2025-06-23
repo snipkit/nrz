@@ -1,5 +1,7 @@
 import { joinDepIDTuple } from '@nrz/dep-id'
-import { Spec, type SpecOptions } from '@nrz/spec'
+import type { SpecOptions } from '@nrz/spec'
+import { Spec } from '@nrz/spec'
+import { unload } from '@nrz/nrz-json'
 import { Monorepo } from '@nrz/workspaces'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -29,7 +31,9 @@ t.test('save', async t => {
       foo: '^1.0.0',
     },
   }
-  const projectRoot = t.testdir()
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     ...configData,
     projectRoot,
@@ -129,7 +133,9 @@ t.test('missing registries', async t => {
     registry: 'http://example.com',
     registries: undefined,
   }
-  const projectRoot = t.testdir()
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     projectRoot,
     ...borkedConfigData,
@@ -139,7 +145,7 @@ t.test('missing registries', async t => {
   t.matchSnapshot(JSON.stringify(lockfile, null, 2))
 })
 
-t.test('custom git hosts', async t => {
+t.test('custom git hosts and catalogs', async t => {
   const mainManifest = {
     name: 'my-project',
     version: '1.0.0',
@@ -148,6 +154,8 @@ t.test('custom git hosts', async t => {
     },
   }
   const specOptions = {
+    catalog: { x: '1.2.3' },
+    catalogs: { a: { x: '2.3.4' } },
     'git-hosts': {
       example: 'git+ssh://example.com/$1/$2.git',
     },
@@ -155,7 +163,9 @@ t.test('custom git hosts', async t => {
       example: 'https://example.com/$1/$2/archive/$3.tar.gz',
     },
   }
-  const projectRoot = t.testdir()
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     projectRoot,
     ...specOptions,
@@ -174,7 +184,7 @@ t.test('custom git hosts', async t => {
   t.matchSnapshot(JSON.stringify(lockfile, null, 2))
 })
 
-t.test('scope-registries', async t => {
+t.test('jsr-registries', async t => {
   const mainManifest = {
     name: 'my-project',
     version: '1.0.0',
@@ -187,7 +197,9 @@ t.test('scope-registries', async t => {
       '@myscope': 'https://example.com/',
     },
   }
-  const projectRoot = t.testdir()
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     projectRoot,
     ...specOptions,
@@ -210,6 +222,44 @@ t.test('scope-registries', async t => {
   t.matchSnapshot(JSON.stringify(lockfile, null, 2))
 })
 
+t.test('jsr-registries', async t => {
+  const mainManifest = {
+    name: 'my-project',
+    version: '1.0.0',
+    dependencies: {
+      '@foo/bar': 'intl:@foo/bar@1',
+    },
+  }
+  const specOptions = {
+    'jsr-registries': {
+      intl: 'https://jsr.example.com/',
+    },
+  }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
+  const graph = new Graph({
+    projectRoot,
+    ...specOptions,
+    mainManifest,
+  })
+  graph.placePackage(
+    graph.mainImporter,
+    'prod',
+    Spec.parse(
+      '@foo/bar',
+      mainManifest.dependencies['@foo/bar'],
+      specOptions,
+    ),
+    {
+      name: '@foo/bar',
+      version: '1.0.0',
+    },
+  )
+  const lockfile = lockfileData({ ...specOptions, graph })
+  t.matchSnapshot(JSON.stringify(lockfile, null, 2))
+})
+
 t.test('overrides default registries', async t => {
   const mainManifest = {
     name: 'my-project',
@@ -224,7 +274,9 @@ t.test('overrides default registries', async t => {
       npm: 'http://example.com',
     },
   }
-  const projectRoot = t.testdir()
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
   const graph = new Graph({
     projectRoot,
     ...specOptions,
@@ -241,8 +293,10 @@ t.test('workspaces', async t => {
   }
   const projectRoot = t.testdir({
     'package.json': JSON.stringify(mainManifest),
-    'nrz-workspaces.json': JSON.stringify({
-      packages: ['./packages/*'],
+    'nrz.json': JSON.stringify({
+      workspaces: {
+        packages: ['./packages/*'],
+      },
     }),
     packages: {
       a: {
@@ -262,6 +316,8 @@ t.test('workspaces', async t => {
       },
     },
   })
+  t.chdir(projectRoot)
+  unload('project')
   const monorepo = Monorepo.load(projectRoot)
   const graph = new Graph({
     projectRoot,
@@ -297,11 +353,55 @@ t.test('workspaces', async t => {
   )
 
   await t.test('save manifests', async t => {
-    save({ ...configData, graph, saveManifests: true })
+    save({ ...configData, graph })
     t.matchSnapshot(
       readFileSync(resolve(projectRoot, 'nrz-lock.json'), {
         encoding: 'utf8',
       }),
     )
   })
+})
+
+t.test('confused manifest', async t => {
+  const mainManifest = {
+    name: 'my-project',
+    version: '1.0.0',
+    dependencies: {
+      foo: '^1.0.0',
+    },
+  }
+  const projectRoot = t.testdir({ 'nrz.json': '{}' })
+  t.chdir(projectRoot)
+  unload('project')
+  const graph = new Graph({
+    ...configData,
+    projectRoot,
+    mainManifest,
+  })
+  const foo = graph.placePackage(
+    graph.mainImporter,
+    'prod',
+    Spec.parse('foo', '^1.0.0'),
+    {
+      name: 'test', // Different name to trigger confusion
+      version: '1.0.0',
+    },
+  )
+  if (!foo) {
+    throw new Error('Missing expected package')
+  }
+  foo.setResolved()
+  foo.location = 'node_modules/.pnpm/foo@1.0.0/node_modules/foo'
+
+  // Save with manifests to include rawManifest
+  saveHidden({ ...configData, graph })
+  t.matchSnapshot(
+    readFileSync(
+      resolve(projectRoot, 'node_modules/.nrz-lock.json'),
+      {
+        encoding: 'utf8',
+      },
+    ),
+    'should save lockfile with confused manifest',
+  )
 })

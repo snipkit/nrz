@@ -1,116 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`renders Layout for the "/dashboard" view 1`] = `
+exports[`renders Layout with an outlet 1`] = `
 
 <gui-sidebar-provider defaultopen="true">
-  <div class="flex min-h-svh w-full flex-col">
-    <div class="flex min-h-svh w-full flex-row">
-      <gui-app-sidebar>
-      </gui-app-sidebar>
-      <div class="flex w-full grow flex-col">
-        <gui-nav-header>
-        </gui-nav-header>
-        <gui-dashboard>
-        </gui-dashboard>
-        <gui-nav-footer>
-        </gui-nav-footer>
-      </div>
-    </div>
-    <gui-toaster>
-    </gui-toaster>
-  </div>
-</gui-sidebar-provider>
-
-`;
-
-exports[`renders Layout for the "/error" view 1`] = `
-
-<gui-sidebar-provider defaultopen="true">
-  <div class="flex min-h-svh w-full flex-col">
-    <div class="flex min-h-svh w-full flex-row">
-      <gui-app-sidebar>
-      </gui-app-sidebar>
-      <div class="flex w-full grow flex-col">
-        <gui-nav-header>
-        </gui-nav-header>
-        <gui-error-found>
-        </gui-error-found>
-        <gui-nav-footer>
-        </gui-nav-footer>
-      </div>
-    </div>
-    <gui-toaster>
-    </gui-toaster>
-  </div>
-</gui-sidebar-provider>
-
-`;
-
-exports[`renders Layout for the "/explore" view 1`] = `
-
-<gui-sidebar-provider defaultopen="true">
-  <div class="flex min-h-svh w-full flex-col">
-    <div class="flex min-h-svh w-full flex-row">
-      <gui-app-sidebar>
-      </gui-app-sidebar>
-      <div class="flex w-full grow flex-col">
-        <gui-nav-header>
-        </gui-nav-header>
-        <gui-explorer>
-        </gui-explorer>
-        <gui-nav-footer>
-        </gui-nav-footer>
-      </div>
-    </div>
-    <gui-toaster>
-    </gui-toaster>
-  </div>
-</gui-sidebar-provider>
-
-`;
-
-exports[`renders Layout for the "/labels" view 1`] = `
-
-<gui-sidebar-provider defaultopen="true">
-  <div class="flex min-h-svh w-full flex-col">
-    <div class="flex min-h-svh w-full flex-row">
-      <gui-app-sidebar>
-      </gui-app-sidebar>
-      <div class="flex w-full grow flex-col">
-        <gui-nav-header>
-        </gui-nav-header>
-        <gui-labels>
-        </gui-labels>
-        <gui-nav-footer>
-        </gui-nav-footer>
-      </div>
-    </div>
-    <gui-toaster>
-    </gui-toaster>
-  </div>
-</gui-sidebar-provider>
-
-`;
-
-exports[`renders Layout for the "/queries" view 1`] = `
-
-<gui-sidebar-provider defaultopen="true">
-  <div class="flex min-h-svh w-full flex-col">
-    <div class="flex min-h-svh w-full flex-row">
-      <gui-app-sidebar>
-      </gui-app-sidebar>
-      <div class="flex w-full grow flex-col">
-        <gui-nav-header>
-        </gui-nav-header>
-        <gui-queries>
-        </gui-queries>
-        <gui-nav-footer>
-        </gui-nav-footer>
-      </div>
-    </div>
-    <gui-toaster>
-    </gui-toaster>
-  </div>
+  <gui-app-sidebar>
+  </gui-app-sidebar>
+  <gui-sidebar-inset>
+    <gui-nav-header>
+    </gui-nav-header>
+    <gui-router-outlet>
+    </gui-router-outlet>
+  </gui-sidebar-inset>
+  <gui-toaster>
+  </gui-toaster>
 </gui-sidebar-provider>
 
 `;

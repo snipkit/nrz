@@ -1,9 +1,10 @@
 import { satisfies } from '@nrz/satisfies'
-import { type Spec } from '@nrz/spec'
-import { inspect, type InspectOptions } from 'util'
-import { type DependencyTypeShort } from '@nrz/types'
-import { type Node } from './node.ts'
-import { type EdgeLike } from './types.ts'
+import type { Spec } from '@nrz/spec'
+import { inspect } from 'node:util'
+import type { InspectOptions } from 'node:util'
+import type { DependencyTypeShort } from '@nrz/types'
+import type { Node } from './node.ts'
+import type { EdgeLike } from './types.ts'
 
 const kCustomInspect = Symbol.for('nodejs.util.inspect.custom')
 

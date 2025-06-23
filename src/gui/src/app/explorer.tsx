@@ -1,20 +1,17 @@
+import { useNavigate } from 'react-router'
 import { useEffect, useRef } from 'react'
 import { Query } from '@nrz/query'
-import { SearchBar } from '@/components/search-bar.jsx'
-import { ExplorerGrid } from '@/components/explorer-grid/index.jsx'
-import { useGraphStore } from '@/state/index.js'
-import {
-  type TransferData,
-  type Action,
-  type State,
-} from '@/state/types.js'
-import { load } from '@/state/load-graph.js'
+import { QueryBar } from '@/components/query-bar/index.tsx'
+import { ExplorerGrid } from '@/components/explorer-grid/index.tsx'
+import { useGraphStore } from '@/state/index.ts'
+import type { TransferData, Action, State } from '@/state/types.ts'
+import { load } from '@/state/load-graph.ts'
 import { Search, Command } from 'lucide-react'
-import { Kbd } from '@/components/ui/kbd.jsx'
-import Save from '@/components/explorer-grid/save-query.jsx'
-import { QueryMatches } from '@/components/explorer-grid/query-matches.jsx'
-import { RootButton } from '@/components/explorer-grid/root-button.jsx'
-import { SetupProject } from '@/components/explorer-grid/setup-project.jsx'
+import { Kbd } from '@/components/ui/kbd.tsx'
+import Save from '@/components/explorer-grid/save-query.tsx'
+import { QueryMatches } from '@/components/explorer-grid/query-matches.tsx'
+import { RootButton } from '@/components/explorer-grid/root-button.tsx'
+import { SetupProject } from '@/components/explorer-grid/setup-project.tsx'
 
 export type ExplorerOptions = {
   projectRoot?: string
@@ -41,8 +38,8 @@ const startGraphData = async ({
   const data = (await res.json()) as TransferData & {
     hasDashboard: boolean
   }
-  const { graph, specOptions } = load(data)
-  const q = new Query({ graph })
+  const { graph, specOptions, securityArchive } = load(data)
+  const q = new Query({ graph, specOptions, securityArchive })
 
   updateHasDashboard(data.hasDashboard)
   updateGraph(graph)
@@ -52,9 +49,7 @@ const startGraphData = async ({
 }
 
 export const Explorer = () => {
-  const updateActiveRoute = useGraphStore(
-    state => state.updateActiveRoute,
-  )
+  const navigate = useNavigate()
   const updateErrorCause = useGraphStore(
     state => state.updateErrorCause,
   )
@@ -83,16 +78,24 @@ export const Explorer = () => {
       stamp,
     }).catch((err: unknown) => {
       console.error(err)
-      updateActiveRoute('/error')
+      void navigate('/error')
       updateErrorCause('Failed to initialize explorer.')
     })
-  }, [stamp])
+  }, [
+    stamp,
+    updateHasDashboard,
+    updateGraph,
+    updateProjectInfo,
+    updateQ,
+    updateSpecOptions,
+    navigate,
+    updateErrorCause,
+  ])
 
   return <ExplorerContent />
 }
 
 const ExplorerContent = () => {
-  const dashboard = useGraphStore(state => state.dashboard)
   const updateEdges = useGraphStore(state => state.updateEdges)
   const updateNodes = useGraphStore(state => state.updateNodes)
   const graph = useGraphStore(state => state.graph)
@@ -107,9 +110,13 @@ const ExplorerContent = () => {
   useEffect(() => {
     async function updateQueryData() {
       if (!q) return
+
       ac.current.abort(new Error('Query changed'))
       ac.current = new AbortController()
-      const queryResponse = await q.search(query, ac.current.signal)
+      const queryResponse = await q.search(query, {
+        signal: ac.current.signal,
+        scopeIDs: graph ? [graph.mainImporter.id] : undefined,
+      })
 
       updateEdges(queryResponse.edges)
       updateNodes(queryResponse.nodes)
@@ -131,8 +138,12 @@ const ExplorerContent = () => {
         window.scrollTo(0, 0)
       }
     }
-    void updateQueryData().catch(() => {})
-  }, [query, q])
+
+    void updateQueryData().catch(() => {
+      updateEdges([])
+      updateNodes([])
+    })
+  }, [query, q, graph, updateEdges, updateNodes])
 
   // avoids flash of content
   if (!graph) {
@@ -145,42 +156,35 @@ const ExplorerContent = () => {
   }
 
   return (
-    <section className="flex grow flex-col justify-between bg-white dark:bg-black">
-      <div className="flex w-full items-center justify-between border-t-[1px] px-8 pt-4">
-        {graph.projectRoot ?
-          <p className="font-mono text-xs font-light text-muted-foreground">
-            :host-context(file:{graph.projectRoot})
-          </p>
-        : ''}
-        {dashboard?.buildVersion ?
-          <p className="text-right font-mono text-xs font-light text-muted-foreground">
-            build: v{dashboard.buildVersion}
-          </p>
-        : ''}
-      </div>
-      <section className="flex items-center border-b-[1px] border-solid px-8 py-4">
-        <div className="flex w-full flex-row gap-2">
+    <section className="relative flex h-full max-h-[calc(100svh-65px-16px)] w-full grow flex-col overflow-y-auto rounded-b-lg border-x-[1px] border-b-[1px]">
+      <section className="sticky top-0 z-[20] flex w-full items-center bg-background px-8 pt-1">
+        <div className="relative flex w-full max-w-8xl flex-row items-center gap-2">
+          {/* query bar blur */}
+          <div className="absolute inset-x-0 -bottom-1 h-1 w-full bg-background blur-sm" />
+          <div className="absolute inset-x-0 -bottom-4 h-4 w-full bg-gradient-to-b from-background/100 from-10% via-50% to-background/0 to-100%" />
           <RootButton />
-          <SearchBar
+          <QueryBar
             tabIndex={0}
-            className="w-full bg-muted-foreground/5"
             startContent={
-              <Search size={20} className="ml-3" color="#a3a3a3" />
+              <Search size={20} className="ml-3 text-neutral-500" />
             }
             endContent={
-              <div className="mr-3 hidden items-center gap-1 backdrop-blur-sm md:flex">
+              <div className="relative mr-3 hidden items-center gap-1 md:flex">
                 <QueryMatches />
                 <Save />
                 <Kbd className='before:content-[" "] relative ml-3 before:absolute before:-ml-10 before:h-[0.75rem] before:w-[1.25px] before:rounded-sm before:bg-neutral-600'>
                   <Command size={12} />
                 </Kbd>
                 <Kbd className="text-sm">k</Kbd>
+                <div className="absolute inset-0 -bottom-2 -right-3 -top-2 z-[-2] rounded-br-md rounded-tr-md border-y border-r border-input bg-gradient-to-r from-white/20 via-white/50 to-white backdrop-blur-sm dark:from-neutral-900/20 dark:via-neutral-900/50 dark:to-neutral-900" />
               </div>
             }
           />
         </div>
       </section>
-      <ExplorerGrid />
+      <div className="z-[10] pt-4">
+        <ExplorerGrid />
+      </div>
     </section>
   )
 }

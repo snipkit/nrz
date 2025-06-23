@@ -1,36 +1,43 @@
-import { type Manifest, type DependencyTypeShort } from '@nrz/types'
-import { lockfile } from '@nrz/graph/browser'
-import { type DepID } from '@nrz/dep-id/browser'
-import {
-  type EdgeLike,
-  type LockfileData,
-  type GraphLike,
-  type NodeLike,
+import type { DepID } from '@nrz/dep-id/browser'
+import type {
+  EdgeLike,
+  GraphLike,
+  LockfileData,
+  NodeLike,
 } from '@nrz/graph'
+import { lockfile, stringifyNode } from '@nrz/graph/browser'
+import { SecurityArchive } from '@nrz/security-archive/browser'
+import type { Spec, SpecOptionsFilled } from '@nrz/spec/browser'
 import {
-  defaultRegistry,
-  defaultRegistries,
-  defaultGitHosts,
   defaultGitHostArchives,
+  defaultGitHosts,
+  defaultRegistries,
+  defaultRegistry,
   defaultScopeRegistries,
-  type SpecOptionsFilled,
-  type Spec,
 } from '@nrz/spec/browser'
-import { type TransferData } from './types.ts'
+import type { DependencyTypeShort, Manifest } from '@nrz/types'
+import type { TransferData } from './types.ts'
+import { assert } from '@/lib/utils.ts'
 
 const loadSpecOptions = (
   lockfile: LockfileData,
 ): SpecOptionsFilled => {
   const {
+    catalog = {},
+    catalogs = {},
     registries,
     registry,
     'git-hosts': gitHosts,
     'git-host-archives': gitHostArchives,
     'scope-registries': scopeRegistries,
+    'jsr-registries': jsrRegistries,
   } = lockfile.options
   return {
+    catalog,
+    catalogs,
     registries: { ...defaultRegistries, ...registries },
     registry: registry || defaultRegistry,
+    'jsr-registries': { ...jsrRegistries },
     'git-hosts': { ...defaultGitHosts, ...gitHosts },
     'git-host-archives': {
       ...defaultGitHostArchives,
@@ -58,6 +65,7 @@ type MaybeGraphLike = Pick<
 export type LoadResponse = {
   graph: GraphLike
   specOptions: SpecOptionsFilled
+  securityArchive: SecurityArchive | undefined
 }
 
 export const load = (transfered: TransferData): LoadResponse => {
@@ -102,13 +110,12 @@ export const load = (transfered: TransferData): LoadResponse => {
     },
     addNode(id?: DepID, manifest?: Manifest) {
       const graph = this as GraphLike
+      assert(id, 'id is required')
+      assert(manifest, 'manifest is required')
       const node: NodeLike = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: id!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        name: manifest!.name,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        version: manifest!.version,
+        id: id,
+        name: manifest.name,
+        version: manifest.version,
         manifest,
         edgesIn: new Set(),
         edgesOut: new Map(),
@@ -118,7 +125,35 @@ export const load = (transfered: TransferData): LoadResponse => {
         projectRoot: graph.projectRoot,
         dev: false,
         optional: false,
+        confused: false,
         setResolved() {},
+        setConfusedManifest(fixed: Manifest, confused?: Manifest) {
+          this.manifest = fixed
+          this.rawManifest = confused
+          this.confused = true
+        },
+        toJSON() {
+          return {
+            id: this.id,
+            name: this.name,
+            version: this.version,
+            location: this.location,
+            importer: this.importer,
+            manifest: this.manifest,
+            projectRoot: this.projectRoot,
+            integrity: this.integrity,
+            resolved: this.resolved,
+            dev: this.dev,
+            optional: this.optional,
+            confused: this.confused,
+            ...(this.confused ?
+              { rawManifest: this.rawManifest }
+            : undefined),
+          }
+        },
+        toString() {
+          return stringifyNode(this)
+        },
       }
       this.nodes.set(node.id, node)
       return node
@@ -137,10 +172,24 @@ export const load = (transfered: TransferData): LoadResponse => {
     node.resolved = importer.resolved
     node.dev = importer.dev
     node.optional = importer.optional
+    node.confused = false
+    node.toJSON = () => ({
+      id: node.id,
+      name: node.name,
+      version: node.version,
+      location: node.location,
+      importer: node.importer,
+      manifest: node.manifest,
+      projectRoot: node.projectRoot,
+      integrity: node.integrity,
+      resolved: node.resolved,
+      dev: node.dev,
+      optional: node.optional,
+      confused: node.confused,
+    })
+    node.toString = () => stringifyNode(node)
     // should set the main importer in the first iteration
-    if (!graph.mainImporter) {
-      graph.mainImporter = node
-    }
+    graph.mainImporter ??= node
     graph.importers.add(node)
   }
 
@@ -149,9 +198,24 @@ export const load = (transfered: TransferData): LoadResponse => {
   lockfile.loadNodes(graph, transfered.lockfile.nodes)
   const specOptions = loadSpecOptions(transfered.lockfile)
   lockfile.loadEdges(graph, transfered.lockfile.edges, specOptions)
+  const securityArchive = SecurityArchive.load(
+    transfered.securityArchive,
+  )
+
+  // validates that all nodes have a security archive entry
+  if (securityArchive) {
+    securityArchive.ok = true
+    for (const node of graph.nodes.values()) {
+      if (!securityArchive.has(node.id)) {
+        securityArchive.ok = false
+        break
+      }
+    }
+  }
 
   return {
     graph,
     specOptions,
+    securityArchive,
   }
 }

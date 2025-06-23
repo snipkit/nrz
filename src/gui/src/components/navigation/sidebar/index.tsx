@@ -1,15 +1,23 @@
+/* sidebar primitives */
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarHeader,
+  SidebarMenu,
   SidebarRail,
-} from '@/components/ui/sidebar.jsx'
-import { SidebarMainNav } from '@/components/navigation/sidebar/nav-main.jsx'
-import { SidebarLogo } from '@/components/navigation/sidebar/logo.jsx'
-import { SidebarQueryNav } from '@/components/navigation/sidebar/nav-queries.jsx'
-import { SidebarQueryProjectNav } from '@/components/navigation/sidebar/nav-project-queries.jsx'
-import { AppSidebarFooter } from '@/components/navigation/sidebar/footer.jsx'
+  SidebarFooter,
+} from '@/components/ui/sidebar.tsx'
+
+/* sidebar components */
+import { SidebarHeader } from '@/components/navigation/sidebar/sidebar-header.tsx'
+import { SidebarThemeSwitcher } from '@/components/navigation/sidebar/sidebar-theme-switcher.tsx'
+import { SidebarMenuLink } from '@/components/navigation/sidebar/sidebar-menu-link.tsx'
+import { SidebarToggle } from '@/components/navigation/sidebar/sidebar-toggle.tsx'
+
+/* sidebar nav menus */
+import { SidebarMainNav } from '@/components/navigation/sidebar/sidebar-main-nav.tsx'
+import { SidebarQueryNav } from '@/components/navigation/sidebar/sidebar-query-nav.tsx'
+
+import { footerMenuItems } from '@/components/navigation/sidebar/menu.ts'
 
 /**
  * Sidebar creates a cookie 'sidebar:state' automatically
@@ -29,21 +37,22 @@ export const defaultOpen: boolean = (() => {
   return value === 'true'
 })()
 
-export function AppSidebar() {
+export const AppSidebar = () => {
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarLogo />
-      </SidebarHeader>
+    <Sidebar collapsible="icon" variant="inset">
+      <SidebarHeader />
       <SidebarContent>
-        <SidebarGroup className="gap-1">
-          <SidebarMainNav />
-          <SidebarQueryNav />
-        </SidebarGroup>
-        <SidebarQueryProjectNav />
+        <SidebarMainNav />
+        <SidebarQueryNav />
       </SidebarContent>
-      <AppSidebarFooter />
-      <SidebarRail />
+      <SidebarFooter className="mb-[0.875px]">
+        <SidebarMenu>
+          <SidebarMenuLink items={footerMenuItems} />
+          <SidebarThemeSwitcher />
+          <SidebarToggle />
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail className="group-data-[state=collapsed]:-translate-x-[0.65rem] hover:after:bg-transparent" />
     </Sidebar>
   )
 }

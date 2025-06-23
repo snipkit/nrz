@@ -1,17 +1,20 @@
-import { type DepID } from '@nrz/dep-id'
+import type { DepID } from '@nrz/dep-id'
 import { error } from '@nrz/error-cause'
-import { type PackageInfoClient } from '@nrz/package-info'
-import { type SpecOptions } from '@nrz/spec'
-import { type PathScurry } from 'path-scurry'
+import type { PackageInfoClient } from '@nrz/package-info'
+import type { SpecOptions } from '@nrz/spec'
+import type { PathScurry } from 'path-scurry'
 import { appendNodes } from './append-nodes.ts'
-import {
-  type BuildIdealAddOptions,
-  type BuildIdealFromGraphOptions,
+import type {
+  BuildIdealAddOptions,
+  BuildIdealFromGraphOptions,
 } from './types.ts'
+import { resolveSaveType } from '../resolve-save-type.ts'
+import type { GraphModifier } from '../modifiers.ts'
 
 export type AddNodesOptions = BuildIdealAddOptions &
   BuildIdealFromGraphOptions &
   SpecOptions & {
+    modifiers?: GraphModifier
     /**
      * A {@link PathScurry} instance based on the `projectRoot` path
      */
@@ -29,6 +32,7 @@ export type AddNodesOptions = BuildIdealAddOptions &
 export const addNodes = async ({
   add,
   graph,
+  modifiers,
   packageInfo,
   scurry,
   ...specOptions
@@ -41,12 +45,16 @@ export const addNodes = async ({
     if (!importer) {
       throw error('Could not find importer', { found: depID })
     }
+    modifiers?.tryImporter(importer)
 
     // Removes any edges and nodes that are currently part of the
     // graph but are also in the list of dependencies to be installed
     const deps = [...dependencies.values()]
-    for (const { spec } of deps) {
-      const node = importer.edgesOut.get(spec.name)?.to
+    for (const dep of deps) {
+      const { spec } = dep
+      const existingEdge = importer.edgesOut.get(spec.name)
+      dep.type = resolveSaveType(importer, spec.name, dep.type)
+      const node = existingEdge?.to
       if (node) graph.removeNode(node)
     }
 
@@ -61,6 +69,8 @@ export const addNodes = async ({
       scurry,
       specOptions,
       seen,
+      modifiers,
+      modifiers?.tryDependencies(importer, deps),
     )
   }
 }

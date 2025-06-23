@@ -102,28 +102,29 @@ exports[`test/index.ts > TAP > hydrate only > workspace·a > hydrated with scope
 `
 
 exports[`test/index.ts > TAP > valid specs > @scoped/x@1.2.3 > hydrated with name asdf 1`] = `
-asdf@npm:@scoped/manifest-name@1.2.3
+asdf@npm:@scoped/x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > @scoped/x@1.2.3 > hydrated with name unknown 1`] = `
-@scoped/manifest-name@1.2.3
+@scoped/x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > @scoped/x@1.2.3 > hydrated with name y 1`] = `
-y@npm:@scoped/manifest-name@1.2.3
+y@npm:@scoped/x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > @scoped/x@1.2.3 > hydrated with scoped name 1`] = `
-@scoped/x@npm:@scoped/manifest-name@1.2.3
+@scoped/x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > @scoped/x@1.2.3 > must match snapshot 1`] = `
 Array [
-  "··@scoped§manifest-name@1.2.3",
+  "··@scoped§x@1.2.3",
   Array [
     "registry",
     "",
-    "@scoped/manifest-name@1.2.3",
+    "@scoped/x@1.2.3",
+    undefined,
   ],
 ]
 `
@@ -151,6 +152,7 @@ Array [
     "git",
     "github:a/b",
     "",
+    undefined,
   ],
 ]
 `
@@ -178,6 +180,7 @@ Array [
     "registry",
     "npm",
     "@scoped/manifest-name@1.2.3",
+    undefined,
   ],
 ]
 `
@@ -205,61 +208,78 @@ Array [
     "registry",
     "npm",
     "@scoped/manifest-name@1.2.3",
+    undefined,
+  ],
+]
+`
+
+exports[`test/index.ts > TAP > valid specs > must match snapshot 1`] = `
+Array [
+  "··manifest-name@1.2.3",
+  Array [
+    "registry",
+    "",
+    "manifest-name@1.2.3",
+    undefined,
   ],
 ]
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1 > hydrated 1`] = `
-x@npm:manifest-name@1.2.3
+x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1 > hydrated with name asdf 1`] = `
-asdf@npm:manifest-name@1.2.3
+asdf@npm:x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1 > hydrated with name unknown 1`] = `
-manifest-name@1.2.3
+x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1 > hydrated with name y 1`] = `
-y@npm:manifest-name@1.2.3
+y@npm:x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1 > must match snapshot 1`] = `
 Array [
-  "··manifest-name@1.2.3",
+  "··x@1.2.3",
   Array [
     "registry",
     "",
-    "manifest-name@1.2.3",
+    "x@1.2.3",
+    undefined,
   ],
+  "··x@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1.2.3 > hydrated 1`] = `
-x@npm:manifest-name@1.2.3
+x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1.2.3 > hydrated with name asdf 1`] = `
-asdf@npm:manifest-name@1.2.3
+asdf@npm:x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1.2.3 > hydrated with name unknown 1`] = `
-manifest-name@1.2.3
+x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1.2.3 > hydrated with name y 1`] = `
-y@npm:manifest-name@1.2.3
+y@npm:x@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > x@1.2.3 > must match snapshot 1`] = `
 Array [
-  "··manifest-name@1.2.3",
+  "··x@1.2.3",
   Array [
     "registry",
     "",
-    "manifest-name@1.2.3",
+    "x@1.2.3",
+    undefined,
   ],
+  "··x@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -286,7 +306,9 @@ Array [
     "registry",
     "a",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·a·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -313,7 +335,9 @@ Array [
     "registry",
     "b",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·b·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -340,7 +364,9 @@ Array [
     "git",
     "git+ssh://host.com/x.git",
     "",
+    undefined,
   ],
+  "git·git%2Bssh%3A§§host.com§x.git··%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -367,7 +393,9 @@ Array [
     "git",
     "git+ssh://host.com/x.git",
     "branch",
+    undefined,
   ],
+  "git·git%2Bssh%3A§§host.com§x.git·branch·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -394,7 +422,9 @@ Array [
     "git",
     "git+ssh://host.com/x.git",
     "semver:1",
+    undefined,
   ],
+  "git·git%2Bssh%3A§§host.com§x.git·semver%3A1·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -421,7 +451,9 @@ Array [
     "git",
     "github:a/b",
     "",
+    undefined,
   ],
+  "git·github%3Aa§b··%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -448,7 +480,9 @@ Array [
     "git",
     "github:a/b",
     "branch",
+    undefined,
   ],
+  "git·github%3Aa§b·branch·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -475,7 +509,9 @@ Array [
     "git",
     "github:a/b",
     "semver:1",
+    undefined,
   ],
+  "git·github%3Aa§b·semver%3A1·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -501,7 +537,9 @@ Array [
   Array [
     "remote",
     "https://x.com/x.tgz",
+    undefined,
   ],
+  "remote·https%3A§§x.com§x.tgz·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -528,7 +566,9 @@ Array [
     "registry",
     "a",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·a·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -555,7 +595,9 @@ Array [
     "registry",
     "b",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·b·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -582,34 +624,38 @@ Array [
     "registry",
     "https://c.example.com/",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·https%3A§§c.example.com§·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
 exports[`test/index.ts > TAP > valid specs > y@1.2.3 > hydrated 1`] = `
-x@npm:manifest-name@1.2.3
+x@npm:y@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > y@1.2.3 > hydrated with name asdf 1`] = `
-asdf@npm:manifest-name@1.2.3
+asdf@npm:y@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > y@1.2.3 > hydrated with name unknown 1`] = `
-manifest-name@1.2.3
+y@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > y@1.2.3 > hydrated with name y 1`] = `
-y@npm:manifest-name@1.2.3
+y@1.2.3
 `
 
 exports[`test/index.ts > TAP > valid specs > y@1.2.3 > must match snapshot 1`] = `
 Array [
-  "··manifest-name@1.2.3",
+  "··y@1.2.3",
   Array [
     "registry",
     "",
-    "manifest-name@1.2.3",
+    "y@1.2.3",
+    undefined,
   ],
+  "··y@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -636,6 +682,7 @@ Array [
     "registry",
     "npm",
     "@scoped/manifest-name@1.2.3",
+    undefined,
   ],
 ]
 `
@@ -663,7 +710,9 @@ Array [
     "registry",
     "npm",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·npm·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -690,7 +739,9 @@ Array [
     "registry",
     "npm",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·npm·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -717,7 +768,9 @@ Array [
     "git",
     "github:a/b",
     "branch",
+    undefined,
   ],
+  "git·github%3Aa§b·branch·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -744,7 +797,9 @@ Array [
     "registry",
     "",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "··manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -771,7 +826,9 @@ Array [
     "registry",
     "",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "··manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `
 
@@ -798,6 +855,8 @@ Array [
     "registry",
     "https://x.com/",
     "manifest-name@1.2.3",
+    undefined,
   ],
+  "·https%3A§§x.com§·manifest-name@1.2.3·%3Aroot%20%3E%20%23extra",
 ]
 `

@@ -1,19 +1,17 @@
 {
   "name": "@nrz/error-cause",
   "description": "nrzs Error.cause convention",
-  "version": "0.0.0-0.1730239248325",
+  "version": "0.0.0-15",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/khulnasoft/nrz.git",
+    "url": "git+https://github.com/khulnasoft-lab/nrz.git",
     "directory": "src/error-cause"
   },
   "tshy": {
     "selfLink": false,
+    "liveDev": true,
     "dialects": [
       "esm"
-    ],
-    "sourceDialects": [
-      "@nrz/source"
     ],
     "exports": {
       "./package.json": "./package.json",
@@ -22,32 +20,30 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@types/eslint__js": "catalog:",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tap": "catalog:",
     "tshy": "catalog:",
+    "typedoc": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
   },
   "license": "BSD-2-Clause-Patent",
   "engines": {
-    "node": ">=22",
-    "pnpm": "9"
+    "node": ">=22"
   },
   "scripts": {
     "format": "prettier --write . --log-level warn --ignore-path ../../.prettierignore --cache",
     "format:check": "prettier --check . --ignore-path ../../.prettierignore --cache",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "prepare": "tshy",
-    "presnap": "tshy",
+    "prepack": "tshy",
     "snap": "tap",
-    "pretest": "tshy",
     "test": "tap",
-    "posttest": "tsc --project tsconfig.test.json",
-    "watch": "tshy --watch"
+    "posttest": "tsc --noEmit",
+    "tshy": "tshy",
+    "typecheck": "tsc --noEmit"
   },
   "tap": {
     "extends": "../../tap-config.yaml"
@@ -59,7 +55,6 @@
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "@nrz/source": "./src/index.ts",
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
       }

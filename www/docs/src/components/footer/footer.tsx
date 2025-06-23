@@ -1,77 +1,45 @@
-import { type Props } from '@astrojs/starlight/props'
-import config from 'virtual:starlight/user-config'
-import ThemeSelect from '@/components/theme-select/theme-select'
-import { useStore } from '@/state'
+import { footerContent } from './content.tsx'
+import { Nrz } from '@/components/icons/icons.tsx'
+import { ThemeSwitcher } from './theme-switcher.tsx'
+import { FooterLink } from './footer-link.tsx'
+import { Waitlist } from './waitlist.tsx'
 
-const Footer = (_props: Props) => {
+const Footer = () => {
   return (
-    <footer className="border-t-[1px]">
-      {/* footer links */}
-      <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-x-4 gap-y-4 px-6 py-6">
-        <div className="flex w-full flex-row items-center justify-between">
-          <FooterSocials />
-          <div className="flex items-center gap-2">
-            <a
-              href="https://www.khulnasoft.com/join"
-              className="group inline-flex items-center gap-3 rounded-[12px] pl-3 pr-1 text-foreground no-underline transition-all">
-              <span className="text-15 rounded-[7px] border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-100 px-3 py-1 text-left font-medium group-hover:border-neutral-400 dark:border-neutral-800 dark:from-neutral-900 dark:to-black dark:group-hover:border-neutral-700 dark:group-hover:from-neutral-800/80">
-                Join waitlist
-              </span>
-            </a>
-            <ThemeSelect />
-          </div>
-        </div>
-
-        {/* footer policies */}
-        <div className="flex w-full flex-row items-center justify-between">
+    <footer className="flex w-full border-t-[1px] border-border/50">
+      <div className="mx-auto flex w-full max-w-screen-xl flex-col gap-8 px-8 pb-8 pt-12 md:h-[26rem] md:pb-16">
+        <div className="flex items-start justify-start pb-8 md:hidden">
           <a
-            href="https://www.khulnasoft.com/"
-            className="text-sm font-medium text-muted-foreground no-underline transition-all hover:text-foreground">
-            &copy; {new Date().getFullYear()} nrz technology inc.
+            href="https://www.nrz.sh"
+            className="flex items-center justify-center text-foreground">
+            <Nrz className="size-5" />
           </a>
-          <div className="flex flex-row gap-4">
-            <a
-              href="https://www.khulnasoft.com/terms"
-              className="text-sm font-medium text-muted-foreground no-underline transition-all hover:text-foreground">
-              Terms
-            </a>
-            <a
-              href="https://www.khulnasoft.com/privacy"
-              className="text-sm font-medium text-muted-foreground no-underline transition-all hover:text-foreground">
-              Privacy
+        </div>
+        <div className="grid grow grid-cols-2 gap-10 md:grid-cols-5 md:gap-0">
+          {footerContent.map((section, idx) => (
+            <section className="flex h-full flex-col gap-4" key={idx}>
+              <p className="text-sm font-medium">{section.title}</p>
+              <ul className="flex list-none flex-col gap-2 p-0 leading-normal">
+                {section.contents.map((content, idx) => (
+                  <li key={idx}>
+                    <FooterLink {...content} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+          <div className="hidden items-start justify-end md:flex">
+            <a href="https://www.nrz.sh" className="text-foreground">
+              <Nrz className="size-5" />
             </a>
           </div>
         </div>
+        <section className="flex w-full items-center justify-between pt-4 md:pt-0">
+          <Waitlist />
+          <ThemeSwitcher />
+        </section>
       </div>
     </footer>
-  )
-}
-
-const FooterSocials = () => {
-  const { getResolvedTheme } = useStore()
-  const theme = getResolvedTheme()
-
-  const socialLinks = Object.entries(config.social ?? {}).map(
-    ([platform, value]) => ({
-      platform,
-      ...value,
-    }),
-  )
-
-  return (
-    <div className="flex gap-4">
-      {socialLinks.map((link, idx) => (
-        <a href={link.url} key={idx}>
-          <img
-            src={`/icons/${link.platform}.svg`}
-            className="h-5"
-            style={{
-              filter: theme === 'dark' ? 'invert(0)' : 'invert(1)',
-            }}
-          />
-        </a>
-      ))}
-    </div>
   )
 }
 

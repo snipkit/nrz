@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@/components/ui/popover.tsx'
 import { ChevronDown } from 'lucide-react'
-import { Icon } from '@/components/icon'
-
-const usePathname = () => {
-  return window.location.href
-}
+import { Icon } from '@/components/icon.tsx'
 
 interface MenuItem {
   icon?: string
@@ -26,41 +22,37 @@ const LinearMenu = () => {
         {
           icon: 'client',
           title: 'Client',
-          path: 'https://khulnasoft.com/client',
+          path: 'https://nrz.sh/client',
         },
         {
           icon: 'serverless-registry',
           title: 'Serverless Registry',
-          path: 'https://khulnasoft.com/serverless-registry',
+          path: 'https://nrz.sh/serverless-registry',
         },
       ],
     },
-    { title: 'Docs', path: 'https://docs.khulnasoft.com/' },
-    { title: 'Blog', path: 'https://blog.khulnasoft.com/' },
-    { title: 'Company', path: 'https://khulnasoft.com/company' },
+    { title: 'Docs', path: 'https://docs.nrz.sh/' },
+    { title: 'Blog', path: 'https://blog.nrz.sh/' },
+    { title: 'Company', path: 'https://nrz.sh/company' },
   ]
 
   return (
-    <nav className="hidden items-center gap-x-2 rounded-[1rem] bg-white/95 p-2 text-base text-neutral-950 shadow-[0_0_0_1px_theme(colors.black/5%)] backdrop-blur-sm dark:bg-neutral-950/75 dark:text-white dark:shadow-[0_0_0_1px_theme(colors.white/10%)] md:flex">
+    <div className="hidden items-center gap-x-2 rounded-[1rem] bg-white/95 p-2 text-[15px] text-neutral-950 shadow-[0_0_0_1px_theme(colors.black/5%)] backdrop-blur-sm dark:bg-neutral-950/75 dark:text-white dark:shadow-[0_0_0_1px_theme(colors.white/10%)] md:flex">
       {menuData.map(item =>
         item.children ?
           <MenuGroup key={item.title} item={item} />
         : <MenuLink key={item.title} item={item} />,
       )}
-    </nav>
+    </div>
   )
 }
 
 const MenuGroup = ({ item }: { item: MenuItem }) => {
   const [open, setOpen] = useState(false)
-  const location = usePathname()
-  useEffect(() => {
-    setOpen(false)
-  }, [location])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="inline-flex cursor-pointer items-center gap-1.5 rounded-[8px] bg-transparent px-4 py-1.5 text-base hover:bg-black/5 dark:hover:bg-white/10">
+      <PopoverTrigger className="inline-flex cursor-pointer items-center gap-1.5 rounded-[8px] bg-transparent px-4 py-1.5 text-[15px] hover:bg-black/5 dark:hover:bg-white/10">
         {item.title}
         <ChevronDown
           size={12}
@@ -72,7 +64,7 @@ const MenuGroup = ({ item }: { item: MenuItem }) => {
         className="flex w-[224px] flex-col gap-1 rounded-[8px] border border-white/10 bg-neutral-900 px-1 py-1 text-foreground shadow-xl shadow-white/5 [&>a]:rounded-[5px]">
         {item.children?.map((child, idx) => (
           <MenuLink className="text-white" key={idx} item={child} />
-        ))}{' '}
+        ))}
       </PopoverContent>
     </Popover>
   )
@@ -95,7 +87,7 @@ const MenuLink = ({
       </span>
     : <a
         href={item.path}
-        className={`group inline-flex items-center gap-x-3 text-nowrap rounded-[8px] px-4 py-1.5 text-base text-foreground no-underline hover:bg-black/5 dark:hover:bg-white/10 ${className}`}>
+        className={`text-15 group inline-flex items-center gap-x-3 text-nowrap rounded-[8px] px-4 py-1.5 text-foreground no-underline hover:bg-black/5 dark:hover:bg-white/10 ${className}`}>
         {item.icon ?
           <MenuLinkIcon item={item} />
         : null}{' '}

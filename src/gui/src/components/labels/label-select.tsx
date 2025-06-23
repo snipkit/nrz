@@ -5,15 +5,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command.jsx'
+} from '@/components/ui/command.tsx'
 import { Check, Pencil } from 'lucide-react'
-import { type QueryLabel } from '@/state/types.js'
-import { useGraphStore } from '@/state/index.js'
+import type { QueryLabel } from '@/state/types.ts'
+import { useGraphStore } from '@/state/index.ts'
 import { useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils.js'
-import { Button } from '@/components/ui/button.jsx'
-import { CreateLabelModal } from '@/components/labels/create-label-dialog.jsx'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog.jsx'
+import { cn } from '@/lib/utils.ts'
+import { Button } from '@/components/ui/button.tsx'
+import { CreateLabelModal } from '@/components/labels/create-label-dialog.tsx'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog.tsx'
 
 interface LabelSelect {
   setIsOpen: (isOpen: boolean) => void
@@ -34,26 +34,26 @@ const LabelSelect = ({
   const [isCreateModalOpen, setIsCreateModalOpen] =
     useState<boolean>(false)
 
-  const handleClick = (event: MouseEvent) => {
-    if (
-      boxRef.current &&
-      !boxRef.current.contains(event.target as Node)
-    ) {
-      setIsOpen(false)
-    }
-  }
-
   /**
    * Manually check for MouseEvents to not close
    * popover until all desired labels have been selected.
    */
   useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (
+        boxRef.current &&
+        !boxRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+
     document.addEventListener('mousedown', handleClick)
 
     return () => {
       document.removeEventListener('mousedown', handleClick)
     }
-  }, [])
+  }, [setIsOpen])
 
   const handleSelect = (value: string) => {
     setItems(prevItems => {
@@ -92,7 +92,7 @@ const LabelSelect = ({
               <p className="text-sm text-neutral-400">
                 No labels found.
               </p>
-              <DialogTrigger>
+              <DialogTrigger asChild>
                 <Button className="w-full font-normal">
                   Create label "{inputText}"
                 </Button>
@@ -114,7 +114,7 @@ const LabelSelect = ({
                 key={label.id}
                 value={label.name}
                 onSelect={handleSelect}
-                className="flex cursor-pointer flex-col items-start gap-2">
+                className="flex flex-col items-start gap-2">
                 <div className="flex items-center gap-3">
                   <Check
                     className={cn(
@@ -143,7 +143,7 @@ const LabelSelect = ({
         </CommandGroup>
       </CommandList>
       <Button
-        className="mb-2 rounded-sm border-none text-neutral-500 hover:bg-background hover:text-primary"
+        className="rounded-[7px] border-none text-neutral-500 hover:text-primary"
         variant="outline"
         size="sm"
         asChild>

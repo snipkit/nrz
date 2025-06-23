@@ -1,14 +1,26 @@
 import { test, expect, vi, afterEach } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import html from 'diffable-html'
-import { useGraphStore as useStore } from '@/state/index.js'
-import { CreateNewProject } from '@/app/create-new-project.jsx'
+import { useGraphStore as useStore } from '@/state/index.ts'
+import { CreateNewProject } from '@/app/create-new-project.tsx'
 
-vi.mock('@/components/create-new-project/index.jsx', () => ({
+vi.mock('react-router', () => ({
+  useNavigate: vi.fn(),
+}))
+
+vi.mock('@/components/create-new-project/index.tsx', () => ({
   CreateNewProjectContent: 'gui-create-new-project-content',
 }))
 
-vi.mock('@/lib/start-dashboard-data.js', () => ({
+vi.mock('@/components/ui/inline-code.tsx', () => ({
+  InlineCode: 'gui-inline-code',
+}))
+
+vi.mock('@/components/ui/loading-spinner.tsx', () => ({
+  LoadingSpinner: 'gui-loading-spinner',
+}))
+
+vi.mock('@/lib/start-data.ts', () => ({
   startDashboardData: vi.fn(),
 }))
 
@@ -24,6 +36,6 @@ afterEach(() => {
 })
 
 test('render default', async () => {
-  render(<CreateNewProject />)
-  expect(window.document.body.innerHTML).toMatchSnapshot()
+  const { container } = render(<CreateNewProject />)
+  expect(container.innerHTML).toMatchSnapshot()
 })

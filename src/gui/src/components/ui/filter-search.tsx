@@ -1,23 +1,27 @@
-import { type SavedQuery } from '@/state/types.js'
-import { useEffect, useRef, useState } from 'react'
-import { Input } from '@/components/ui/input.jsx'
-import { Kbd } from '@/components/ui/kbd.jsx'
+import type { SavedQuery } from '@/state/types.ts'
+import { useSearchParams } from 'react-router'
+import { useEffect, useRef, useState, useMemo } from 'react'
+import { Input } from '@/components/ui/input.tsx'
+import { Kbd } from '@/components/ui/kbd.tsx'
 import { Command, Search } from 'lucide-react'
 
 interface FilterSearchProps<T> {
   items: T[] | undefined
   setFilteredItems: (i: T[]) => void
   placeholder: string
+  className?: string
 }
 
 const FilterSearch = <T,>({
   items,
   setFilteredItems,
   placeholder,
+  className = '',
 }: FilterSearchProps<T>) => {
   const [filterText, setFilterText] = useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
   const isInitialMount = useRef(true)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   /**
    * Update URL params based on `filterText` after initial load.
@@ -25,7 +29,7 @@ const FilterSearch = <T,>({
   useEffect(() => {
     if (isInitialMount.current) return
 
-    const params = new URLSearchParams(window.location.search)
+    const params = new URLSearchParams(searchParams)
     const itemKeys = items ? Object.keys(items[0] ?? {}) : []
 
     if (!filterText.trim()) {
@@ -54,15 +58,20 @@ const FilterSearch = <T,>({
       }
     }
 
-    const newUrl = `${window.location.pathname}?${params.toString()}`
-    window.history.replaceState({}, '', newUrl)
-  }, [filterText])
+    setSearchParams(params)
+  }, [
+    filterText,
+    items,
+    searchParams,
+    setFilteredItems,
+    setSearchParams,
+  ])
 
   /**
    * Sync URL params with filtered items on initial load.
    */
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
+    const params = new URLSearchParams(searchParams)
     const itemKeys = items ? Object.keys(items[0] ?? {}) : []
 
     const paramKeys = Array.from(params.keys())
@@ -78,25 +87,24 @@ const FilterSearch = <T,>({
     }
 
     isInitialMount.current = false
-  }, [])
+  }, [items, searchParams])
 
   /**
    * Filter items based on `filterText` or URL params.
    */
-  useEffect(() => {
+  const filteredItems = useMemo(() => {
     if (!items) {
-      setFilteredItems([])
-      return
+      return []
     }
 
-    const params = new URLSearchParams(window.location.search)
+    const params = new URLSearchParams(searchParams)
     const selectors: { key: string; value: string }[] = []
 
     for (const [key, value] of params.entries()) {
       selectors.push({ key, value })
     }
 
-    const filteredItems = items.filter(item =>
+    return items.filter(item =>
       selectors.every(selector => {
         if (selector.key === 'filter') {
           const searchValue = selector.value.toLowerCase()
@@ -118,9 +126,12 @@ const FilterSearch = <T,>({
         }
       }),
     )
+  }, [items, searchParams])
 
+  // Update the parent component with filtered items
+  useEffect(() => {
     setFilteredItems(filteredItems)
-  }, [items, window.location.search, filterText])
+  }, [filteredItems, setFilteredItems])
 
   /**
    * Handle keyboard shortcuts.
@@ -151,7 +162,8 @@ const FilterSearch = <T,>({
   }, [])
 
   return (
-    <div className="relative flex w-[384px] items-center">
+    <div
+      className={`relative flex w-[384px] items-center ${className}`}>
       <Search
         size={18}
         className="absolute left-0 ml-3 text-neutral-500"
@@ -159,7 +171,7 @@ const FilterSearch = <T,>({
       <Input
         type="text"
         ref={inputRef}
-        className="pl-9 pr-20"
+        className="bg-white pl-9 pr-20 dark:bg-muted-foreground/5"
         role="search"
         placeholder={placeholder}
         value={filterText}
